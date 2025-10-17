@@ -1,0 +1,30 @@
+import type { JadwalWithInstructor } from "../page";
+import { InteractiveCard } from "@/app/components/cards";
+
+interface JadwalCardProps {
+  jadwal: JadwalWithInstructor;
+}
+
+// Fungsi helper untuk format
+const formatTanggal = (tanggal: string | null) => {
+  if (!tanggal) return "Segera Hadir";
+  return new Date(tanggal).toLocaleDateString("id-ID", { month: "long", day: "numeric", year: "numeric" });
+};
+
+const formatHarga = (harga: number) => {
+  if (harga === 0) return "Gratis";
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(harga);
+};
+
+export default function JadwalCard({ jadwal }: JadwalCardProps) {
+  const isOnline = jadwal.tipe_kursus === "online";
+  const isFree = jadwal.harga === 0;
+
+  // Data untuk InteractiveCard
+  const duration = `${jadwal.durasi_jam} Jam`;
+  const participants = `Maks. ${jadwal.maksimal_peserta} Peserta`;
+  const price = isFree ? undefined : formatHarga(jadwal.harga);
+  const href = `/kursus/${jadwal.id}`;
+
+  return <InteractiveCard title={jadwal.judul} duration={duration} participants={participants} price={price} isOnline={isOnline} isFree={isFree} href={href} />;
+}
