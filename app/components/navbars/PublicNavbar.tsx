@@ -15,7 +15,7 @@ export default function Header() {
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
               <div className="relative w-10 h-10 bg-white rounded-lg p-1 shadow-sm">
-                <Image src="/public/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" priority />
+                <Image src="/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" priority />
               </div>
               <div className="text-white-text hidden sm:block">
                 <span className="font-bold text-lg">PT. CertiGuardia</span>
