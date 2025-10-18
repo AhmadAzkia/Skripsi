@@ -2,7 +2,7 @@
 
 import RegisterForm from "./RegisterForm";
 import RegisterHero from "./RegisterHero";
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 
 export default function RegisterContainer() {
   return (

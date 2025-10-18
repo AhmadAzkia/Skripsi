@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollReveal, AnimatedCounter } from "@/app/components/ui";
+import { ScrollReveal, AnimatedCounter } from "@/components/ui";
 
 interface BlogStatsProps {
   totalPosts: number;

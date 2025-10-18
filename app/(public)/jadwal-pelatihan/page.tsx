@@ -1,8 +1,8 @@
 // app/(public)/jadwal-pelatihan/page.tsx
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import JadwalContainer from "./components/JadwalContainer";
-import { Tables } from "@/types/database";
+import { Tables } from "@/../types/database";
 
 export type JadwalWithInstructor = Tables<"kursus"> & {
   profil_pengguna: Pick<Tables<"profil_pengguna">, "nama_lengkap"> | null;

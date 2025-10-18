@@ -2,18 +2,18 @@
 
 "use server"; // Menandakan ini adalah file Backend (Server Actions)
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 function getRedirectPath(role: string): string {
   switch (role) {
     case "admin":
-      return "/admin/dashboard";
+      return "/dashboard";
     case "instruktur":
-      return "/pemateri/dashboard";
+      return "/dashboard";
     case "peserta":
-      return "/peserta/dashboard";
+      return "/dashboard";
     default:
       return "/";
   }

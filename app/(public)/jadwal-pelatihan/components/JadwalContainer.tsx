@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import type { JadwalWithInstructor } from "../page";
 import JadwalCard from "./JadwalCard";
-import { ScrollReveal, AnimatedCounter } from "@/app/components/ui";
+import { ScrollReveal, AnimatedCounter } from "@/components/ui";
 import Link from "next/link";
 
 type FilterType = "semua" | "online" | "offline" | "gratis" | "berbayar";

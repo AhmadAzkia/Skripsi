@@ -2,7 +2,7 @@
 
 import ForgotPasswordHero from "./ForgotPasswordHero";
 import ForgotPasswordForm from "./ForgotPasswordForm";
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 import Link from "next/link";
 
 export default function ForgotPasswordContainer() {

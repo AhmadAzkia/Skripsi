@@ -1,8 +1,8 @@
 // app/(public)/blog/page.tsx
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
-import { Tables } from "@/types/database";
-import { ScrollReveal } from "@/app/components/ui";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Tables } from "@/../types/database";
+import { ScrollReveal } from "@/components/ui";
 import { BlogHero, BlogStats, FeaturedPost, BlogCategories, BlogArticlesSection, BlogTestimonials, BlogNewsletter, BlogPopularTags, BlogCTA } from "./components";
 
 export type PostWithAuthor = Tables<"artikel_blog"> & {

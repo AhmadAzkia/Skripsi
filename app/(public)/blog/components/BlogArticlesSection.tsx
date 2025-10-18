@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 import BlogFeed from "./BlogFeed";
 import type { PostWithAuthor } from "../page";
 

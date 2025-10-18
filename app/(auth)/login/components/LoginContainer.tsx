@@ -2,7 +2,7 @@
 
 import LoginHero from "./LoginHero";
 import LoginForm from "./LoginForm";
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 import Link from "next/link";
 
 export default function LoginContainer() {

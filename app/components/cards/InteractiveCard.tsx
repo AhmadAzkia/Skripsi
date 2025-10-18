@@ -1,53 +1,62 @@
 "use client";
 
 import Link from "next/link";
+import { ClockIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 
 interface InteractiveCardProps {
+  id: string; // ID untuk link
   title: string;
-  duration: string;
-  participants: string;
-  price?: string;
-  isOnline: boolean;
-  isFree?: boolean;
-  href: string;
+  duration: string; // Durasi sudah diformat
+  participants: string; // Info peserta sudah diformat
+  isOnline: boolean; // Tipe boolean
+  price: number; // Harga sebagai angka
+  href: string; // Link tujuan
+  imageUrl?: string | null; // URL gambar (opsional)
 }
 
-export default function InteractiveCard({ title, duration, participants, price, isOnline, isFree = false, href }: InteractiveCardProps) {
+const formatHarga = (harga: number) => {
+  if (harga === 0) return "Gratis";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(harga);
+};
+
+export default function InteractiveCard({ id, title, duration, participants, isOnline, price, href, imageUrl }: InteractiveCardProps) {
+  const isFree = price === 0;
+
   return (
-    <div className="bg-white rounded-lg border border-silver/20 hover-lift hover-glow transition-all duration-300 p-6 animate-slide-up">
+    <div className="bg-white rounded-lg border border-silver/20 hover-lift hover-glow transition-all duration-300 p-6 flex flex-col h-full">
       {/* Status Badge */}
       <div className="flex justify-between items-start mb-4">
         <span className={`px-3 py-1 rounded-full text-xs font-medium ${isOnline ? "bg-gold text-navy" : "bg-navy text-white-text"}`}>{isOnline ? "Online" : "Offline"}</span>
-        {isFree && <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Gratis</span>}
-        {price && !isFree && <span className="px-3 py-1 rounded-full text-xs font-medium bg-gold/10 text-gold">{price}</span>}
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${isFree ? "bg-green-100 text-green-800" : "bg-gold/10 text-gold"}`}>{formatHarga(price)}</span>
       </div>
 
-      {/* Title */}
-      <h3 className="text-xl font-bold text-navy mb-4 text-balance">{title}</h3>
+      {imageUrl && (
+        <div className="relative h-40 mb-4 rounded overflow-hidden">
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        </div>
+      )}
 
-      {/* Info */}
-      <div className="space-y-2 mb-6">
+      {/* Title */}
+      <h3 className="text-xl font-bold text-navy mb-4 text-balance flex-grow">{title}</h3>
+
+      {/* Training Details */}
+      <div className="space-y-3 mb-6">
         <div className="flex items-center text-silver text-sm">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <ClockIcon className="w-4 h-4 mr-2" />
           {duration}
         </div>
         <div className="flex items-center text-silver text-sm">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
+          <UserGroupIcon className="w-4 h-4 mr-2" />
           {participants}
         </div>
       </div>
 
       {/* CTA Button */}
-      <Link href={href} className="w-full bg-transparent border-2 border-gold text-gold hover:bg-gold hover:text-navy btn-interactive transition-all duration-300 py-2 px-4 rounded-md font-medium text-center block">
+      <Link href={href} className="mt-auto w-full bg-transparent border-2 border-gold text-gold hover:bg-gold hover:text-navy btn-interactive transition-all duration-300 py-3 px-4 rounded-md font-medium text-center block">
         Lihat Detail
         <svg className="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

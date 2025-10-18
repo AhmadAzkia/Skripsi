@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 
 export default function AboutCTA() {
   return (

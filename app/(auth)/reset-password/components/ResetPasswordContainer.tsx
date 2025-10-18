@@ -2,7 +2,7 @@
 
 import ResetPasswordHero from "./ResetPasswordHero";
 import ResetPasswordForm from "./ResetPasswordForm";
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 
 export default function ResetPasswordContainer() {
   return (

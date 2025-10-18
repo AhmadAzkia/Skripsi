@@ -1,7 +1,7 @@
 "use client";
 
-import { ScrollReveal } from "@/app/components/ui";
-import { TestimonialCard } from "@/app/components/cards";
+import { ScrollReveal } from "@/components/ui";
+import { TestimonialCard } from "@/components/cards";
 
 interface Testimonial {
   name: string;

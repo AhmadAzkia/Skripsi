@@ -1,18 +1,18 @@
 // app/auth/callback/route.ts
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
-import { Tables } from "@/types/database";
+import { Tables } from "@/../types/database";
 
 // Fungsi untuk menentukan path redirect berdasarkan peran
 function getRedirectPath(role: string): string {
   switch (role) {
     case 'admin':
-      return '/admin/dashboard';
+      return '/dashboard';
     case 'instruktur':
-      return '/pemateri/dashboard';
+      return '/dashboard';
     case 'peserta':
-      return '/peserta/dashboard';
+      return '/dashboard';
     default:
       return '/login?message=Peran tidak dikenal'; // Fallback jika peran tidak ada
   }

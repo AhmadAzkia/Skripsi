@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollReveal } from "@/app/components/ui";
+import { ScrollReveal } from "@/components/ui";
 
 export default function AboutVisionMission() {
   return (

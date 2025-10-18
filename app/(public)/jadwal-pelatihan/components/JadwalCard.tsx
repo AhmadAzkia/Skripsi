@@ -1,5 +1,5 @@
 import type { JadwalWithInstructor } from "../page";
-import { InteractiveCard } from "@/app/components/cards";
+import { InteractiveCard } from "@/components/cards";
 
 interface JadwalCardProps {
   jadwal: JadwalWithInstructor;
@@ -26,5 +26,14 @@ export default function JadwalCard({ jadwal }: JadwalCardProps) {
   const price = isFree ? undefined : formatHarga(jadwal.harga);
   const href = `/kursus/${jadwal.id}`;
 
-  return <InteractiveCard title={jadwal.judul} duration={duration} participants={participants} price={price} isOnline={isOnline} isFree={isFree} href={href} />;
+  return InteractiveCard({
+    id: jadwal.id,
+    title: jadwal.judul,
+    duration,
+    participants,
+    isOnline,
+    price: jadwal.harga,
+    href,
+    imageUrl: null,
+  });
 }
