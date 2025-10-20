@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <div className="relative w-10 h-10 bg-white rounded-lg p-1 shadow-sm">
-                <Image src="/img/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" />
+                <Image src="/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" />
               </div>
               <div>
                 <div className="font-bold text-lg">PT. CertiGuardia</div>
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          {/* <div>
             <h3 className="font-semibold mb-4">Tautan Cepat</h3>
             <ul className="space-y-2">
               <li>
@@ -67,10 +67,10 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Services */}
-          <div>
+          {/* <div>
             <h3 className="font-semibold mb-4">Layanan</h3>
             <ul className="space-y-2">
               <li>
@@ -94,7 +94,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
 
         {/* Contact Info */}
