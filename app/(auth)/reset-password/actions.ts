@@ -1,7 +1,7 @@
 
 "use server";
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function updatePassword(formData: FormData) {

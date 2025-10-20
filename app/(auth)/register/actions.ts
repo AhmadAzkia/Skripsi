@@ -1,8 +1,8 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
-import { Database } from "@/types/database";
+import { Database } from "@/../types/database";
 
 // Kita buat interface untuk data yang dikirim dari form
 interface SignupData {

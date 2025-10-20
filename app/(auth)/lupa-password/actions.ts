@@ -1,7 +1,7 @@
 
 "use server";
 
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 
 export async function requestPasswordReset(formData: FormData) {

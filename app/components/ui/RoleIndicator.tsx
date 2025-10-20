@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { hasRole } from "@/lib/role-utils";
 
 export default function RoleIndicator() {
   const { user } = useAuth();

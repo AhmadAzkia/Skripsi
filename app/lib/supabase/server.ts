@@ -2,7 +2,7 @@
 
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { Database } from "@/types/database"; // Pastikan path ini benar
+import { Database } from "@/../types/database";
 
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();

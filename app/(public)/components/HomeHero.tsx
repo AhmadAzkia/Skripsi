@@ -5,7 +5,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function HomeHero() {
   return (
-    <section className="bg-gradient-to-br from-navy via-navy/95 to-navy/90 py-16 md:py-24 relative overflow-hidden">
+    <section className="bg-gradient-to-br from-navy via-navy to-blue-900 py-16 md:py-24 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-32 h-32 border border-gold rounded-full animate-bounce-gentle"></div>
