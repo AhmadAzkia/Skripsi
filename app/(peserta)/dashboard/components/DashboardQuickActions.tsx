@@ -53,7 +53,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           />
         </svg>
       ),
-      href: "/jadwal-pelatihan",
+      href: "/jadwal-peserta",
       bgColor: "from-amber-50 to-amber-100",
       borderColor: "border-amber-200",
       hoverBorderColor: "hover:border-amber-300",
@@ -67,7 +67,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
-      href: "/profil",
+      href: "/profil-peserta",
       bgColor: "from-purple-50 to-purple-100",
       borderColor: "border-purple-200",
       hoverBorderColor: "hover:border-purple-300",

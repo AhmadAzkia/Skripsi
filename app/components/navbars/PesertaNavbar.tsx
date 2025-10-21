@@ -16,8 +16,8 @@ const navigation = [
 
 const pelatihanDropdown = [
   { name: "Katalog Pelatihan", href: "/katalog-pelatihan", icon: BookOpenIcon },
-  { name: "Jadwal Pelatihan", href: "/jadwal", icon: CalendarDaysIcon },
-  { name: "Materi Pelatihan", href: "/materi", icon: DocumentTextIcon },
+  { name: "Jadwal Pelatihan", href: "/jadwal-peserta", icon: CalendarDaysIcon },
+  { name: "Materi Pelatihan", href: "/materi-peserta", icon: DocumentTextIcon },
 ];
 
 export default function PesertaNavbar() {
@@ -344,7 +344,7 @@ export default function PesertaNavbar() {
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    handleNavigation("/peserta/profil");
+                    handleNavigation("/peserta/profil-peserta");
                   }}
                   className={`w-full text-left px-6 py-2 rounded-md text-base font-medium transition-colors duration-300 flex items-center space-x-2 ${
                     isActiveLink("/peserta/profil") ? "text-gold bg-navy/50" : "text-silver hover:text-gold hover:bg-navy/50"
