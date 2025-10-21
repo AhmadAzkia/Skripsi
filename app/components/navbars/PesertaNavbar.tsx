@@ -10,14 +10,14 @@ import RoleIndicator from "@/components/ui/RoleIndicator";
 import { HomeIcon, BookOpenIcon, CalendarDaysIcon, DocumentTextIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "Dashboard", href: "/peserta", icon: HomeIcon },
-  { name: "Sertifikat", href: "/peserta/sertifikat", icon: AcademicCapIcon },
+  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { name: "Sertifikat", href: "/sertifikat", icon: AcademicCapIcon },
 ];
 
 const pelatihanDropdown = [
-  { name: "Katalog Pelatihan", href: "/peserta/katalog", icon: BookOpenIcon },
-  { name: "Jadwal Pelatihan", href: "/peserta/jadwal", icon: CalendarDaysIcon },
-  { name: "Materi Pelatihan", href: "/peserta/materi", icon: DocumentTextIcon },
+  { name: "Katalog Pelatihan", href: "/katalog", icon: BookOpenIcon },
+  { name: "Jadwal Pelatihan", href: "/jadwal", icon: CalendarDaysIcon },
+  { name: "Materi Pelatihan", href: "/materi", icon: DocumentTextIcon },
 ];
 
 export default function PesertaNavbar() {
