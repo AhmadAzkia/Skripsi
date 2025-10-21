@@ -15,7 +15,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      href: "/jadwal-pelatihan",
+      href: "/katalog-pelatihan",
       bgColor: "from-blue-50 to-blue-100",
       borderColor: "border-blue-200",
       hoverBorderColor: "hover:border-blue-300",
@@ -34,7 +34,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           />
         </svg>
       ),
-      href: "/dashboard/sertifikat",
+      href: "/sertifikat",
       bgColor: "from-green-50 to-green-100",
       borderColor: "border-green-200",
       hoverBorderColor: "hover:border-green-300",
@@ -53,7 +53,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           />
         </svg>
       ),
-      href: "/dashboard/riwayat",
+      href: "/jadwal-pelatihan",
       bgColor: "from-amber-50 to-amber-100",
       borderColor: "border-amber-200",
       hoverBorderColor: "hover:border-amber-300",
@@ -67,7 +67,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
-      href: "/dashboard/profil",
+      href: "/profil",
       bgColor: "from-purple-50 to-purple-100",
       borderColor: "border-purple-200",
       hoverBorderColor: "hover:border-purple-300",

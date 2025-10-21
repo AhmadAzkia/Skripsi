@@ -15,7 +15,7 @@ const navigation = [
 ];
 
 const pelatihanDropdown = [
-  { name: "Katalog Pelatihan", href: "/katalog", icon: BookOpenIcon },
+  { name: "Katalog Pelatihan", href: "/katalog-pelatihan", icon: BookOpenIcon },
   { name: "Jadwal Pelatihan", href: "/jadwal", icon: CalendarDaysIcon },
   { name: "Materi Pelatihan", href: "/materi", icon: DocumentTextIcon },
 ];
