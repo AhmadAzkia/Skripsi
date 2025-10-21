@@ -7,9 +7,9 @@ import { ScrollReveal } from "@/components/ui";
 export default function RegisterContainer() {
   return (
     <div className="relative w-full max-w-md">
-      {/* <ScrollReveal>
+      <ScrollReveal>
         <RegisterHero />
-      </ScrollReveal> */}
+      </ScrollReveal>
       <ScrollReveal delay={200}>
         <RegisterForm />
       </ScrollReveal>
