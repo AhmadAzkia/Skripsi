@@ -28,9 +28,9 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-blue-50 to-blue-100",
-      borderColor: "border-blue-200",
-      hoverBorderColor: "hover:border-blue-300",
+      bgColor: "from-navy/10 to-navy/20",
+      borderColor: "border-navy/30",
+      hoverBorderColor: "hover:border-navy/50",
     },
     {
       end: stats.sertifikatCount,
@@ -45,9 +45,9 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-green-50 to-green-100",
-      borderColor: "border-green-200",
-      hoverBorderColor: "hover:border-green-300",
+      bgColor: "from-gold/10 to-gold/20",
+      borderColor: "border-gold/30",
+      hoverBorderColor: "hover:border-gold/50",
     },
     {
       end: stats.jadwalHariIniCount,
@@ -57,9 +57,9 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      bgColor: "from-amber-50 to-amber-100",
-      borderColor: "border-amber-200",
-      hoverBorderColor: "hover:border-amber-300",
+      bgColor: "from-silver/10 to-silver/20",
+      borderColor: "border-silver/30",
+      hoverBorderColor: "hover:border-silver/50",
     },
   ];
 

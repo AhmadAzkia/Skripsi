@@ -5,19 +5,26 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 type RecentActivity = {
   id: string;
   title: string;
-  type: "pelatihan" | "sertifikat" | "jadwal";
+  type: "pendaftaran" | "kursus" | "sertifikat" | "pembayaran";
   date: string;
-  status: "completed" | "in-progress" | "upcoming";
+  status: "completed" | "in-progress" | "pending";
+  peserta?: string;
 };
 
-interface DashboardRecentActivitiesProps {
+interface DashboardPemateriRecentActivitiesProps {
   activities: RecentActivity[];
 }
 
-export default function DashboardRecentActivities({ activities }: DashboardRecentActivitiesProps) {
+export default function DashboardPemateriRecentActivities({ activities }: DashboardPemateriRecentActivitiesProps) {
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "pelatihan":
+      case "pendaftaran":
+        return (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        );
+      case "kursus":
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -39,10 +46,15 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
             />
           </svg>
         );
-      case "jadwal":
+      case "pembayaran":
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         );
       default:
@@ -56,8 +68,8 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
         return "text-gold bg-gold/10 border border-gold/20";
       case "in-progress":
         return "text-navy bg-navy/10 border border-navy/20";
-      case "upcoming":
-        return "text-silver bg-silver/10 border border-silver/20";
+      case "pending":
+        return "text-silver bg-silver/20 border border-silver/30";
       default:
         return "text-gray-600 bg-gray-100 border border-gray-200";
     }
@@ -69,10 +81,25 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
         return "Selesai";
       case "in-progress":
         return "Berlangsung";
-      case "upcoming":
-        return "Mendatang";
+      case "pending":
+        return "Menunggu";
       default:
         return "Unknown";
+    }
+  };
+
+  const getActivityTypeText = (type: string) => {
+    switch (type) {
+      case "pendaftaran":
+        return "Pendaftaran Baru";
+      case "kursus":
+        return "Kursus";
+      case "sertifikat":
+        return "Sertifikat";
+      case "pembayaran":
+        return "Pembayaran";
+      default:
+        return "Aktivitas";
     }
   };
 
@@ -90,7 +117,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
               Aktivitas <span className="text-gold">Terbaru</span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Pantau progres dan aktivitas pembelajaran terbaru Anda</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Pantau aktivitas terbaru dari kursus dan peserta Anda</p>
           </div>
         </ScrollReveal>
 
@@ -106,6 +133,10 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
                           <div className="w-10 h-10 bg-gradient-to-br from-navy to-blue-700 rounded-full flex items-center justify-center text-white">{getActivityIcon(activity.type)}</div>
                         </div>
                         <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{getActivityTypeText(activity.type)}</span>
+                            {activity.peserta && <span className="text-xs text-gold">• {activity.peserta}</span>}
+                          </div>
                           <h3 className="text-lg font-semibold text-navy mb-1">{activity.title}</h3>
                           <p className="text-gray-500 text-sm">
                             {new Date(activity.date).toLocaleDateString("id-ID", {
@@ -113,6 +144,8 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
                               year: "numeric",
                               month: "long",
                               day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
                             })}
                           </p>
                         </div>
@@ -132,7 +165,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium text-navy mb-2">Belum Ada Aktivitas</h3>
-                <p className="text-gray-500">Mulai ikuti pelatihan untuk melihat aktivitas Anda di sini</p>
+                <p className="text-gray-500">Aktivitas terbaru dari kursus dan peserta akan muncul di sini</p>
               </div>
             )}
           </div>

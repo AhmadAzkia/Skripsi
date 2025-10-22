@@ -10,7 +10,7 @@ function getRedirectPath(role: string): string {
     case 'admin':
       return '/dashboard';
     case 'instruktur':
-      return '/dashboard';
+      return '/dashboard-pemateri';
     case 'peserta':
       return '/dashboard';
     default:

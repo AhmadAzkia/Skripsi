@@ -95,7 +95,7 @@ export default function Header() {
                     className="text-silver hover:text-gold border border-silver hover:border-gold transition-all duration-300 px-4 py-2 rounded-md text-sm font-medium flex-1 text-center"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    test
+                    Masuk
                   </Link>
                   <Link href="/register" className="bg-gold hover:bg-gold/90 text-navy btn-interactive px-4 py-2 rounded-md text-sm font-medium flex-1 text-center transition-all duration-300" onClick={() => setIsMenuOpen(false)}>
                     Daftar

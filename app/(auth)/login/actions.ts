@@ -11,7 +11,7 @@ function getRedirectPath(role: string): string {
     case "admin":
       return "/dashboard";
     case "instruktur":
-      return "/dashboard";
+      return "/dashboard-pemateri";
     case "peserta":
       return "/dashboard";
     default:
@@ -40,11 +40,7 @@ export async function login(formData: FormData) {
     return { error: "Gagal mendapatkan data pengguna setelah login." };
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profil_pengguna")
-    .select("peran")
-    .eq("user_id", user.id)
-    .single();
+  const { data: profile, error: profileError } = await supabase.from("profil_pengguna").select("peran").eq("user_id", user.id).single();
 
   if (profileError || !profile) {
     await supabase.auth.signOut();
@@ -53,6 +49,6 @@ export async function login(formData: FormData) {
 
   const redirectPath = getRedirectPath(profile.peran);
 
-  revalidatePath("/", "layout"); 
-  redirect(redirectPath); 
+  revalidatePath("/", "layout");
+  redirect(redirectPath);
 }

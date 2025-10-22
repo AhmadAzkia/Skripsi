@@ -28,9 +28,9 @@ export default function KatalogStats({ stats }: KatalogStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-blue-50 to-blue-100",
-      borderColor: "border-blue-200",
-      hoverBorderColor: "hover:border-blue-300",
+      bgColor: "from-navy/5 to-navy/10",
+      borderColor: "border-navy/20",
+      hoverBorderColor: "hover:border-navy/30",
     },
     {
       end: stats.kategoriCount,
@@ -40,9 +40,9 @@ export default function KatalogStats({ stats }: KatalogStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      bgColor: "from-green-50 to-green-100",
-      borderColor: "border-green-200",
-      hoverBorderColor: "hover:border-green-300",
+      bgColor: "from-gold/5 to-gold/10",
+      borderColor: "border-gold/20",
+      hoverBorderColor: "hover:border-gold/30",
     },
     {
       end: stats.instrukturCount,
@@ -57,9 +57,9 @@ export default function KatalogStats({ stats }: KatalogStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-amber-50 to-amber-100",
-      borderColor: "border-amber-200",
-      hoverBorderColor: "hover:border-amber-300",
+      bgColor: "from-silver/5 to-silver/10",
+      borderColor: "border-silver/20",
+      hoverBorderColor: "hover:border-silver/30",
     },
   ];
 

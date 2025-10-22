@@ -29,9 +29,9 @@ export default function ProfilStats({ stats }: ProfilStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-blue-50 to-blue-100",
-      borderColor: "border-blue-200",
-      hoverBorderColor: "hover:border-blue-300",
+      bgColor: "from-navy/5 to-navy/10",
+      borderColor: "border-navy/20",
+      hoverBorderColor: "hover:border-navy/30",
     },
     {
       end: stats.pelatihanSelesai,
@@ -46,9 +46,9 @@ export default function ProfilStats({ stats }: ProfilStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-green-50 to-green-100",
-      borderColor: "border-green-200",
-      hoverBorderColor: "hover:border-green-300",
+      bgColor: "from-gold/5 to-gold/10",
+      borderColor: "border-gold/20",
+      hoverBorderColor: "hover:border-gold/30",
     },
     {
       end: stats.totalSertifikat,
@@ -58,9 +58,9 @@ export default function ProfilStats({ stats }: ProfilStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       ),
-      bgColor: "from-purple-50 to-purple-100",
-      borderColor: "border-purple-200",
-      hoverBorderColor: "hover:border-purple-300",
+      bgColor: "from-silver/5 to-silver/10",
+      borderColor: "border-silver/20",
+      hoverBorderColor: "hover:border-silver/30",
     },
     {
       end: stats.waktuBelajar,
@@ -70,9 +70,9 @@ export default function ProfilStats({ stats }: ProfilStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      bgColor: "from-amber-50 to-amber-100",
-      borderColor: "border-amber-200",
-      hoverBorderColor: "hover:border-amber-300",
+      bgColor: "from-navy/10 to-gold/5",
+      borderColor: "border-navy/30",
+      hoverBorderColor: "hover:border-gold/30",
     },
   ];
 
@@ -130,15 +130,15 @@ export default function ProfilStats({ stats }: ProfilStatsProps) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                <div className="text-center p-4 bg-gradient-to-br from-navy/5 to-navy/10 rounded-lg border border-navy/20">
                   <div className="text-2xl font-bold text-navy">{stats.totalPelatihan}</div>
                   <div className="text-sm text-gray-600">Total Pelatihan</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                <div className="text-center p-4 bg-gradient-to-br from-gold/5 to-gold/10 rounded-lg border border-gold/20">
                   <div className="text-2xl font-bold text-navy">{stats.pelatihanSelesai}</div>
                   <div className="text-sm text-gray-600">Selesai</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg">
+                <div className="text-center p-4 bg-gradient-to-br from-silver/5 to-silver/10 rounded-lg border border-silver/20">
                   <div className="text-2xl font-bold text-navy">{stats.totalPelatihan - stats.pelatihanSelesai}</div>
                   <div className="text-sm text-gray-600">Sedang Berjalan</div>
                 </div>

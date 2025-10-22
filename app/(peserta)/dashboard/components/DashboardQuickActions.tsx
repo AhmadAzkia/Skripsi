@@ -16,10 +16,10 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
         </svg>
       ),
       href: "/katalog-pelatihan",
-      bgColor: "from-blue-50 to-blue-100",
-      borderColor: "border-blue-200",
-      hoverBorderColor: "hover:border-blue-300",
-      iconColor: "text-blue-600",
+      bgColor: "from-navy/10 to-navy/20",
+      borderColor: "border-navy/30",
+      hoverBorderColor: "hover:border-navy/50",
+      iconColor: "text-navy",
     },
     {
       title: "Sertifikat Saya",
@@ -35,10 +35,10 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
         </svg>
       ),
       href: "/sertifikat",
-      bgColor: "from-green-50 to-green-100",
-      borderColor: "border-green-200",
-      hoverBorderColor: "hover:border-green-300",
-      iconColor: "text-green-600",
+      bgColor: "from-gold/10 to-gold/20",
+      borderColor: "border-gold/30",
+      hoverBorderColor: "hover:border-gold/50",
+      iconColor: "text-gold",
     },
     {
       title: "Riwayat Pelatihan",
@@ -54,10 +54,10 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
         </svg>
       ),
       href: "/jadwal-peserta",
-      bgColor: "from-amber-50 to-amber-100",
-      borderColor: "border-amber-200",
-      hoverBorderColor: "hover:border-amber-300",
-      iconColor: "text-amber-600",
+      bgColor: "from-silver/10 to-silver/20",
+      borderColor: "border-silver/30",
+      hoverBorderColor: "hover:border-silver/50",
+      iconColor: "text-silver",
     },
     {
       title: "Update Profil",
@@ -68,10 +68,10 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
         </svg>
       ),
       href: "/profil-peserta",
-      bgColor: "from-purple-50 to-purple-100",
-      borderColor: "border-purple-200",
-      hoverBorderColor: "hover:border-purple-300",
-      iconColor: "text-purple-600",
+      bgColor: "from-navy/5 to-gold/10",
+      borderColor: "border-navy/20",
+      hoverBorderColor: "hover:border-gold/40",
+      iconColor: "text-navy",
     },
   ];
 

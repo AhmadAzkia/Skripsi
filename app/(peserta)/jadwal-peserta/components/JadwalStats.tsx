@@ -24,9 +24,9 @@ export default function JadwalStats({ stats }: JadwalStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      bgColor: "from-blue-50 to-blue-100",
-      borderColor: "border-blue-200",
-      hoverBorderColor: "hover:border-blue-300",
+      bgColor: "from-navy/5 to-navy/10",
+      borderColor: "border-navy/20",
+      hoverBorderColor: "hover:border-navy/30",
     },
     {
       end: stats.jadwalBerlangsung,
@@ -36,9 +36,9 @@ export default function JadwalStats({ stats }: JadwalStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      bgColor: "from-amber-50 to-amber-100",
-      borderColor: "border-amber-200",
-      hoverBorderColor: "hover:border-amber-300",
+      bgColor: "from-gold/5 to-gold/10",
+      borderColor: "border-gold/20",
+      hoverBorderColor: "hover:border-gold/30",
     },
     {
       end: stats.jadwalSelesai,
@@ -53,9 +53,9 @@ export default function JadwalStats({ stats }: JadwalStatsProps) {
           />
         </svg>
       ),
-      bgColor: "from-green-50 to-green-100",
-      borderColor: "border-green-200",
-      hoverBorderColor: "hover:border-green-300",
+      bgColor: "from-silver/5 to-silver/10",
+      borderColor: "border-silver/20",
+      hoverBorderColor: "hover:border-silver/30",
     },
     {
       end: stats.jadwalMendatang,
@@ -65,9 +65,9 @@ export default function JadwalStats({ stats }: JadwalStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      bgColor: "from-purple-50 to-purple-100",
-      borderColor: "border-purple-200",
-      hoverBorderColor: "hover:border-purple-300",
+      bgColor: "from-navy/10 to-gold/5",
+      borderColor: "border-navy/30",
+      hoverBorderColor: "hover:border-gold/30",
     },
   ];
 

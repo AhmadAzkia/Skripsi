@@ -3,25 +3,25 @@
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
-type MateriStats = {
-  totalMateriCount: number;
-  materiSelesaiCount: number;
-  materiSedangBelajarCount: number;
-  totalKursusCount: number;
+type MateriPemateriStats = {
+  totalMateri: number;
+  materiAktif: number;
+  totalKursus: number;
+  materiTerbaru: number;
 };
 
-interface MateriStatsProps {
-  stats: MateriStats;
+interface MateriPemateriStatsProps {
+  stats: MateriPemateriStats;
 }
 
-export default function MateriStats({ stats }: MateriStatsProps) {
+export default function MateriPemateriStats({ stats }: MateriPemateriStatsProps) {
   const statsData = [
     {
-      end: stats.totalKursusCount,
-      label: "Kursus Aktif",
+      end: stats.totalMateri,
+      label: "Total Materi",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
       bgColor: "from-navy/5 to-navy/10",
@@ -29,16 +29,11 @@ export default function MateriStats({ stats }: MateriStatsProps) {
       hoverBorderColor: "hover:border-navy/30",
     },
     {
-      end: stats.totalMateriCount,
-      label: "Total Materi",
+      end: stats.materiAktif,
+      label: "Materi Aktif",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
       ),
       bgColor: "from-gold/5 to-gold/10",
@@ -46,16 +41,11 @@ export default function MateriStats({ stats }: MateriStatsProps) {
       hoverBorderColor: "hover:border-gold/30",
     },
     {
-      end: stats.materiSelesaiCount,
-      label: "Materi Selesai",
+      end: stats.totalKursus,
+      label: "Kursus Anda",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
       bgColor: "from-silver/5 to-silver/10",
@@ -63,8 +53,8 @@ export default function MateriStats({ stats }: MateriStatsProps) {
       hoverBorderColor: "hover:border-silver/30",
     },
     {
-      end: stats.materiSedangBelajarCount,
-      label: "Sedang Dipelajari",
+      end: stats.materiTerbaru,
+      label: "Bulan Ini",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -88,9 +78,9 @@ export default function MateriStats({ stats }: MateriStatsProps) {
         <ScrollReveal>
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
-              Progress <span className="text-gold">Pembelajaran</span>
+              Statistik <span className="text-gold">Materi</span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Pantau kemajuan belajar Anda di semua kursus yang sedang diikuti</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Ringkasan konten pembelajaran yang telah Anda buat dan kelola</p>
           </div>
         </ScrollReveal>
 
