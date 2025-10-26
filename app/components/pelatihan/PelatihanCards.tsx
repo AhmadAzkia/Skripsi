@@ -98,7 +98,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
       case "admin":
         return `/admin/kursus/${kursusId}`;
       case "instruktur":
-        return `/materi-pemateri/${kursusId}`;
+        return `/pelatihan-pemateri/${kursusId}/materi`;
       case "peserta":
         return `/kursus/${kursusId}`;
       default:
