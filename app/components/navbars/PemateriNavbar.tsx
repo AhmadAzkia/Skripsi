@@ -10,6 +10,7 @@ import { HomeIcon, BookOpenIcon, NewspaperIcon, UserIcon, Bars3Icon, XMarkIcon, 
 const navigation = [
   { name: "Dashboard", href: "/dashboard-pemateri", icon: HomeIcon },
   { name: "Pelatihan", href: "/pelatihan-pemateri", icon: BookOpenIcon },
+  { name: "Materi", href: "/materi-pemateri", icon: AcademicCapIcon },
   { name: "Manajemen Blog", href: "/blog-pemateri", icon: NewspaperIcon },
 ];
 
@@ -120,7 +121,7 @@ export default function PemateriNavbar() {
                         <div className="font-semibold text-navy text-sm gradient-text">{user?.profile?.nama_lengkap || user?.profile?.email?.split("@")[0] || "Pemateri"}</div>
                         <div className="text-xs text-gray-500 truncate">{user?.profile?.email}</div>
                         <div className="mt-1">
-                          <RoleIndicator />s
+                          <RoleIndicator />
                         </div>
                       </div>
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
