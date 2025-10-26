@@ -33,7 +33,7 @@ import React from "react";
 import Link from "next/link";
 
 // Komponen ini akan menerima 'title' (Login/Register)
-export default function FeatureNotAvailable({ title }: { title: string }) {
+export default function LoginContainer() {
   return (
     <div className="w-full max-w-md">
       {/* Box utama */}
@@ -52,7 +52,7 @@ export default function FeatureNotAvailable({ title }: { title: string }) {
         </div>
 
         {/* Judul Pesan */}
-        <h2 className="text-2xl font-bold text-white-text mb-3">Fitur {title} Sedang Disiapkan</h2>
+        <h2 className="text-2xl font-bold text-white-text mb-3">Fitur Login Sedang Disiapkan</h2>
 
         {/* Isi Pesan */}
         <p className="text-silver">Kami sedang bekerja keras untuk segera meluncurkan fitur ini. Pantau terus pembaruan dari kami. Terima kasih atas kesabaran Anda.</p>

@@ -23,7 +23,7 @@ import React from "react";
 import Link from "next/link";
 
 // Komponen ini akan menerima 'title' (Login/Register)
-export default function FeatureNotAvailable({ title }: { title: string }) {
+export default function RegisterContainer() {
   return (
     <div className="w-full max-w-md">
       {/* Box utama */}
@@ -42,11 +42,11 @@ export default function FeatureNotAvailable({ title }: { title: string }) {
         </div>
 
         {/* Judul Pesan */}
-        <h2 className="text-2xl font-bold text-white-text mb-3">Fitur {title} Sedang Disiapkan</h2>
+        <h2 className="text-2xl font-bold text-white-text mb-3">Fitur Register Sedang Disiapkan</h2>
 
         {/* Isi Pesan */}
         <p className="text-silver">Kami sedang bekerja keras untuk segera meluncurkan fitur ini. Pantau terus pembaruan dari kami. Terima kasih atas kesabaran Anda.</p>
-        
+
         <div className="mt-6 text-center">
           <Link href="/" className="inline-flex items-center text-silver hover:text-gold transition-colors duration-300 group">
             <svg className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
