@@ -120,7 +120,6 @@ export default async function BlogPemateriContainer({ user }: BlogPemateriContai
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-gray-50">
       <BlogPemateriHero user={user} />
       <BlogPemateriStats stats={stats} />
-      <BlogPemateriQuickActions />
       <BlogPemateriList articles={articles} />
     </div>
   );

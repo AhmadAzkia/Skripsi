@@ -1,24 +1,31 @@
-import { getUserWithRole } from "@/lib/user"; // Asumsi helper ini ada
 import { redirect } from "next/navigation";
-import Footer from "@/components/Footer";
-import PemateriNavbar from "@/components/navbars/PemateriNavbar";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import Footer from "../components/Footer";
+import PemateriNavbar from "../components/navbars/PemateriNavbar";
 
 export default async function PemateriLayout({ children }: { children: React.ReactNode }) {
-  // 1. Ambil peran pengguna di server
-  const { role } = await getUserWithRole();
+  const supabase = await createSupabaseServerClient();
 
-  // 2. Lindungi layout ini. Jika bukan 'peserta', tendang ke login!
-  if (role !== "instruktur") {
+  // Check authentication
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     redirect("/login");
   }
 
-  // 3. Jika lolos, render UI khusus peserta
+  // Get user profile
+  const { data: profile } = await supabase.from("profil_pengguna").select("*").eq("user_id", user.id).single();
+
+  // Check if user is pemateri
+  if (!profile || profile.peran !== "instruktur") {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
       <PemateriNavbar />
-      <main>
-        {children} {/* 'children' adalah 7 halaman Anda */}
-      </main>
+      <main>{children}</main>
       <Footer />
     </div>
   );
