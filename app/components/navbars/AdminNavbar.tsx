@@ -1,0 +1,415 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import RoleIndicator from "@/components/ui/RoleIndicator";
+import {
+  HomeIcon,
+  UsersIcon,
+  BookOpenIcon,
+  CalendarDaysIcon,
+  AcademicCapIcon,
+  CreditCardIcon,
+  NewspaperIcon,
+  UserIcon,
+  Bars3Icon,
+  XMarkIcon,
+  ChevronDownIcon,
+  ArrowRightOnRectangleIcon,
+  ChartBarIcon,
+  DocumentTextIcon,
+  VideoCameraIcon,
+  ClipboardDocumentCheckIcon,
+} from "@heroicons/react/24/outline";
+
+const navigation = [
+  { name: "Dashboard", href: "/admin", icon: HomeIcon },
+  { name: "Manajemen Pengguna", href: "/admin/users", icon: UsersIcon },
+  { name: "Transaksi & Laporan", href: "/admin/reports", icon: ChartBarIcon },
+  { name: "Manajemen Blog", href: "/admin/blog", icon: NewspaperIcon },
+];
+
+const pelatihanDropdown = [
+  { name: "Konten Pelatihan", href: "/admin/content", icon: BookOpenIcon, description: "Kelola materi dan video pelatihan" },
+  { name: "Jadwal & Pelatihan", href: "/admin/schedule", icon: CalendarDaysIcon, description: "Atur jadwal dan link zoom" },
+  { name: "Sertifikat", href: "/admin/certificates", icon: AcademicCapIcon, description: "Kelola sertifikat peserta" },
+];
+
+export default function AdminNavbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [pelatihanDropdownOpen, setPelatihanDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  // Close dropdowns when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest(".dropdown-container")) {
+        setPelatihanDropdownOpen(false);
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleNavigation = async (href: string) => {
+    try {
+      console.log(`Navigation attempt to: ${href}`);
+      router.push(href);
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  };
+
+  const handleSignOut = () => {
+    setShowLogoutModal(true);
+    setProfileDropdownOpen(false);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+  };
+
+  const isActiveLink = (href: string) => {
+    if (href === "/admin") {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
+
+  const isPelatihanActive = () => {
+    return pelatihanDropdown.some((item) => pathname.startsWith(item.href));
+  };
+
+  return (
+    <>
+      <header className="sticky top-0 z-50 bg-navy border-b-2 border-gold">
+        <nav className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center flex-shrink-0">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="relative w-10 h-10 bg-white rounded-lg p-1 shadow-sm">
+                  <Image src="/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" priority />
+                </div>
+                <div className="text-white-text hidden sm:block">
+                  <span className="font-bold text-lg">PT. CertiGuardia</span>
+                  <span className="text-silver text-sm block">Admin Panel</span>
+                </div>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation - Center Aligned */}
+            <div className="hidden lg:flex flex-1 justify-center">
+              <div className="flex items-baseline space-x-6">
+                {/* Regular Navigation Items */}
+                {navigation.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = isActiveLink(item.href);
+
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => handleNavigation(item.href)}
+                      className={`transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 ${isActive ? "text-gold" : "text-silver hover:text-gold"}`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{item.name}</span>
+                    </button>
+                  );
+                })}
+
+                {/* Pelatihan Dropdown */}
+                <div className="relative dropdown-container">
+                  <button
+                    onClick={() => setPelatihanDropdownOpen(!pelatihanDropdownOpen)}
+                    className={`transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 group hover:bg-navy/50 ${isPelatihanActive() ? "text-gold" : "text-silver hover:text-gold"}`}
+                  >
+                    <AcademicCapIcon className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+                    <span>Pelatihan</span>
+                    <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${pelatihanDropdownOpen ? "rotate-180" : "rotate-0"}`} />
+                  </button>
+
+                  {/* Pelatihan Dropdown Menu */}
+                  {pelatihanDropdownOpen && (
+                    <div className="absolute left-1/2 transform -translate-x-1/2 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transition-all duration-200 animate-slideInFromTop">
+                      <div className="py-2">
+                        <div className="px-4 py-2 text-xs font-semibold text-navy/60 uppercase tracking-wider border-b border-gray-100 bg-gradient-to-r from-navy/5 to-blue-50">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gradient-to-r from-navy to-blue-600 rounded-full animate-pulse"></div>
+                            <span>Menu Pelatihan</span>
+                          </div>
+                        </div>
+                        {pelatihanDropdown.map((item, index) => {
+                          const Icon = item.icon;
+                          const isActive = isActiveLink(item.href);
+
+                          return (
+                            <button
+                              key={item.name}
+                              onClick={() => {
+                                setPelatihanDropdownOpen(false);
+                                handleNavigation(item.href);
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm flex items-start space-x-3 transition-all duration-200 group dropdown-item relative overflow-hidden transform hover:scale-[1.02] ${
+                                isActive ? "text-gold bg-gradient-to-r from-gold/10 to-gold/5 border-r-2 border-gold shadow-sm" : "text-gray-700 hover:text-navy hover:bg-gradient-to-r hover:from-navy/8 hover:to-blue-50 hover:shadow-sm"
+                              }`}
+                              style={{
+                                animationDelay: `${index * 50}ms`,
+                              }}
+                            >
+                              <div
+                                className={`p-1.5 rounded-lg transition-all duration-200 mt-0.5 ${
+                                  isActive ? "bg-gradient-to-br from-gold/20 to-gold/10 text-gold shadow-sm" : "bg-gray-100 text-gray-600 group-hover:bg-gradient-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"
+                                }`}
+                              >
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1">
+                                <div className={`font-medium ${isActive ? "text-gold" : "text-gray-900 group-hover:text-navy"}`}>{item.name}</div>
+                                <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Profile & Mobile Menu */}
+            <div className="flex items-center space-x-4">
+              {/* Profile Dropdown */}
+              <div className="relative dropdown-container">
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-full text-sm text-silver hover:text-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                    <UserIcon className="w-5 h-5 text-navy" />
+                  </div>
+                  <span className="hidden sm:block font-medium max-w-32 truncate text-white-text">{user?.profile?.nama_lengkap?.split(" ")[0] || "Admin"}</span>
+                  <ChevronDownIcon className={`w-4 h-4 hidden sm:block transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transform transition-all duration-200 animate-slideInFromTop">
+                    <div className="py-2">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-navy/5 to-blue-50">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-navy to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                            <UserIcon className="w-5 h-5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-semibold text-navy text-sm gradient-text">{user?.profile?.nama_lengkap || user?.profile?.email?.split("@")[0] || "Admin"}</div>
+                            <div className="text-xs text-gray-500 truncate">{user?.profile?.email}</div>
+                            <div className="mt-1">
+                              <RoleIndicator />
+                            </div>
+                          </div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            handleNavigation("/admin/profile");
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                        >
+                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-gradient-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200">
+                            <UserIcon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium">Profil Admin</span>
+                            <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Kelola informasi admin</div>
+                          </div>
+                          <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
+                        </button>
+                      </div>
+
+                      {/* Separator */}
+                      <div className="border-t border-gray-100 my-1"></div>
+
+                      {/* Logout Button */}
+                      <div className="py-1">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                        >
+                          <div className="p-1.5 rounded-lg bg-red-100 text-red-600 group-hover:bg-gradient-to-br group-hover:from-red-200 group-hover:to-red-100 group-hover:text-red-700 transition-all duration-200">
+                            <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium">Keluar</span>
+                            <div className="text-xs text-red-500 group-hover:text-red-600 transition-all duration-200">Logout dari panel admin</div>
+                          </div>
+                          <div className="w-1 h-1 bg-red-300 rounded-full group-hover:bg-red-500 transition-all duration-200"></div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile menu button */}
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden text-silver hover:text-white focus:outline-none focus:ring-2 focus:ring-gold transition-colors duration-200">
+                {mobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden border-t border-navy-light">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-navy-light">
+                {navigation.map((item) => {
+                  const isActive = isActiveLink(item.href);
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => {
+                        handleNavigation(item.href);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`
+                        flex items-center w-full px-3 py-2 rounded-lg text-left font-medium transition-all duration-200
+                        ${isActive ? "bg-gold text-navy shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
+                      `}
+                    >
+                      <item.icon className="w-5 h-5 mr-3" />
+                      {item.name}
+                    </button>
+                  );
+                })}
+
+                {/* Mobile Dropdown Pelatihan */}
+                <div className="space-y-1">
+                  <button
+                    onClick={() => setPelatihanDropdownOpen(!pelatihanDropdownOpen)}
+                    className={`
+                      flex items-center justify-between w-full px-3 py-2 rounded-lg text-left font-medium transition-all duration-200
+                      ${isPelatihanActive() ? "bg-gold text-navy shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
+                    `}
+                  >
+                    <div className="flex items-center">
+                      <AcademicCapIcon className="w-5 h-5 mr-3" />
+                      Pelatihan
+                    </div>
+                    <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${pelatihanDropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {pelatihanDropdownOpen && (
+                    <div className="ml-8 space-y-1">
+                      {pelatihanDropdown.map((item) => {
+                        const isActive = isActiveLink(item.href);
+                        return (
+                          <button
+                            key={item.name}
+                            onClick={() => {
+                              handleNavigation(item.href);
+                              setMobileMenuOpen(false);
+                              setPelatihanDropdownOpen(false);
+                            }}
+                            className={`
+                              flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-all duration-200
+                              ${isActive ? "bg-gold text-navy shadow-lg" : "text-gray-300 hover:bg-navy hover:text-white"}
+                            `}
+                          >
+                            <item.icon className="w-4 h-4 mr-3" />
+                            {item.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </nav>
+      </header>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300" onClick={cancelLogout} />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 mx-4 max-w-md w-full transform transition-all duration-300 animate-slideInFromTop">
+            {/* Header */}
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <ArrowRightOnRectangleIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Konfirmasi Keluar</h3>
+                <p className="text-sm text-gray-500">Pastikan untuk menyimpan pekerjaan Anda</p>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="mb-6">
+              <p className="text-gray-700 leading-relaxed">Apakah Anda yakin ingin keluar dari panel admin?</p>
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">⚠️ Anda akan diarahkan kembali ke halaman utama dan perlu login ulang untuk mengakses panel admin.</p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex space-x-3">
+              <button onClick={cancelLogout} disabled={isLoggingOut} className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 disabled:opacity-50">
+                Batal
+              </button>
+              <button
+                onClick={confirmLogout}
+                disabled={isLoggingOut}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                {isLoggingOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Keluar...</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                    <span>Ya, Keluar</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

@@ -9,7 +9,7 @@ import RoleIndicator from "@/components/ui/RoleIndicator";
 import { HomeIcon, BookOpenIcon, NewspaperIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
 const navigation = [
   { name: "Dashboard", href: "/dashboard-pemateri", icon: HomeIcon },
-  { name: "Manajemen Materi", href: "/materi-pemateri", icon: BookOpenIcon },
+  { name: "Pelatihan", href: "/pelatihan-pemateri", icon: BookOpenIcon },
   { name: "Manajemen Blog", href: "/blog-pemateri", icon: NewspaperIcon },
 ];
 

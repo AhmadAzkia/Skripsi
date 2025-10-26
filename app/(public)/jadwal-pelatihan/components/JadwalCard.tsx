@@ -24,7 +24,7 @@ export default function JadwalCard({ jadwal }: JadwalCardProps) {
   const duration = `${jadwal.durasi_jam} Jam`;
   const participants = `Maks. ${jadwal.maksimal_peserta} Peserta`;
   const price = isFree ? undefined : formatHarga(jadwal.harga);
-  const href = `/kursus/${jadwal.id}`;
+  const href = `/login`;
 
   return InteractiveCard({
     id: jadwal.id,
