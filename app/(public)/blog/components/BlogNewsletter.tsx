@@ -5,7 +5,7 @@ import { ScrollReveal } from "@/components/ui";
 export default function BlogNewsletter() {
   return (
     <ScrollReveal delay={400}>
-      <section className="py-16 bg-gradient-to-br from-amber-50 to-orange-50">
+      <section className="py-16 bg-linear-to-br from-amber-50 to-orange-50">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center">
             <div className="bg-white rounded-2xl p-8 shadow-xl border border-gold/20">

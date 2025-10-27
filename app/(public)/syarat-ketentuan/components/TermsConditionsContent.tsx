@@ -87,7 +87,7 @@ export default function TermsConditionsContent() {
         <div className="space-y-12">
           {termsSections.map((section, index) => (
             <ScrollReveal key={section.id} delay={100 * (index + 1)}>
-              <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 shadow-lg border border-gray-100">
+              <div className="bg-linear-to-br from-gray-50 to-white rounded-xl p-8 shadow-lg border border-gray-100">
                 <h3 className="text-xl md:text-2xl font-bold text-navy mb-6 flex items-center">
                   <div className="w-8 h-8 bg-gold/20 rounded-full flex items-center justify-center mr-4">
                     <span className="text-gold font-bold text-sm">{index + 1}</span>
@@ -107,7 +107,7 @@ export default function TermsConditionsContent() {
         </div>
 
         <ScrollReveal delay={200}>
-          <div className="mt-16 p-8 bg-gradient-to-br from-gold/5 to-gold/10 rounded-xl border border-gold/20">
+          <div className="mt-16 p-8 bg-linear-to-br from-gold/5 to-gold/10 rounded-xl border border-gold/20">
             <h3 className="text-xl font-bold text-navy mb-4 flex items-center">
               <svg className="w-6 h-6 text-gold mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

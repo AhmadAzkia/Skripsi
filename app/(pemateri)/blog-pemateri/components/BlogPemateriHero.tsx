@@ -20,7 +20,7 @@ export default function BlogPemateriHero({ user }: BlogPemateriHeroProps) {
   }
 
   return (
-    <section className="bg-gradient-to-br from-navy via-navy to-blue-900 py-12 md:py-16 relative overflow-hidden">
+    <section className="bg-linear-to-br from-navy via-navy to-blue-900 py-12 md:py-16 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-32 h-32 border border-gold rounded-full animate-bounce-gentle"></div>
@@ -66,7 +66,7 @@ export default function BlogPemateriHero({ user }: BlogPemateriHeroProps) {
             </h2>
             <p className="text-silver text-lg mb-8 max-w-3xl mx-auto">Platform lengkap untuk mengelola konten blog, dari menulis artikel baru hingga menganalisis performa tulisan Anda</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="px-8 py-4 bg-gradient-to-r from-gold to-yellow-500 text-navy rounded-lg hover:from-gold/90 hover:to-yellow-500/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold">
+              <button className="px-8 py-4 bg-linear-to-r from-gold to-yellow-500 text-navy rounded-lg hover:from-gold/90 hover:to-yellow-500/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold">
                 <span className="flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

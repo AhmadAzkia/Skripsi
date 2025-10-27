@@ -22,11 +22,11 @@ const formatDate = (dateString: string | null) => {
 export default function SertifikatList({ certificates }: SertifikatListProps) {
   if (!certificates || certificates.length === 0) {
     return (
-      <section className="py-16 bg-gradient-to-br from-white to-gray-50 relative">
+      <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-lg border border-gray-200">
-              <div className="w-24 h-24 bg-gradient-to-br from-navy to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-16 bg-linear-to-br from-gray-50 to-white rounded-2xl shadow-lg border border-gray-200">
+              <div className="w-24 h-24 bg-linear-to-br from-navy to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -40,7 +40,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
               <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">Selesaikan pelatihan untuk mendapatkan sertifikat profesional Anda</p>
               <Link
                 href="/jadwal-pelatihan"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold to-gold/90 text-navy font-semibold rounded-lg hover:from-gold/90 hover:to-gold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
+                className="inline-flex items-center px-6 py-3 bg-linear-to-r from-gold to-gold/90 text-navy font-semibold rounded-lg hover:from-gold/90 hover:to-gold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -60,7 +60,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-white to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold rounded-full blur-3xl"></div>
@@ -82,7 +82,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
             {certificates.map((cert, index) => (
               <div key={cert.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gold/30 hover:-translate-y-2 overflow-hidden">
                 {/* Certificate Header */}
-                <div className="bg-gradient-to-br from-navy via-navy to-blue-900 p-6 text-white relative overflow-hidden">
+                <div className="bg-linear-to-br from-navy via-navy to-blue-900 p-6 text-white relative overflow-hidden">
                   {/* Background pattern */}
                   <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-2 right-2 w-16 h-16 border border-gold rounded-full"></div>
@@ -103,7 +103,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                       </div>
                     </div>
                     <h3
-                      className="text-lg font-bold text-center mb-2 min-h-[3.5rem] overflow-hidden"
+                      className="text-lg font-bold text-center mb-2 min-h-14 overflow-hidden"
                       style={{
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
@@ -119,13 +119,13 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                 <div className="p-6">
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center text-gray-600">
-                      <svg className="w-4 h-4 mr-3 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-3 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                       <span className="text-sm font-medium">No: {cert.nomor_sertifikat}</span>
                     </div>
                     <div className="flex items-center text-gray-600">
-                      <svg className="w-4 h-4 mr-3 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-3 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       <span className="text-sm">{formatDate(cert.tanggal_terbit)}</span>
@@ -139,7 +139,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       download
-                      className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-gold to-gold/90 text-navy font-semibold rounded-lg hover:from-gold/90 hover:to-gold transition-all duration-300 shadow-md hover:shadow-lg group-hover:scale-105"
+                      className="w-full inline-flex items-center justify-center px-4 py-3 bg-linear-to-r from-gold to-gold/90 text-navy font-semibold rounded-lg hover:from-gold/90 hover:to-gold transition-all duration-300 shadow-md hover:shadow-lg group-hover:scale-105"
                     >
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

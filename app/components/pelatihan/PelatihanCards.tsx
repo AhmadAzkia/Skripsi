@@ -110,7 +110,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
     return (
       <ScrollReveal>
         <div className="text-center py-16 bg-white rounded-xl shadow-lg border border-navy/10 hover-lift">
-          <div className="bg-gradient-to-br from-navy/5 to-gold/5 w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <div className="bg-linear-to-br from-navy/5 to-gold/5 w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center">
             <svg className="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
@@ -128,7 +128,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
         <ScrollReveal key={kursus.id} delay={index * 100}>
           <div className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-navy/10 hover:border-navy/20 overflow-hidden hover-lift">
             {/* Thumbnail */}
-            <div className="relative h-48 bg-gradient-to-br from-navy/10 to-gold/10">
+            <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10">
               {kursus.thumbnail_url ? (
                 <img src={kursus.thumbnail_url} alt={kursus.judul} className="w-full h-full object-cover" />
               ) : (
@@ -234,7 +234,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
                     <div
-                      className="bg-gradient-to-r from-navy to-gold h-1.5 rounded-full transition-all duration-300"
+                      className="bg-linear-to-r from-navy to-gold h-1.5 rounded-full transition-all duration-300"
                       style={{
                         width: `${Math.min(((kursus.jumlah_peserta || 0) / kursus.maksimal_peserta) * 100, 100)}%`,
                       }}
@@ -247,7 +247,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
               {showActions && (
                 <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200">
                   {/* View/Access Button */}
-                  <Link href={getViewLink(kursus.id)} className="flex-1 px-4 py-2 bg-gradient-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
+                  <Link href={getViewLink(kursus.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
                     {userRole === "instruktur" ? "Kelola Materi" : userRole === "admin" ? "Kelola Kursus" : "Lihat Detail"}
                   </Link>
 

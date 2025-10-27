@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -14,9 +13,9 @@ interface CertificateListProps {
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "N/A";
   return new Date(dateString).toLocaleDateString("id-ID", {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 };
 
@@ -41,9 +40,9 @@ export default function CertificateList({ certificates }: CertificateListProps) 
           {/* Bagian Kiri: Info Kursus */}
           <div className="p-6 flex-1">
             <div className="flex items-center mb-3">
-              <CheckBadgeIcon className="w-6 h-6 text-gold mr-2 flex-shrink-0" />
-              <h2 className="text-xl font-bold text-navy truncate" title={cert.kursus?.judul || 'Nama Kursus Tidak Tersedia'}>
-                {cert.kursus?.judul || 'Nama Kursus Tidak Tersedia'}
+              <CheckBadgeIcon className="w-6 h-6 text-gold mr-2 shrink-0" />
+              <h2 className="text-xl font-bold text-navy truncate" title={cert.kursus?.judul || "Nama Kursus Tidak Tersedia"}>
+                {cert.kursus?.judul || "Nama Kursus Tidak Tersedia"}
               </h2>
             </div>
             <div className="flex items-center text-sm text-silver mb-2">
@@ -64,7 +63,7 @@ export default function CertificateList({ certificates }: CertificateListProps) 
                 target="_blank"
                 rel="noopener noreferrer"
                 download // Menyarankan browser untuk download
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-navy to-navy/90 text-white rounded-lg hover:from-navy/90 hover:to-navy font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+                className="inline-flex items-center px-4 py-2 bg-linear-to-r from-navy to-navy/90 text-white rounded-lg hover:from-navy/90 hover:to-navy font-medium transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
                 Unduh Sertifikat

@@ -68,7 +68,7 @@ export default function BlogPemateriStats({ stats }: BlogPemateriStatsProps) {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-amber-50 to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-amber-50 to-gray-50 relative">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 border border-gold rounded-full"></div>
@@ -88,7 +88,7 @@ export default function BlogPemateriStats({ stats }: BlogPemateriStatsProps) {
         <ScrollReveal delay={200}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {statsData.map((stat, index) => (
-              <div key={index} className={`group text-center p-8 bg-gradient-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
+              <div key={index} className={`group text-center p-8 bg-linear-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
                 <div className="flex items-center justify-center mb-6">
                   <div className="bg-white/60 p-4 rounded-full shadow-md group-hover:shadow-lg transition-shadow duration-300">{stat.icon}</div>
                 </div>
@@ -100,7 +100,7 @@ export default function BlogPemateriStats({ stats }: BlogPemateriStatsProps) {
 
         <ScrollReveal delay={400}>
           <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gold/10 to-navy/10 px-6 py-3 rounded-full border border-gold/20">
+            <div className="inline-flex items-center gap-2 bg-linear-to-r from-gold/10 to-navy/10 px-6 py-3 rounded-full border border-gold/20">
               <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>

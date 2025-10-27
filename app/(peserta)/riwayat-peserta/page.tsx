@@ -12,9 +12,9 @@ export default async function RiwayatPesertaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-navy via-navy to-blue-900 py-12 md:py-16 relative overflow-hidden">
+      <section className="bg-linear-to-br from-navy via-navy to-blue-900 py-12 md:py-16 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-gold rounded-full animate-bounce-gentle"></div>
@@ -45,11 +45,11 @@ export default async function RiwayatPesertaPage() {
       </section>
 
       {/* Content Section */}
-      <section className="py-16 bg-gradient-to-br from-amber-50 to-gray-50 relative">
+      <section className="py-16 bg-linear-to-br from-amber-50 to-gray-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Coming Soon Card */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-navy to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-linear-to-br from-navy to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -88,7 +88,7 @@ export default async function RiwayatPesertaPage() {
                   description: "Pantau status pembayaran secara real-time",
                 },
               ].map((feature, index) => (
-                <div key={index} className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                <div key={index} className="p-6 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                   <div className="text-blue-600 mb-3">{feature.icon}</div>
                   <h3 className="font-semibold text-navy mb-2">{feature.title}</h3>
                   <p className="text-gray-600 text-sm">{feature.description}</p>

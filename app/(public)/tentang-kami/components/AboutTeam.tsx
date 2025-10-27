@@ -32,7 +32,7 @@ export default function AboutTeam({ teamMembers }: AboutTeamProps) {
             <ScrollReveal key={index} delay={index * 100}>
               <div className="bg-white rounded-xl border border-silver/20 hover-lift hover-glow transition-all duration-300 p-6 text-center shadow-lg">
                 <div className="relative w-24 h-24 mx-auto mb-4">
-                  <div className="w-24 h-24 bg-gradient-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center border-2 border-gold/20">
+                  <div className="w-24 h-24 bg-linear-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center border-2 border-gold/20">
                     <svg className="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>

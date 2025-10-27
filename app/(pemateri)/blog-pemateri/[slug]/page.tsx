@@ -37,7 +37,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-navy/5 via-white to-gold/5">
+      <div className="min-h-screen bg-linear-to-br from-navy/5 via-white to-gold/5">
         <PemateriBlogDetail data={result.data} />
       </div>
     );

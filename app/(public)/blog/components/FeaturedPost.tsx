@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import type { PostWithAuthor } from "../page";
 
@@ -42,7 +41,7 @@ export default function FeaturedPost({ post }: { post: PostWithAuthor }) {
             <p className="text-silver mb-6 text-pretty">{post.ringkasan}</p>
             <div className="flex items-center space-x-4 mb-6">
               {/* Avatar placeholder */}
-              <div className="w-12 h-12 bg-gradient-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center">...</div>
+              <div className="w-12 h-12 bg-linear-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center">...</div>
               <div>
                 <div className="font-medium text-navy">{authorName}</div>
                 <div className="text-sm text-silver">{authorRole}</div>

@@ -261,11 +261,11 @@ export default function TambahPelatihanForm() {
                         if (!selectedInstruktur) return null;
                         return (
                           <div className="flex items-center space-x-3">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               {selectedInstruktur.foto_profil_url ? (
                                 <img src={selectedInstruktur.foto_profil_url} alt={selectedInstruktur.nama_lengkap} className="w-10 h-10 rounded-full object-cover border-2 border-gold/20" />
                               ) : (
-                                <div className="w-10 h-10 bg-gradient-to-br from-navy to-gold rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-linear-to-br from-navy to-gold rounded-full flex items-center justify-center">
                                   <span className="text-white font-semibold text-sm">{selectedInstruktur.nama_lengkap.charAt(0).toUpperCase()}</span>
                                 </div>
                               )}
@@ -432,7 +432,7 @@ export default function TambahPelatihanForm() {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="px-8 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

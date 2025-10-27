@@ -45,7 +45,7 @@ export default function MateriList({ materiList }: MateriListProps) {
 
   if (materiList.length === 0) {
     return (
-      <section className="py-16 bg-gradient-to-br from-white to-gray-50">
+      <section className="py-16 bg-linear-to-br from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <div className="text-center py-12">
@@ -75,7 +75,7 @@ export default function MateriList({ materiList }: MateriListProps) {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-white to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 right-1/4 w-72 h-72 border border-gold rounded-full"></div>

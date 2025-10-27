@@ -3,7 +3,6 @@ import { SessionUser } from "@/contexts/AuthContext";
 import { Tables } from "@/../types/database";
 import BlogPemateriHero from "./BlogPemateriHero";
 import BlogPemateriStats from "./BlogPemateriStats";
-import BlogPemateriQuickActions from "./BlogPemateriQuickActions";
 import BlogPemateriList from "./BlogPemateriList";
 
 type ArtikelItem = {
@@ -117,7 +116,7 @@ export default async function BlogPemateriContainer({ user }: BlogPemateriContai
   const { articles, stats } = await getBlogPemateriData(user.profile?.id || "");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">
       <BlogPemateriHero user={user} />
       <BlogPemateriStats stats={stats} />
       <BlogPemateriList articles={articles} />

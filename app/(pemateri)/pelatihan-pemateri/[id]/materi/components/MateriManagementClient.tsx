@@ -104,7 +104,7 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
       <ScrollReveal>
         <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-12 text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-24 h-24 bg-gradient-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 bg-linear-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-12 h-12 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -113,7 +113,7 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
             <p className="text-silver mb-6">Mulai tambahkan materi pembelajaran untuk pelatihan "{kursus.judul}". Anda dapat mengunggah berbagai jenis file seperti PDF, PPT, video, atau rekaman Zoom.</p>
             <button
               onClick={() => router.push(`/pelatihan-pemateri/${kursus.id}/materi/tambah`)}
-              className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+              className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl inline-flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -135,7 +135,7 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
                   {/* Icon */}
-                  <div className="flex-shrink-0">{getMateriIcon(materiItem.tipe_materi)}</div>
+                  <div className="shrink-0">{getMateriIcon(materiItem.tipe_materi)}</div>
 
                   {/* Content */}
                   <div className="flex-1">
@@ -177,7 +177,7 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   {materiItem.file_url && (
                     <a href={materiItem.file_url} target="_blank" rel="noopener noreferrer" className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200" title="Lihat File">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

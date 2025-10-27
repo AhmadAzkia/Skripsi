@@ -14,7 +14,7 @@ export default async function PesertaLayout({ children }: { children: React.Reac
 
   // 3. Jika lolos, render UI khusus peserta
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       <PesertaNavbar />
       <main>
         {children} {/* 'children' adalah 7 halaman Anda */}

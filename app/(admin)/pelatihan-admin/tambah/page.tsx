@@ -24,7 +24,7 @@ export default async function TambahPelatihanPage() {
   // }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">
       {/* Header Section */}
       <ScrollReveal>
         <div className="bg-white border-b border-navy/10 mb-8">

@@ -4,7 +4,7 @@ import { ScrollReveal } from "@/components/ui";
 
 export default function AboutVisionMission() {
   return (
-    <section className="py-16 bg-gradient-to-r from-gray-50 to-amber-50">
+    <section className="py-16 bg-linear-to-r from-gray-50 to-amber-50">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12">

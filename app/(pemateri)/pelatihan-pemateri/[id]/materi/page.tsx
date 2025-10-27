@@ -63,7 +63,7 @@ export default async function MateriKursusPage({ params }: PageProps) {
     const { kursus, materi, profile } = data;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-gray-50">
+      <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">
         {/* Header Section */}
         <ScrollReveal>
           <div className="bg-white border-b border-navy/10 mb-8">
@@ -89,7 +89,7 @@ export default async function MateriKursusPage({ params }: PageProps) {
                   {/* Quick Stats */}
                   <div className="flex items-center gap-6 mt-4">
                     <div className="flex items-center gap-2 text-sm text-silver">
-                      <div className="w-2 h-2 bg-gradient-to-r from-navy to-gold rounded-full"></div>
+                      <div className="w-2 h-2 bg-linear-to-r from-navy to-gold rounded-full"></div>
                       <span>
                         Total: <span className="font-semibold text-navy">{materi.length}</span> materi
                       </span>
@@ -113,7 +113,7 @@ export default async function MateriKursusPage({ params }: PageProps) {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href={`/pelatihan-pemateri/${params.id}/materi/tambah`}
-                    className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover-lift flex items-center gap-2 text-center justify-center"
+                    className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover-lift flex items-center gap-2 text-center justify-center"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

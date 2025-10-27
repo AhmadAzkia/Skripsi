@@ -26,7 +26,7 @@ type DashboardPemateriContainerProps = {
 
 export default function DashboardPemateriContainer({ user, stats, activities }: DashboardPemateriContainerProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       {/* Hero Section with personalized greeting */}
       <DashboardPemateriHero user={user} />
 

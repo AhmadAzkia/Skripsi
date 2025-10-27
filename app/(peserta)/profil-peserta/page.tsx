@@ -1,109 +1,98 @@
+import { Suspense } from "react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUserWithRole } from "@/lib/user";
-import ProfilContainer from "./components/ProfilContainer";
 import { redirect } from "next/navigation";
-import type { SessionUser } from "@/contexts/AuthContext";
-import type { Tables } from "@/../types/database";
+import ProfilPesertaClient from "./components/ProfilPesertaClient";
 
-type ProfilStats = {
-  totalPelatihan: number;
-  pelatihanSelesai: number;
-  totalSertifikat: number;
-  waktuBelajar: number;
-};
-
-type ProfileData = Pick<Tables<'profil_pengguna'>, 'id' | 'nama_lengkap' | 'email' | 'nomor_hp' | 'bio' | 'dibuat_pada' | 'diperbarui_pada' | 'is_aktif'>;
-
-async function getProfilStats(userId: string): Promise<ProfilStats> {
+async function ProfilPesertaContent() {
   const supabase = await createSupabaseServerClient();
 
-  try {
-    // 1. Hitung Total Pelatihan yang Pernah Didaftar
-    const { count: totalPelatihan, error: errorTotal } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId);
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-    // 2. Hitung Pelatihan yang Selesai
-    const { count: pelatihanSelesai, error: errorSelesai } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId).eq("status", "selesai");
-
-    // 3. Hitung Total Sertifikat
-    const { count: totalSertifikat, error: errorSertifikat } = await supabase.from("sertifikat").select("*", { count: "exact", head: true }).eq("peserta_id", userId).eq("status", "terbit");
-
-    // 4. Hitung Waktu Belajar (estimasi dari durasi kursus yang diikuti)
-    const { data: kursusData, error: errorKursus } = await supabase
-      .from("pendaftaran_kursus")
-      .select(
-        `
-        kursus:kursus_id (
-          durasi_jam
-        )
-      `
-      )
-      .eq("pengguna_id", userId)
-      .eq("status", "selesai");
-
-    let waktuBelajar = 0;
-    if (kursusData && !errorKursus) {
-      waktuBelajar = kursusData.reduce((total, item) => {
-        const kursus = item.kursus as any;
-        return total + (kursus?.durasi_jam || 0);
-      }, 0);
-    }
-
-    if (errorTotal) console.error("Error fetching total courses:", errorTotal.message);
-    if (errorSelesai) console.error("Error fetching completed courses:", errorSelesai.message);
-    if (errorSertifikat) console.error("Error fetching certificates:", errorSertifikat.message);
-    if (errorKursus) console.error("Error fetching course duration:", errorKursus.message);
-
-    return {
-      totalPelatihan: totalPelatihan ?? 0,
-      pelatihanSelesai: pelatihanSelesai ?? 0,
-      totalSertifikat: totalSertifikat ?? 0,
-      waktuBelajar: waktuBelajar,
-    };
-  } catch (error) {
-    console.error("Error fetching profile stats:", error);
-    return {
-      totalPelatihan: 0,
-      pelatihanSelesai: 0,
-      totalSertifikat: 0,
-      waktuBelajar: 0,
-    };
+  if (authError || !user) {
+    redirect("/login");
   }
-}
 
-async function getProfileData(userId: string): Promise<ProfileData | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data: profile, error } = await supabase
-    .from('profil_pengguna')
-    .select('id, nama_lengkap, email, nomor_hp, bio, dibuat_pada, diperbarui_pada, is_aktif') // Select all needed fields
-    .eq('user_id', userId)
-    .single();
+  const { data: profile, error } = await supabase.from("profil_pengguna").select("*").eq("user_id", user.id).single();
 
   if (error) {
-    console.error("Error fetching profile data:", error);
-    return null;
+    console.error("Error fetching profile:", error);
+    return <ProfilPesertaClient initialData={null} error="Gagal memuat profil pengguna." />;
   }
-  return profile;
+
+  // Get peserta statistics (mock data for now)
+  const stats = {
+    enrolledCourses: 5,
+    completedCourses: 3,
+    certificates: 2,
+    totalHours: 45,
+    progressPercentage: 75,
+  };
+
+  return (
+    <ProfilPesertaClient
+      initialData={{
+        profile,
+        user: {
+          id: user.id,
+          email: user.email,
+          created_at: user.created_at,
+        },
+        stats,
+      }}
+    />
+  );
 }
 
-export default async function ProfilPesertaPage() {
-  // Ambil data user DAN profil (termasuk peran) dari helper
-  const userData = await getUserWithRole();
+function LoadingSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header Skeleton */}
+        <div className="mb-8">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
+        </div>
 
-  // Pengaman jika user tidak ditemukan (meskipun layout sudah melindungi)
-  if (!userData?.user || userData.role !== "peserta") {
-    redirect("/login"); // Arahkan ke login jika tidak sesuai
-  }
+        {/* Breadcrumb Skeleton */}
+        <div className="h-4 bg-gray-200 rounded w-32 mb-8 animate-pulse"></div>
 
-  // 1. Jalankan kode BE di server untuk mendapatkan statistik profil
-  const stats = userData.user.id
-    ? await getProfilStats(userData.user.id)
-    : {
-        totalPelatihan: 0,
-        pelatihanSelesai: 0,
-        totalSertifikat: 0,
-        waktuBelajar: 0,
-      };
+        {/* Content Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="h-32 bg-gray-200 rounded-full w-32 mx-auto mb-4 animate-pulse"></div>
+              <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-2 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-32 mx-auto mb-6 animate-pulse"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="h-6 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  // 2. Render komponen FE dan kirimkan data user & statistik sebagai props
-  return <ProfilContainer user={userData.user as SessionUser} stats={stats} />;
+export default function ProfilPesertaPage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <ProfilPesertaContent />
+    </Suspense>
+  );
 }

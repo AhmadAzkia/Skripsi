@@ -41,7 +41,7 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
   return (
     <>
       {/* Hero Section dengan animasi */}
-      <section className="bg-gradient-to-br from-navy via-navy to-blue-900 py-16 md:py-20 relative overflow-hidden">
+      <section className="bg-linear-to-br from-navy via-navy to-blue-900 py-16 md:py-20 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-gold rounded-full animate-bounce-gentle"></div>
@@ -76,7 +76,7 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
       </section>
 
       {/* Statistik Section */}
-      <section className="py-16 bg-gradient-to-r from-gray-50 to-amber-50">
+      <section className="py-16 bg-linear-to-r from-gray-50 to-amber-50">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <ScrollReveal delay={200}>
             <div className="text-center mb-12">
@@ -115,7 +115,7 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
 
       {/* Filter Section dengan animasi yang lebih menarik */}
       <ScrollReveal delay={100}>
-        <section className="py-8 bg-gradient-to-br from-amber-50 via-white to-gray-50">
+        <section className="py-8 bg-linear-to-br from-amber-50 via-white to-gray-50">
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center gap-4">
               {filterButtons.map((btn) => (

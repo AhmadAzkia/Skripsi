@@ -12,7 +12,7 @@ export default function Header() {
       <nav className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0">
+          <div className="flex items-center shrink-0">
             <Link href="/" className="flex items-center space-x-2">
               <div className="relative w-10 h-10 bg-white rounded-lg p-1 shadow-sm">
                 <Image src="/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" priority />
@@ -43,7 +43,7 @@ export default function Header() {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
+          <div className="hidden md:flex items-center space-x-3 shrink-0">
             <Link href="/login" className="text-silver hover:text-gold border border-silver hover:border-gold transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium">
               Masuk
             </Link>
@@ -53,7 +53,7 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex-shrink-0">
+          <div className="md:hidden shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-silver hover:text-gold hover:bg-navy/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold transition-colors duration-300"

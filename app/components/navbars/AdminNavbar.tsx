@@ -107,7 +107,7 @@ export default function AdminNavbar() {
         <nav className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center shrink-0">
               <Link href="/" className="flex items-center space-x-2">
                 <div className="relative w-10 h-10 bg-white rounded-lg p-1 shadow-sm">
                   <Image src="/CertiGuardia.png" alt="CertiGuardia Logo" fill className="object-contain" priority />
@@ -154,9 +154,9 @@ export default function AdminNavbar() {
                   {pelatihanDropdownOpen && (
                     <div className="absolute left-1/2 transform -translate-x-1/2 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transition-all duration-200 animate-slideInFromTop">
                       <div className="py-2">
-                        <div className="px-4 py-2 text-xs font-semibold text-navy/60 uppercase tracking-wider border-b border-gray-100 bg-gradient-to-r from-navy/5 to-blue-50">
+                        <div className="px-4 py-2 text-xs font-semibold text-navy/60 uppercase tracking-wider border-b border-gray-100 bg-linear-to-r from-navy/5 to-blue-50">
                           <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-gradient-to-r from-navy to-blue-600 rounded-full animate-pulse"></div>
+                            <div className="w-2 h-2 bg-linear-to-r from-navy to-blue-600 rounded-full animate-pulse"></div>
                             <span>Menu Pelatihan</span>
                           </div>
                         </div>
@@ -172,7 +172,7 @@ export default function AdminNavbar() {
                                 handleNavigation(item.href);
                               }}
                               className={`w-full text-left px-4 py-3 text-sm flex items-start space-x-3 transition-all duration-200 group dropdown-item relative overflow-hidden transform hover:scale-[1.02] ${
-                                isActive ? "text-gold bg-gradient-to-r from-gold/10 to-gold/5 border-r-2 border-gold shadow-sm" : "text-gray-700 hover:text-navy hover:bg-gradient-to-r hover:from-navy/8 hover:to-blue-50 hover:shadow-sm"
+                                isActive ? "text-gold bg-linear-to-r from-gold/10 to-gold/5 border-r-2 border-gold shadow-sm" : "text-gray-700 hover:text-navy hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:shadow-sm"
                               }`}
                               style={{
                                 animationDelay: `${index * 50}ms`,
@@ -180,7 +180,7 @@ export default function AdminNavbar() {
                             >
                               <div
                                 className={`p-1.5 rounded-lg transition-all duration-200 mt-0.5 ${
-                                  isActive ? "bg-gradient-to-br from-gold/20 to-gold/10 text-gold shadow-sm" : "bg-gray-100 text-gray-600 group-hover:bg-gradient-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"
+                                  isActive ? "bg-linear-to-br from-gold/20 to-gold/10 text-gold shadow-sm" : "bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"
                                 }`}
                               >
                                 <Icon className="w-4 h-4" />
@@ -207,7 +207,7 @@ export default function AdminNavbar() {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center space-x-2 px-3 py-2 rounded-full text-sm text-silver hover:text-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                  <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
                     <UserIcon className="w-5 h-5 text-navy" />
                   </div>
                   <span className="hidden sm:block font-medium max-w-32 truncate text-white-text">{user?.profile?.nama_lengkap?.split(" ")[0] || "Admin"}</span>
@@ -219,9 +219,9 @@ export default function AdminNavbar() {
                   <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transform transition-all duration-200 animate-slideInFromTop">
                     <div className="py-2">
                       {/* User Info Header */}
-                      <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-navy/5 to-blue-50">
+                      <div className="px-4 py-3 border-b border-gray-100 bg-linear-to-r from-navy/5 to-blue-50">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-navy to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                          <div className="w-10 h-10 bg-linear-to-br from-navy to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
                             <UserIcon className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1">
@@ -240,11 +240,11 @@ export default function AdminNavbar() {
                         <button
                           onClick={() => {
                             setProfileDropdownOpen(false);
-                            handleNavigation("/admin/profile");
+                            handleNavigation("/profile");
                           }}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                         >
-                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-gradient-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200">
+                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200">
                             <UserIcon className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
@@ -262,9 +262,9 @@ export default function AdminNavbar() {
                       <div className="py-1">
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-linear-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                         >
-                          <div className="p-1.5 rounded-lg bg-red-100 text-red-600 group-hover:bg-gradient-to-br group-hover:from-red-200 group-hover:to-red-100 group-hover:text-red-700 transition-all duration-200">
+                          <div className="p-1.5 rounded-lg bg-red-100 text-red-600 group-hover:bg-linear-to-br group-hover:from-red-200 group-hover:to-red-100 group-hover:text-red-700 transition-all duration-200">
                             <ArrowRightOnRectangleIcon className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
@@ -367,7 +367,7 @@ export default function AdminNavbar() {
           <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 mx-4 max-w-md w-full transform transition-all duration-300 animate-slideInFromTop">
             {/* Header */}
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
                 <ArrowRightOnRectangleIcon className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -392,7 +392,7 @@ export default function AdminNavbar() {
               <button
                 onClick={confirmLogout}
                 disabled={isLoggingOut}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
               >
                 {isLoggingOut ? (
                   <>

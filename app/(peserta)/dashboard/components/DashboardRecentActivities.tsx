@@ -77,7 +77,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-white to-amber-50 relative">
+    <section className="py-16 bg-linear-to-br from-white to-amber-50 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-1/4 right-1/4 w-72 h-72 border border-gold rounded-full"></div>
@@ -102,8 +102,8 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
                   <div key={activity.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 bg-gradient-to-br from-navy to-blue-700 rounded-full flex items-center justify-center text-white">{getActivityIcon(activity.type)}</div>
+                        <div className="shrink-0">
+                          <div className="w-10 h-10 bg-linear-to-br from-navy to-blue-700 rounded-full flex items-center justify-center text-white">{getActivityIcon(activity.type)}</div>
                         </div>
                         <div className="flex-1">
                           <h3 className="text-lg font-semibold text-navy mb-1">{activity.title}</h3>
@@ -117,7 +117,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
                           </p>
                         </div>
                       </div>
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>{getStatusText(activity.status)}</span>
                       </div>
                     </div>
@@ -126,7 +126,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
               </div>
             ) : (
               <div className="p-12 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-navy/10 to-navy/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-navy/20">
+                <div className="w-16 h-16 bg-linear-to-br from-navy/10 to-navy/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-navy/20">
                   <svg className="w-8 h-8 text-navy/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>

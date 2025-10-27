@@ -66,7 +66,7 @@ export default function SertifikatStats({ stats }: SertifikatStatsProps) {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-amber-50 to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-amber-50 to-gray-50 relative">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 border border-gold rounded-full"></div>
@@ -86,7 +86,7 @@ export default function SertifikatStats({ stats }: SertifikatStatsProps) {
         <ScrollReveal delay={200}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {statsData.map((stat, index) => (
-              <div key={index} className={`group text-center p-8 bg-gradient-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
+              <div key={index} className={`group text-center p-8 bg-linear-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
                 <div className="flex items-center justify-center mb-6">
                   <div className="bg-white/60 p-4 rounded-full shadow-md group-hover:shadow-lg transition-shadow duration-300">{stat.icon}</div>
                 </div>

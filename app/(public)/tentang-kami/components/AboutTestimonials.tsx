@@ -16,7 +16,7 @@ interface AboutTestimonialsProps {
 
 export default function AboutTestimonials({ testimonials }: AboutTestimonialsProps) {
   return (
-    <section className="py-16 bg-gradient-to-br from-amber-50 to-gray-50">
+    <section className="py-16 bg-linear-to-br from-amber-50 to-gray-50">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12">

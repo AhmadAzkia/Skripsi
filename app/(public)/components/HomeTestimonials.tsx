@@ -23,8 +23,8 @@ export default function HomeTestimonials() {
     <section className="py-16 bg-white relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-navy via-gold to-silver rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-gold via-silver to-navy rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-linear-to-br from-navy via-gold to-silver rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-linear-to-br from-gold via-silver to-navy rounded-full blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -47,7 +47,7 @@ export default function HomeTestimonials() {
 
         <ScrollReveal delay={300}>
           <div className="text-center mt-12">
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold/10 to-gold/5 rounded-full border border-gold/20">
+            <div className="inline-flex items-center px-6 py-3 bg-linear-to-r from-gold/10 to-gold/5 rounded-full border border-gold/20">
               <span className="text-gold font-medium">Bergabunglah dengan ribuan profesional lainnya</span>
             </div>
           </div>

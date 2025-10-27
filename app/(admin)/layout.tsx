@@ -14,7 +14,7 @@ export default async function PemateriLayout({ children }: { children: React.Rea
 
   // 3. Jika lolos, render UI khusus peserta
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       <main>
         <AdminNavbar />
         {children} {/* 'children' adalah 7 halaman Anda */}

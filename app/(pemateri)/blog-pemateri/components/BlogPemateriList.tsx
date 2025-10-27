@@ -78,7 +78,7 @@ export default function BlogPemateriList({ articles }: BlogPemateriListProps) {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-amber-50 relative">
+    <section className="py-16 bg-linear-to-br from-gray-50 to-amber-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12">
@@ -154,11 +154,11 @@ export default function BlogPemateriList({ articles }: BlogPemateriListProps) {
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
                         {/* Thumbnail */}
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           {article.gambar_utama_url ? (
                             <img src={article.gambar_utama_url} alt={article.judul} className="w-16 h-16 object-cover rounded-lg border-2 border-gold/20" />
                           ) : (
-                            <div className="w-16 h-16 bg-gradient-to-br from-gold/10 to-navy/10 rounded-lg border-2 border-gold/20 flex items-center justify-center">
+                            <div className="w-16 h-16 bg-linear-to-br from-gold/10 to-navy/10 rounded-lg border-2 border-gold/20 flex items-center justify-center">
                               <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                               </svg>
@@ -234,7 +234,7 @@ export default function BlogPemateriList({ articles }: BlogPemateriListProps) {
         {filteredArticles.length > 0 && (
           <ScrollReveal delay={600}>
             <div className="text-center mt-12">
-              <button className="px-8 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 shadow-lg hover:shadow-xl">Muat Lebih Banyak</button>
+              <button className="px-8 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 shadow-lg hover:shadow-xl">Muat Lebih Banyak</button>
             </div>
           </ScrollReveal>
         )}

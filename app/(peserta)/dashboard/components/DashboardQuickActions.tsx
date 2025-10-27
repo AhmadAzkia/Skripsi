@@ -76,7 +76,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-white relative">
+    <section className="py-16 bg-linear-to-br from-gray-50 to-white relative">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-navy rounded-full blur-3xl"></div>
@@ -99,7 +99,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
               <Link
                 key={index}
                 href={action.href}
-                className={`group block p-6 bg-gradient-to-br ${action.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${action.borderColor} ${action.hoverBorderColor} hover:-translate-y-1`}
+                className={`group block p-6 bg-linear-to-br ${action.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${action.borderColor} ${action.hoverBorderColor} hover:-translate-y-1`}
               >
                 <div className="flex flex-col items-center text-center">
                   <div className={`${action.iconColor} mb-4 group-hover:scale-110 transition-transform duration-300`}>{action.icon}</div>

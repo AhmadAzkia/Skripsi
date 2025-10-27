@@ -52,8 +52,8 @@ export default function HomeFeatures() {
     <section className="py-16 bg-white relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute -top-10 -right-10 w-96 h-96 bg-gradient-to-br from-gold to-navy rounded-full"></div>
-        <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-gradient-to-br from-silver to-gold rounded-full"></div>
+        <div className="absolute -top-10 -right-10 w-96 h-96 bg-linear-to-br from-gold to-navy rounded-full"></div>
+        <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-linear-to-br from-silver to-gold rounded-full"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -69,8 +69,8 @@ export default function HomeFeatures() {
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <ScrollReveal key={index} delay={(index + 1) * 100}>
-              <div className="group text-center p-8 rounded-xl bg-gradient-to-br from-white to-gray-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-gold/30 hover:-translate-y-2">
-                <div className="bg-gradient-to-br from-gold/10 to-gold/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-md">{feature.icon}</div>
+              <div className="group text-center p-8 rounded-xl bg-linear-to-br from-white to-gray-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-gold/30 hover:-translate-y-2">
+                <div className="bg-linear-to-br from-gold/10 to-gold/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-md">{feature.icon}</div>
                 <h3 className="text-xl font-bold text-navy mb-4 group-hover:text-gold transition-colors duration-300">{feature.title}</h3>
                 <p className="text-silver text-pretty leading-relaxed">{feature.description}</p>
               </div>

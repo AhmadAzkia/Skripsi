@@ -13,12 +13,12 @@ interface HomeFeaturedCoursesProps {
 
 export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCoursesProps) {
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-gray-50 via-white to-gray-50 relative">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-1/6 w-32 h-32 bg-gradient-to-br from-gold to-navy rounded-full"></div>
-        <div className="absolute bottom-1/4 right-1/6 w-24 h-24 bg-gradient-to-br from-silver to-gold rounded-full"></div>
-        <div className="absolute top-3/4 left-3/4 w-16 h-16 bg-gradient-to-br from-navy to-silver rounded-full"></div>
+        <div className="absolute top-1/4 left-1/6 w-32 h-32 bg-linear-to-br from-gold to-navy rounded-full"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-24 h-24 bg-linear-to-br from-silver to-gold rounded-full"></div>
+        <div className="absolute top-3/4 left-3/4 w-16 h-16 bg-linear-to-br from-navy to-silver rounded-full"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -53,7 +53,7 @@ export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCou
               <div className="text-center">
                 <Link
                   href="/jadwal-pelatihan"
-                  className="group bg-gradient-to-r from-gold to-gold/90 hover:from-gold/90 hover:to-gold text-navy btn-interactive px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl"
+                  className="group bg-linear-to-r from-gold to-gold/90 hover:from-gold/90 hover:to-gold text-navy btn-interactive px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl"
                 >
                   Lihat Semua Pelatihan
                   <svg className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

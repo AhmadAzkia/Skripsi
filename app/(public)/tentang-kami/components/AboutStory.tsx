@@ -39,7 +39,7 @@ export default function AboutStory({ foundingYear, totalAlumni, totalPrograms, s
 
           <ScrollReveal delay={200}>
             <div className="relative">
-              <div className="bg-gradient-to-r from-gray-50 to-amber-50 rounded-xl p-8 shadow-lg border border-gold/20">
+              <div className="bg-linear-to-r from-gray-50 to-amber-50 rounded-xl p-8 shadow-lg border border-gold/20">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="bg-white p-4 rounded-lg shadow-md hover-lift">
                     <AnimatedCounter end={foundingYear} label="Tahun Berdiri" duration={1500} />

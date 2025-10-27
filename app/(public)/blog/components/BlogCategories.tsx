@@ -10,7 +10,7 @@ interface BlogCategoriesProps {
 export default function BlogCategories({ categories }: BlogCategoriesProps) {
   return (
     <ScrollReveal delay={100}>
-      <section className="py-8 bg-gradient-to-br from-amber-50 via-white to-gray-50" id="artikel-terbaru">
+      <section className="py-8 bg-linear-to-br from-amber-50 via-white to-gray-50" id="artikel-terbaru">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">Jelajahi Artikel</h2>

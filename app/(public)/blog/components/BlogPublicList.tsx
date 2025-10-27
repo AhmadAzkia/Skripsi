@@ -115,7 +115,7 @@ export default function BlogPublicList({ initialArticles }: BlogPublicListProps)
         <ScrollReveal>
           <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-12 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 bg-linear-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg className="w-12 h-12 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -127,7 +127,7 @@ export default function BlogPublicList({ initialArticles }: BlogPublicListProps)
                   setSearchQuery("");
                   setSelectedTag("");
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+                className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
               >
                 Lihat Semua Artikel
               </button>
@@ -140,7 +140,7 @@ export default function BlogPublicList({ initialArticles }: BlogPublicListProps)
             <ScrollReveal key={article.id} delay={index * 100}>
               <Link href={`/blog/${article.slug}`} className="group block bg-white rounded-xl shadow-lg border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 hover-lift">
                 {/* Image */}
-                <div className="relative h-48 bg-gradient-to-br from-navy/10 to-gold/10">
+                <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10">
                   {article.gambar_utama_url ? (
                     <Image src={article.gambar_utama_url} alt={article.judul} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
@@ -175,7 +175,7 @@ export default function BlogPublicList({ initialArticles }: BlogPublicListProps)
                   {/* Author & Date */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
+                      <div className="w-8 h-8 bg-linear-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
                         {article.penulis.foto_profil_url ? (
                           <Image src={article.penulis.foto_profil_url} alt={article.penulis.nama_lengkap} width={32} height={32} className="w-full h-full object-cover" />
                         ) : (

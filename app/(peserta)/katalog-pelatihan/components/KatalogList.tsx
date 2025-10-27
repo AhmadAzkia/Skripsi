@@ -58,7 +58,7 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
 
   if (kursusList.length === 0) {
     return (
-      <section className="py-16 bg-gradient-to-br from-white to-gray-50 relative">
+      <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <div className="text-center py-16">
@@ -82,7 +82,7 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-white to-gray-50 relative">
+    <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 right-1/4 w-72 h-72 border border-gold rounded-full"></div>
@@ -104,11 +104,11 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
             {kursusList.map((kursus, index) => (
               <div key={kursus.id} className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gold/30 hover:-translate-y-1 overflow-hidden">
                 {/* Thumbnail */}
-                <div className="relative h-48 bg-gradient-to-br from-navy/10 to-gold/10 overflow-hidden">
+                <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10 overflow-hidden">
                   {kursus.thumbnail_url ? (
                     <img src={kursus.thumbnail_url} alt={kursus.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy/20 to-gold/20">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-navy/20 to-gold/20">
                       <svg className="w-16 h-16 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           strokeLinecap="round"
@@ -181,7 +181,7 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
                   {/* CTA Button */}
                   <Link
                     href={`/katalog-pelatihan/${kursus.id}`}
-                    className="w-full bg-gradient-to-r from-navy to-blue-700 hover:from-gold hover:to-gold/90 text-white py-3 px-4 rounded-lg font-medium text-center block transition-all duration-300 group-hover:shadow-lg"
+                    className="w-full bg-linear-to-r from-navy to-blue-700 hover:from-gold hover:to-gold/90 text-white py-3 px-4 rounded-lg font-medium text-center block transition-all duration-300 group-hover:shadow-lg"
                   >
                     Lihat Detail
                     <svg className="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">

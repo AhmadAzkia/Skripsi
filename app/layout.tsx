@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} bg-white`}>
         <AuthProvider>
           <div className="flex flex-col min-h-screen bg-white">
-            <main className="flex-grow">{children}</main>
+            <main className="grow">{children}</main>
           </div>
         </AuthProvider>
       </body>

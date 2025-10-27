@@ -24,7 +24,7 @@ export default function MateriFilters({ kursusOptions }: MateriFiltersProps) {
   ];
 
   return (
-    <section className="py-8 bg-gradient-to-br from-gray-50 to-white relative">
+    <section className="py-8 bg-linear-to-br from-gray-50 to-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">

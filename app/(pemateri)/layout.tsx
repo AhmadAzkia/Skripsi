@@ -23,7 +23,7 @@ export default async function PemateriLayout({ children }: { children: React.Rea
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       <PemateriNavbar />
       <main>{children}</main>
       <Footer />

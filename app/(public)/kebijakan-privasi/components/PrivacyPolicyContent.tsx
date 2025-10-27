@@ -78,7 +78,7 @@ export default function PrivacyPolicyContent() {
         <div className="space-y-12">
           {privacySections.map((section, index) => (
             <ScrollReveal key={section.id} delay={100 * (index + 1)}>
-              <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-8 shadow-lg border border-gray-100">
+              <div className="bg-linear-to-br from-gray-50 to-white rounded-xl p-8 shadow-lg border border-gray-100">
                 <h3 className="text-xl md:text-2xl font-bold text-navy mb-6 flex items-center">
                   <div className="w-8 h-8 bg-gold/20 rounded-full flex items-center justify-center mr-4">
                     <span className="text-gold font-bold text-sm">{index + 1}</span>
@@ -98,7 +98,7 @@ export default function PrivacyPolicyContent() {
         </div>
 
         <ScrollReveal delay={200}>
-          <div className="mt-16 p-8 bg-gradient-to-br from-gold/5 to-gold/10 rounded-xl border border-gold/20">
+          <div className="mt-16 p-8 bg-linear-to-br from-gold/5 to-gold/10 rounded-xl border border-gold/20">
             <h3 className="text-xl font-bold text-navy mb-4">Kontak</h3>
             <p className="text-gray-600 mb-4">Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini atau ingin menggunakan hak-hak Anda terkait data pribadi, silakan hubungi kami:</p>
             <div className="space-y-2 text-gray-600">

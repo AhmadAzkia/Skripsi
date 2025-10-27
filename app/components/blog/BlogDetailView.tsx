@@ -165,7 +165,7 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             {/* Author */}
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 bg-linear-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
                 {article.penulis.foto_profil_url ? (
                   <Image src={article.penulis.foto_profil_url} alt={article.penulis.nama_lengkap} width={48} height={48} className="w-full h-full object-cover" />
                 ) : (
@@ -291,8 +291,8 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
         <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-8 mb-12">
           <h3 className="text-2xl font-bold text-navy mb-6">Tentang Penulis</h3>
           <div className="flex flex-col sm:flex-row gap-6">
-            <div className="flex-shrink-0">
-              <div className="w-24 h-24 bg-gradient-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
+            <div className="shrink-0">
+              <div className="w-24 h-24 bg-linear-to-br from-navy to-gold rounded-full flex items-center justify-center overflow-hidden">
                 {article.penulis.foto_profil_url ? (
                   <Image src={article.penulis.foto_profil_url} alt={article.penulis.nama_lengkap} width={96} height={96} className="w-full h-full object-cover" />
                 ) : (
@@ -314,11 +314,7 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
                   <p className="text-sm font-medium text-navy mb-3">Artikel lainnya dari {article.penulis.nama_lengkap}:</p>
                   <div className="space-y-2">
                     {authorArticles.slice(0, 3).map((authorArticle) => (
-                      <Link
-                        key={authorArticle.id}
-                        href={mode === "pemateri" ? `/blog-pemateri/${authorArticle.slug}` : `/blog/${authorArticle.slug}`}
-                        className="block text-sm text-gray-600 hover:text-navy transition-colors duration-200"
-                      >
+                      <Link key={authorArticle.id} href={mode === "pemateri" ? `/blog-pemateri/${authorArticle.slug}` : `/blog/${authorArticle.slug}`} className="block text-sm text-gray-600 hover:text-navy transition-colors duration-200">
                         • {authorArticle.judul}
                       </Link>
                     ))}
@@ -342,7 +338,7 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
                   href={mode === "pemateri" ? `/blog-pemateri/${relatedArticle.slug}` : `/blog/${relatedArticle.slug}`}
                   className="group block bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300"
                 >
-                  <div className="relative h-48 bg-gradient-to-br from-navy/10 to-gold/10">
+                  <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10">
                     {relatedArticle.gambar_utama_url ? (
                       <Image src={relatedArticle.gambar_utama_url} alt={relatedArticle.judul} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
@@ -373,7 +369,7 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
         <div className="text-center mt-12">
           <Link
             href={backUrl}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

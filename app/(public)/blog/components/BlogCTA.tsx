@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ui";
 export default function BlogCTA() {
   return (
     <ScrollReveal delay={600}>
-      <section className="py-16 bg-gradient-to-br from-navy via-navy to-blue-900 relative overflow-hidden">
+      <section className="py-16 bg-linear-to-br from-navy via-navy to-blue-900 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-10 right-10 w-32 h-32 border border-gold rounded-full animate-bounce-gentle"></div>

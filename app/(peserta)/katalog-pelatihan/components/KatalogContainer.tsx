@@ -49,7 +49,7 @@ export default function KatalogContainer({ user, stats, kursusList, kategoriList
   }, [kursusList, selectedKategori, selectedTipe]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       {/* Hero Section */}
       <KatalogHero user={user} />
 

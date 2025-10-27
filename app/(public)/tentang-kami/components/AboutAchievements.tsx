@@ -14,7 +14,7 @@ interface AboutAchievementsProps {
 
 export default function AboutAchievements({ achievements }: AboutAchievementsProps) {
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+    <section className="py-16 bg-linear-to-br from-gray-50 to-white">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="text-center mb-12">
@@ -29,7 +29,7 @@ export default function AboutAchievements({ achievements }: AboutAchievementsPro
           {achievements.map((achievement, index) => (
             <ScrollReveal key={index} delay={index * 100}>
               <div className="bg-white rounded-xl p-6 text-center hover-lift hover-glow transition-all duration-300 shadow-lg border border-gold/20">
-                <div className="text-4xl mb-4 bg-gradient-to-r from-gold/10 to-amber/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto">{achievement.icon}</div>
+                <div className="text-4xl mb-4 bg-linear-to-r from-gold/10 to-amber/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto">{achievement.icon}</div>
                 <h3 className="text-lg font-bold text-navy mb-3">{achievement.title}</h3>
                 <p className="text-sm text-silver text-pretty">{achievement.description}</p>
               </div>

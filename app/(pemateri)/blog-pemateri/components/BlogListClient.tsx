@@ -152,7 +152,7 @@ export default function BlogListClient({ initialArticles, userId }: BlogListClie
               {/* Add New Article Button */}
               <Link
                 href="/blog-pemateri/tulis"
-                className="px-4 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium text-center flex items-center justify-center gap-2"
+                className="px-4 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium text-center flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -192,7 +192,7 @@ export default function BlogListClient({ initialArticles, userId }: BlogListClie
         <ScrollReveal>
           <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-12 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 bg-linear-to-br from-navy/10 to-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg className="w-12 h-12 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
@@ -200,13 +200,13 @@ export default function BlogListClient({ initialArticles, userId }: BlogListClie
               <h3 className="text-xl font-semibold text-navy mb-3">{hasActiveFilters ? "Tidak ada hasil" : "Belum Ada Artikel"}</h3>
               <p className="text-gray-600 mb-6">{hasActiveFilters ? "Coba ubah kriteria pencarian atau filter Anda" : "Anda belum memiliki artikel blog. Mulai menulis artikel pertama Anda."}</p>
               {hasActiveFilters ? (
-                <button onClick={resetFilters} className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                <button onClick={resetFilters} className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
                   Reset Semua Filter
                 </button>
               ) : (
                 <Link
                   href="/blog-pemateri/tulis"
-                  className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+                  className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl inline-flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -223,7 +223,7 @@ export default function BlogListClient({ initialArticles, userId }: BlogListClie
             <ScrollReveal key={article.id} delay={index * 100}>
               <div className="bg-white rounded-xl shadow-lg border border-navy/10 overflow-hidden hover:shadow-xl transition-all duration-300 hover-lift">
                 {/* Thumbnail */}
-                <div className="relative h-48 bg-gradient-to-br from-navy/10 to-gold/10">
+                <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10">
                   {article.gambar_utama_url ? (
                     <img src={article.gambar_utama_url} alt={article.judul} className="w-full h-full object-cover" />
                   ) : (

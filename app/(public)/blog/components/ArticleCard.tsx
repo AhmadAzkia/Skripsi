@@ -1,12 +1,10 @@
-
-
 import Link from "next/link";
 import type { PostWithAuthor } from "../page";
 
 // Helper dari FeaturedPost (bisa dipindah ke file 'utils' nanti)
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "Segera";
-  return new Date(dateString).toLocaleDateString("id-ID", { month: 'long', day: 'numeric' });
+  return new Date(dateString).toLocaleDateString("id-ID", { month: "long", day: "numeric" });
 };
 const calculateReadTime = (content: string | null) => {
   if (!content) return "1 min";
@@ -22,7 +20,7 @@ export default function ArticleCard({ post }: { post: PostWithAuthor }) {
 
   return (
     <article className="bg-white border border-silver/20 rounded-lg overflow-hidden hover-lift hover-glow transition-all duration-300">
-      <img src={post.gambar_utama_url || 'https://placehold.co/600x400'} alt={post.judul} className="w-full h-48 object-cover" />
+      <img src={post.gambar_utama_url || "https://placehold.co/600x400"} alt={post.judul} className="w-full h-48 object-cover" />
 
       <div className="p-6">
         <div className="flex items-center space-x-3 mb-3">
@@ -36,7 +34,7 @@ export default function ArticleCard({ post }: { post: PostWithAuthor }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {/* Avatar placeholder */}
-            <div className="w-8 h-8 bg-gradient-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center">...</div>
+            <div className="w-8 h-8 bg-linear-to-br from-gold/20 to-silver/20 rounded-full flex items-center justify-center">...</div>
             <div>
               <div className="text-xs font-medium text-navy">{authorName}</div>
               <div className="text-xs text-silver">{formatDate(post.dipublikasi_pada)}</div>

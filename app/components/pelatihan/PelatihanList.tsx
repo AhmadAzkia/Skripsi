@@ -83,11 +83,11 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
         <ScrollReveal>
           <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-gradient-to-r from-navy/10 to-gold/10 rounded w-1/3"></div>
+              <div className="h-6 bg-linear-to-r from-navy/10 to-gold/10 rounded w-1/3"></div>
               <div className="h-4 bg-silver/10 rounded w-2/3"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-12 bg-gradient-to-r from-navy/5 to-gold/5 rounded-lg animate-pulse"></div>
+                  <div key={i} className="h-12 bg-linear-to-r from-navy/5 to-gold/5 rounded-lg animate-pulse"></div>
                 ))}
               </div>
             </div>
@@ -99,15 +99,15 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
           {[...Array(6)].map((_, i) => (
             <ScrollReveal key={i} delay={i * 100}>
               <div className="bg-white rounded-xl shadow-lg border border-navy/10 overflow-hidden">
-                <div className="h-48 bg-gradient-to-br from-navy/10 to-gold/10 animate-pulse"></div>
+                <div className="h-48 bg-linear-to-br from-navy/10 to-gold/10 animate-pulse"></div>
                 <div className="p-6 space-y-4">
-                  <div className="h-4 bg-gradient-to-r from-navy/10 to-gold/10 rounded animate-pulse"></div>
+                  <div className="h-4 bg-linear-to-r from-navy/10 to-gold/10 rounded animate-pulse"></div>
                   <div className="h-6 bg-navy/10 rounded animate-pulse"></div>
                   <div className="space-y-2">
                     <div className="h-3 bg-silver/10 rounded animate-pulse"></div>
                     <div className="h-3 bg-silver/10 rounded animate-pulse w-3/4"></div>
                   </div>
-                  <div className="h-10 bg-gradient-to-r from-navy/10 to-gold/10 rounded animate-pulse"></div>
+                  <div className="h-10 bg-linear-to-r from-navy/10 to-gold/10 rounded animate-pulse"></div>
                 </div>
               </div>
             </ScrollReveal>
@@ -224,7 +224,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
       {filteredAndSortedData.length === 0 ? (
         <ScrollReveal>
           <div className="text-center py-16 bg-white rounded-xl shadow-lg border border-navy/10 hover-lift">
-            <div className="bg-gradient-to-br from-navy/5 to-gold/5 w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center">
+            <div className="bg-linear-to-br from-navy/5 to-gold/5 w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center">
               <svg className="w-12 h-12 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -243,7 +243,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
                 setTipeFilter("all");
                 setKategoriFilter("all");
               }}
-              className="px-6 py-3 bg-gradient-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+              className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
             >
               Reset Semua Filter
             </button>
