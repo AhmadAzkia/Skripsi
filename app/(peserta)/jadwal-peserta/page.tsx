@@ -118,17 +118,17 @@ export default async function JadwalPesertaPage() {
     redirect("/login");
   }
 
-  // Ambil statistik dan daftar jadwal
-  const stats = userData.user.id
-    ? await getJadwalStats(userData.user.id)
-    : {
-        totalJadwal: 0,
-        jadwalBerlangsung: 0,
-        jadwalSelesai: 0,
-        jadwalMendatang: 0,
-      };
+  // Gunakan profile.id untuk query database, bukan auth user.id
+  const profileId = userData.profile?.id;
 
-  const jadwalList = userData.user.id ? await getJadwalList(userData.user.id) : [];
+  if (!profileId) {
+    console.error("Profile ID not found");
+    redirect("/login");
+  }
+
+  // Ambil statistik dan daftar jadwal menggunakan profileId
+  const stats = await getJadwalStats(profileId);
+  const jadwalList = await getJadwalList(profileId);
 
   return <JadwalContainer user={userData.user as SessionUser} stats={stats} jadwalList={jadwalList} />;
 }
