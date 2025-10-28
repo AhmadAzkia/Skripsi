@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Avatar from "./Avatar";
+import { Button } from "@/components/ui";
 
 // Type definitions based on database schema
 interface UserProfile {
@@ -52,11 +53,24 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
       case "admin":
         return "bg-red-100 text-red-800 border-red-200";
       case "pemateri":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-navy/10 text-navy border-navy/20";
       case "peserta":
         return "bg-green-100 text-green-800 border-green-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getRoleGradient = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "bg-gradient-to-r from-red-500 to-red-600";
+      case "pemateri":
+        return "bg-gradient-to-r from-navy to-navy/90";
+      case "peserta":
+        return "bg-gradient-to-r from-green-500 to-green-600";
+      default:
+        return "bg-gradient-to-r from-gray-500 to-gray-600";
     }
   };
 
@@ -71,9 +85,9 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(role)}`}>{getRoleDisplay(role)}</span>
         </div>
         {showEditButton && onEdit && (
-          <button onClick={onEdit} className="shrink-0 px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors duration-200">
+          <Button onClick={onEdit} variant="ghost" size="sm" className="shrink-0 text-navy hover:text-navy/80 bg-navy/10 hover:bg-navy/20">
             Edit
-          </button>
+          </Button>
         )}
       </div>
     );
@@ -82,7 +96,7 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       {/* Header with gradient background */}
-      <div className="h-32 bg-blue-500"></div>
+      <div className={`h-32 ${getRoleGradient(role)}`}></div>
 
       {/* Profile content */}
       <div className="relative px-6 pb-6">
@@ -125,12 +139,12 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Buttons */}
         {showEditButton && onEdit && (
           <div className="mt-6">
-            <button onClick={onEdit} className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+            <Button onClick={onEdit} variant="primary" className="w-full">
               Edit Profil
-            </button>
+            </Button>
           </div>
         )}
       </div>

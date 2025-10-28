@@ -3,6 +3,87 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+// Change user password
+export async function changeUserPassword(formData: FormData) {
+  const supabase = await createSupabaseServerClient();
+
+  try {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error("User not authenticated");
+    }
+
+    // Extract form data
+    const currentPassword = formData.get("currentPassword") as string;
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    // Validate input
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return {
+        success: false,
+        error: "Semua field wajib diisi",
+        message: "Gagal mengubah password",
+      };
+    }
+
+    if (newPassword !== confirmPassword) {
+      return {
+        success: false,
+        error: "Konfirmasi password tidak sesuai",
+        message: "Gagal mengubah password",
+      };
+    }
+
+    if (newPassword.length < 6) {
+      return {
+        success: false,
+        error: "Password baru minimal 6 karakter",
+        message: "Gagal mengubah password",
+      };
+    }
+
+    // Verify current password by attempting to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email!,
+      password: currentPassword,
+    });
+
+    if (signInError) {
+      return {
+        success: false,
+        error: "Password saat ini tidak benar",
+        message: "Gagal mengubah password",
+      };
+    }
+
+    // Update password
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) {
+      throw new Error("Error updating password: " + updateError.message);
+    }
+
+    return {
+      success: true,
+      error: null,
+      message: "Password berhasil diubah!",
+    };
+  } catch (error) {
+    console.error("Error in changeUserPassword:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      message: "Gagal mengubah password",
+    };
+  }
+}
+
 // Get user profile by user ID
 export async function getUserProfile(userId?: string) {
   const supabase = await createSupabaseServerClient();

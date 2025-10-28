@@ -3,6 +3,7 @@ export { default as ProfilView } from "./ProfilView";
 export { default as ProfilEditForm } from "./ProfilEditForm";
 export { default as ProfilManager } from "./ProfilManager";
 export { default as Avatar } from "./Avatar";
+export { default as ChangePasswordForm } from "./ChangePasswordForm";
 
 // Export types if needed
 export type UserProfile = {

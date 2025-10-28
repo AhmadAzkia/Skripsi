@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { updateUserProfile, deleteUserAvatar } from "./actions";
 import Avatar from "./Avatar";
+import { Button, Input, Alert } from "@/components/ui";
 
 // Type definitions based on database schema
 interface UserProfile {
@@ -195,19 +196,8 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
 
       {/* Message Display */}
       {message && (
-        <div className={`p-4 rounded-lg ${message.type === "success" ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
-          <div className="flex items-center">
-            {message.type === "success" ? (
-              <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            )}
-            <p className={`text-sm font-medium ${message.type === "success" ? "text-green-800" : "text-red-800"}`}>{message.text}</p>
-          </div>
+        <div className="mb-6">
+          <Alert variant={message.type === "success" ? "success" : "error"}>{message.text}</Alert>
         </div>
       )}
 
@@ -223,7 +213,7 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-colors disabled:opacity-50"
+              className="absolute bottom-0 right-0 bg-navy hover:bg-navy/90 text-white rounded-full p-2 shadow-lg transition-colors disabled:opacity-50"
               disabled={loading || isSubmitting}
               title="Ganti foto profil"
             >
@@ -264,37 +254,10 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
         {/* Form Fields */}
         <div className="space-y-4">
           {/* Nama Lengkap */}
-          <div>
-            <label htmlFor="nama_lengkap" className="block text-sm font-medium text-gray-700 mb-2">
-              Nama Lengkap *
-            </label>
-            <input
-              type="text"
-              id="nama_lengkap"
-              name="nama_lengkap"
-              value={formData.nama_lengkap}
-              onChange={handleInputChange}
-              required
-              disabled={loading || isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50"
-            />
-          </div>
+          <Input type="text" label="Nama Lengkap" name="nama_lengkap" value={formData.nama_lengkap} onChange={handleInputChange} required disabled={loading || isSubmitting} />
 
           {/* Nomor HP */}
-          <div>
-            <label htmlFor="nomor_hp" className="block text-sm font-medium text-gray-700 mb-2">
-              Nomor Telepon
-            </label>
-            <input
-              type="tel"
-              id="nomor_hp"
-              name="nomor_hp"
-              value={formData.nomor_hp}
-              onChange={handleInputChange}
-              disabled={loading || isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50"
-            />
-          </div>
+          <Input type="tel" label="Nomor Telepon" name="nomor_hp" value={formData.nomor_hp} onChange={handleInputChange} disabled={loading || isSubmitting} />
 
           {/* Bio */}
           <div>
@@ -308,7 +271,7 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
               onChange={handleInputChange}
               rows={4}
               disabled={loading || isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy/20 focus:border-navy disabled:bg-gray-50"
               placeholder="Ceritakan sedikit tentang diri Anda..."
             />
           </div>
@@ -316,31 +279,12 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
 
         {/* Action Buttons */}
         <div className="flex space-x-4 pt-6 border-t">
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={loading || isSubmitting}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <Button type="button" variant="secondary" onClick={handleCancel} disabled={loading || isSubmitting} className="flex-1">
             Batal
-          </button>
-          <button
-            type="submit"
-            disabled={loading || isSubmitting}
-            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-          >
-            {loading || isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Menyimpan...
-              </>
-            ) : (
-              "Simpan Perubahan"
-            )}
-          </button>
+          </Button>
+          <Button type="submit" variant="primary" isLoading={loading || isSubmitting} disabled={loading || isSubmitting} className="flex-1">
+            {loading || isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+          </Button>
         </div>
       </form>
     </div>
