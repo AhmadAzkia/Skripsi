@@ -17,7 +17,6 @@ export interface BlogStats {
   totalArtikel: number;
   artikelPublished: number;
   artikelDraft: number;
-  artikelReview: number;
   viewsBulanIni: number;
 }
 
@@ -92,7 +91,6 @@ export async function getBlogStats(userId: string): Promise<{
     const totalArtikel = articles.length;
     const artikelPublished = articles.filter((a) => a.status === "published").length;
     const artikelDraft = articles.filter((a) => a.status === "draft").length;
-    const artikelReview = articles.filter((a) => a.status === "review").length;
 
     // Mock calculation for views this month
     const currentMonth = new Date().getMonth();
@@ -111,7 +109,6 @@ export async function getBlogStats(userId: string): Promise<{
         totalArtikel,
         artikelPublished,
         artikelDraft,
-        artikelReview,
         viewsBulanIni,
       },
     };

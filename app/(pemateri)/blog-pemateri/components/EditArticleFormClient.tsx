@@ -32,14 +32,14 @@ export default function EditArticleFormClient({ userId, articleId, initialData }
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const statusOptions = [
-    { value: "draft", label: "Simpan sebagai Draft", color: "bg-yellow-500 hover:bg-yellow-600" },
-    { value: "review", label: "Kirim untuk Review", color: "bg-blue-500 hover:bg-blue-600" },
-    { value: "published", label: "Publikasikan", color: "bg-green-500 hover:bg-green-600" },
+    { value: "draft", label: "Simpan sebagai Draft", color: "bg-navy hover:bg-navy/90" },
+    { value: "published", label: "Publikasikan", color: "bg-gold hover:bg-gold/90" },
   ];
 
-  const validateForm = (): boolean => {
+  const validateForm = (status: string): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // Judul selalu wajib diisi
     if (!formData.judul.trim()) {
       newErrors.judul = "Judul artikel wajib diisi";
     } else if (formData.judul.length < 10) {
@@ -48,20 +48,24 @@ export default function EditArticleFormClient({ userId, articleId, initialData }
       newErrors.judul = "Judul artikel maksimal 200 karakter";
     }
 
-    if (!formData.ringkasan.trim()) {
-      newErrors.ringkasan = "Ringkasan artikel wajib diisi";
-    } else if (formData.ringkasan.length < 50) {
-      newErrors.ringkasan = "Ringkasan artikel minimal 50 karakter";
-    } else if (formData.ringkasan.length > 500) {
-      newErrors.ringkasan = "Ringkasan artikel maksimal 500 karakter";
+    // Untuk status published, semua field wajib diisi
+    if (status === "published") {
+      if (!formData.ringkasan.trim()) {
+        newErrors.ringkasan = "Ringkasan artikel wajib diisi untuk publikasi";
+      } else if (formData.ringkasan.length < 50) {
+        newErrors.ringkasan = "Ringkasan artikel minimal 50 karakter";
+      } else if (formData.ringkasan.length > 500) {
+        newErrors.ringkasan = "Ringkasan artikel maksimal 500 karakter";
+      }
+
+      if (!formData.konten.trim()) {
+        newErrors.konten = "Konten artikel wajib diisi untuk publikasi";
+      } else if (formData.konten.length < 100) {
+        newErrors.konten = "Konten artikel minimal 100 karakter";
+      }
     }
 
-    if (!formData.konten.trim()) {
-      newErrors.konten = "Konten artikel wajib diisi";
-    } else if (formData.konten.length < 100) {
-      newErrors.konten = "Konten artikel minimal 100 karakter";
-    }
-
+    // Validasi URL gambar jika diisi
     if (formData.gambar_utama_url && !isValidUrl(formData.gambar_utama_url)) {
       newErrors.gambar_utama_url = "URL gambar tidak valid";
     }
@@ -93,7 +97,7 @@ export default function EditArticleFormClient({ userId, articleId, initialData }
 
     const updatedFormData = { ...formData, status };
 
-    if (!validateForm()) {
+    if (!validateForm(status)) {
       alert("Mohon periksa form dan perbaiki kesalahan yang ada");
       return;
     }
@@ -127,13 +131,13 @@ export default function EditArticleFormClient({ userId, articleId, initialData }
         konten: updatedFormData.konten.trim(),
         tags: tagsArray,
         gambar_utama_url: updatedFormData.gambar_utama_url.trim() || undefined,
-        status: status as "draft" | "review" | "published",
+        status: status as "draft" | "published",
       };
 
       const result = await updateArtikel(userId, articleId, artikelData);
 
       if (result.success) {
-        alert(`Artikel berhasil ${status === "published" ? "dipublikasikan" : status === "review" ? "dikirim untuk review" : "disimpan sebagai draft"}!`);
+        alert(`Artikel berhasil ${status === "published" ? "dipublikasikan" : "disimpan sebagai draft"}!`);
         router.push("/blog-pemateri");
       } else {
         alert(result.error || "Terjadi kesalahan saat menyimpan artikel");

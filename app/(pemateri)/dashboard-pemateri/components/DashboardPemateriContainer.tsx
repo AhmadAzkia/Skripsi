@@ -1,16 +1,16 @@
 import DashboardPemateriHero from "./DashboardPemateriHero";
 import DashboardPemateriStats from "./DashboardPemateriStats";
 import DashboardPemateriQuickActions from "./DashboardPemateriQuickActions";
-import DashboardPemateriRecentActivities from "./DashboardPemateriRecentActivities";
+import DashboardPemateriActivities from "./DashboardPemateriActivities";
 import { SessionUser } from "@/contexts/AuthContext";
 
 type RecentActivity = {
   id: string;
   title: string;
-  type: "pendaftaran" | "kursus" | "sertifikat" | "pembayaran";
-  date: string;
-  status: "completed" | "in-progress" | "pending";
-  peserta?: string;
+  description: string;
+  time: string;
+  type: "kursus" | "pendaftaran" | "materi" | "blog" | "sertifikat";
+  icon: React.ReactNode;
 };
 
 type DashboardPemateriContainerProps = {
@@ -37,7 +37,7 @@ export default function DashboardPemateriContainer({ user, stats, activities }: 
       <DashboardPemateriQuickActions />
 
       {/* Recent Activities Section */}
-      <DashboardPemateriRecentActivities activities={activities} />
+      <DashboardPemateriActivities activities={activities} />
     </div>
   );
 }

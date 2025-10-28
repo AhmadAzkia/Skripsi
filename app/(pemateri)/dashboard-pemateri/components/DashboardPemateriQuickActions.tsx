@@ -8,8 +8,8 @@ interface DashboardPemateriQuickActionsProps {}
 export default function DashboardPemateriQuickActions({}: DashboardPemateriQuickActionsProps) {
   const quickActions = [
     {
-      title: "Kelola Kursus",
-      description: "Buat dan kelola kursus pelatihan Anda",
+      title: "Kelola Pelatihan",
+      description: "Buat dan kelola program pelatihan Anda",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -20,91 +20,58 @@ export default function DashboardPemateriQuickActions({}: DashboardPemateriQuick
           />
         </svg>
       ),
-      href: "/kelola-kursus",
+      href: "/pelatihan-pemateri",
       bgColor: "from-navy/10 to-navy/20",
       borderColor: "border-navy/20",
       hoverBorderColor: "hover:border-navy/30",
       iconColor: "text-navy",
     },
     {
-      title: "Lihat Peserta",
-      description: "Pantau progress dan kelola peserta kursus",
+      title: "Materi Pembelajaran",
+      description: "Upload dan kelola materi pelatihan",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      href: "/peserta-kursus",
+      href: "/materi-pemateri",
       bgColor: "from-gold/10 to-gold/20",
       borderColor: "border-gold/20",
       hoverBorderColor: "hover:border-gold/30",
       iconColor: "text-gold",
     },
     {
-      title: "Materi Pembelajaran",
-      description: "Upload dan kelola materi kursus",
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-      href: "/materi-pembelajaran",
-      bgColor: "from-silver/20 to-silver/30",
-      borderColor: "border-silver/30",
-      hoverBorderColor: "hover:border-silver/40",
-      iconColor: "text-silver",
-    },
-    {
-      title: "Laporan & Analitik",
-      description: "Lihat laporan kinerja dan pendapatan",
+      title: "Blog Instruktur",
+      description: "Tulis artikel dan bagikan pengalaman mengajar",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
           />
         </svg>
       ),
-      href: "/laporan-analitik",
-      bgColor: "from-navy/15 to-blue-900/20",
-      borderColor: "border-navy/25",
-      hoverBorderColor: "hover:border-navy/35",
-      iconColor: "text-navy",
-    },
-    {
-      title: "Sertifikat",
-      description: "Kelola dan terbitkan sertifikat peserta",
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-          />
-        </svg>
-      ),
-      href: "/kelola-sertifikat",
-      bgColor: "from-gold/15 to-amber-200/20",
-      borderColor: "border-gold/25",
-      hoverBorderColor: "hover:border-gold/35",
-      iconColor: "text-gold",
+      href: "/blog-pemateri",
+      bgColor: "from-emerald-500/10 to-emerald-600/20",
+      borderColor: "border-emerald-500/20",
+      hoverBorderColor: "hover:border-emerald-500/30",
+      iconColor: "text-emerald-600",
     },
     {
       title: "Profil Instruktur",
-      description: "Update informasi profil dan pengaturan",
+      description: "Update informasi profil dan pengaturan akun",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
-      href: "/profil-instruktur",
-      bgColor: "from-gray-50 to-silver/15",
-      borderColor: "border-silver/25",
-      hoverBorderColor: "hover:border-silver/35",
-      iconColor: "text-silver",
+      href: "/profil-pemateri",
+      bgColor: "from-amber-500/10 to-amber-600/20",
+      borderColor: "border-amber-500/20",
+      hoverBorderColor: "hover:border-amber-500/30",
+      iconColor: "text-amber-600",
     },
   ];
 
@@ -127,7 +94,7 @@ export default function DashboardPemateriQuickActions({}: DashboardPemateriQuick
         </ScrollReveal>
 
         <ScrollReveal delay={200}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {quickActions.map((action, index) => (
               <Link
                 key={index}

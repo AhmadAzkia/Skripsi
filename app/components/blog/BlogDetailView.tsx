@@ -59,7 +59,6 @@ interface BlogDetailViewProps {
 }
 
 export default function BlogDetailView({ article, relatedArticles, authorArticles, mode = "public", showEditButton = false, onEdit, backUrl = "/blog-pemateri" }: BlogDetailViewProps) {
-  const [shareDropdownOpen, setShareDropdownOpen] = useState(false);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Tidak diketahui";
@@ -75,32 +74,6 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
     const wordsPerMinute = 200;
     const wordCount = content.split(" ").length;
     return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
-  };
-
-  const handleShare = (platform: string) => {
-    const url = window.location.href;
-    const title = article.judul;
-
-    const shareUrls = {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-      twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      whatsapp: `https://wa.me/?text=${encodeURIComponent(title + " " + url)}`,
-      email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent("Baca artikel menarik ini: " + url)}`,
-    };
-
-    if (platform === "copy") {
-      navigator.clipboard.writeText(url);
-      alert("Link berhasil disalin!");
-      return;
-    }
-
-    const shareUrl = shareUrls[platform as keyof typeof shareUrls];
-    if (shareUrl) {
-      window.open(shareUrl, "_blank", "width=600,height=400");
-    }
-
-    setShareDropdownOpen(false);
   };
 
   // Menentukan breadcrumb berdasarkan mode
@@ -211,53 +184,6 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
                   <span>Edit</span>
                 </button>
               )}
-
-              {/* Share Button */}
-              <div className="relative">
-                <button onClick={() => setShareDropdownOpen(!shareDropdownOpen)} className="flex items-center gap-2 px-4 py-2 bg-navy/10 hover:bg-navy/20 text-navy rounded-lg transition-colors duration-200">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                    />
-                  </svg>
-                  <span>Bagikan</span>
-                </button>
-
-                {shareDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <button onClick={() => handleShare("facebook")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <div className="w-5 h-5 bg-blue-600 rounded"></div>
-                      Facebook
-                    </button>
-                    <button onClick={() => handleShare("twitter")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <div className="w-5 h-5 bg-blue-400 rounded"></div>
-                      Twitter
-                    </button>
-                    <button onClick={() => handleShare("linkedin")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <div className="w-5 h-5 bg-blue-700 rounded"></div>
-                      LinkedIn
-                    </button>
-                    <button onClick={() => handleShare("whatsapp")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <div className="w-5 h-5 bg-green-500 rounded"></div>
-                      WhatsApp
-                    </button>
-                    <button onClick={() => handleShare("email")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <div className="w-5 h-5 bg-gray-600 rounded"></div>
-                      Email
-                    </button>
-                    <hr className="my-2" />
-                    <button onClick={() => handleShare("copy")} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      Salin Link
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </header>
@@ -378,9 +304,6 @@ export default function BlogDetailView({ article, relatedArticles, authorArticle
           </Link>
         </div>
       </ScrollReveal>
-
-      {/* Click outside to close dropdown */}
-      {shareDropdownOpen && <div className="fixed inset-0 z-40" onClick={() => setShareDropdownOpen(false)} />}
     </div>
   );
 }

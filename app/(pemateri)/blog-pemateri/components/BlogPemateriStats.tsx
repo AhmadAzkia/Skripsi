@@ -48,22 +48,9 @@ export default function BlogPemateriStats({ stats }: BlogPemateriStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       ),
-      bgColor: "from-silver/5 to-silver/10",
-      borderColor: "border-silver/20",
-      hoverBorderColor: "hover:border-silver/30",
-    },
-    {
-      end: stats.viewsBulanIni,
-      label: "Views Bulan Ini",
-      icon: (
-        <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      ),
-      bgColor: "from-navy/10 to-gold/5",
-      borderColor: "border-navy/30",
-      hoverBorderColor: "hover:border-gold/30",
+      bgColor: "from-amber-500/5 to-amber-600/10",
+      borderColor: "border-amber-500/20",
+      hoverBorderColor: "hover:border-amber-500/30",
     },
   ];
 
@@ -86,7 +73,7 @@ export default function BlogPemateriStats({ stats }: BlogPemateriStatsProps) {
         </ScrollReveal>
 
         <ScrollReveal delay={200}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {statsData.map((stat, index) => (
               <div key={index} className={`group text-center p-8 bg-linear-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
                 <div className="flex items-center justify-center mb-6">

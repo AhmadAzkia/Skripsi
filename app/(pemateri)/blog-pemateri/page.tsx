@@ -29,15 +29,15 @@ export default async function BlogPemateriPage() {
   const articles = articlesResult.success ? articlesResult.data || [] : [];
   const stats = {
     totalArtikel: 0,
-    published: 0,
-    draft: 0,
-    review: 0,
+    artikelPublished: 0,
+    artikelDraft: 0,
+    viewsBulanIni: 0,
     ...(statsResult.success && statsResult.data ? statsResult.data : {}),
   } as {
     totalArtikel: number;
-    published: number;
-    draft: number;
-    review: number;
+    artikelPublished: number;
+    artikelDraft: number;
+    viewsBulanIni: number;
   };
 
   return (
@@ -59,7 +59,7 @@ export default async function BlogPemateriPage() {
         </ScrollReveal>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <ScrollReveal delay={100}>
             <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-6 hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ export default async function BlogPemateriPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Dipublikasi</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.published}</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.artikelPublished}</p>
                 </div>
                 <div className="w-12 h-12 bg-linear-to-br from-green-100 to-green-200 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,28 +97,11 @@ export default async function BlogPemateriPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Draft</p>
-                  <p className="text-3xl font-bold text-yellow-600">{stats.draft}</p>
+                  <p className="text-3xl font-bold text-yellow-600">{stats.artikelDraft}</p>
                 </div>
                 <div className="w-12 h-12 bg-linear-to-br from-yellow-100 to-yellow-200 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={400}>
-            <div className="bg-white rounded-xl shadow-lg border border-navy/10 p-6 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Review</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.review}</p>
-                </div>
-                <div className="w-12 h-12 bg-linear-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </div>
               </div>
