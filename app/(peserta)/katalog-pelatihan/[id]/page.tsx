@@ -180,5 +180,5 @@ export default async function DetailPelatihanPage({ params }: { params: Promise<
   // Ambil data pendukung secara paralel
   const [registrationStatus, materiKursus, jumlahPeserta] = await Promise.all([getRegistrationStatus(id, userData.profile.id), getMateriKursus(id), getJumlahPeserta(id)]);
 
-  return <DetailPelatihanContainer user={userData.user as SessionUser} profile={userData.profile} kursus={kursus} registrationStatus={registrationStatus} materiKursus={materiKursus} jumlahPeserta={jumlahPeserta} />;
+  return <DetailPelatihanContainer user={userData.user as SessionUser} profile={userData.profile} kursus={kursus} registrationStatus={registrationStatus} jumlahPeserta={jumlahPeserta} />;
 }

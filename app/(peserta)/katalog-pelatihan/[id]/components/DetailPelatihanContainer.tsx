@@ -37,14 +37,6 @@ type RegistrationStatus = {
   };
 };
 
-type MateriKursus = {
-  id: string;
-  judul: string;
-  deskripsi: string | null;
-  durasi_menit: number | null;
-  urutan: number;
-};
-
 type Profile = {
   id: string;
   nama_lengkap: string;
@@ -57,11 +49,10 @@ interface DetailPelatihanContainerProps {
   profile: Profile;
   kursus: Kursus;
   registrationStatus: RegistrationStatus;
-  materiKursus: MateriKursus[];
   jumlahPeserta: number;
 }
 
-export default function DetailPelatihanContainer({ user, profile, kursus, registrationStatus, materiKursus, jumlahPeserta }: DetailPelatihanContainerProps) {
+export default function DetailPelatihanContainer({ user, profile, kursus, registrationStatus, jumlahPeserta }: DetailPelatihanContainerProps) {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   // Function untuk membuka modal pendaftaran
@@ -138,10 +129,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
     }
   };
 
-  const getTotalDurasi = () => {
-    return materiKursus.reduce((total, materi) => total + (materi.durasi_menit || 0), 0);
-  };
-
   const isKursusPenuh = kursus.maksimal_peserta && jumlahPeserta >= kursus.maksimal_peserta;
 
   return (
@@ -203,7 +190,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span className="text-sm">{materiKursus.length} materi</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,32 +218,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </ScrollReveal>
-
-            {/* Materi Kursus */}
-            <ScrollReveal delay={200}>
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h3 className="text-xl font-semibold text-navy mb-4">Materi Pembelajaran</h3>
-                {materiKursus.length > 0 ? (
-                  <div className="space-y-3">
-                    {materiKursus.map((materi, index) => (
-                      <div key={materi.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-navy mb-1">
-                              {index + 1}. {materi.judul}
-                            </h4>
-                            {materi.deskripsi && <p className="text-sm text-gray-600 mb-2">{materi.deskripsi}</p>}
-                          </div>
-                          {materi.durasi_menit && <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{materi.durasi_menit} menit</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">Belum ada materi yang tersedia.</p>
                 )}
               </div>
             </ScrollReveal>
@@ -371,14 +331,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                   <div className="flex justify-between">
                     <span className="text-gray-600">Durasi</span>
                     <span className="font-medium">{kursus.durasi_jam} jam</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Materi</span>
-                    <span className="font-medium">{materiKursus.length} modul</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Durasi</span>
-                    <span className="font-medium">{Math.round(getTotalDurasi() / 60)} jam</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tipe</span>
