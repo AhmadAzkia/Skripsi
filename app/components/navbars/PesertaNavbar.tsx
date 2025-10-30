@@ -7,23 +7,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/(peserta)/actions";
 import RoleIndicator from "@/components/ui/RoleIndicator";
-import { HomeIcon, BookOpenIcon, CalendarDaysIcon, DocumentTextIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Sertifikat", href: "/sertifikat", icon: AcademicCapIcon },
-];
-
-const pelatihanDropdown = [
   { name: "Katalog Pelatihan", href: "/katalog-pelatihan", icon: BookOpenIcon },
   { name: "Jadwal Pelatihan", href: "/jadwal-peserta", icon: CalendarDaysIcon },
-  { name: "Materi Pelatihan", href: "/materi-peserta", icon: DocumentTextIcon },
 ];
 
 export default function PesertaNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [pelatihanDropdownOpen, setPelatihanDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
@@ -33,7 +28,6 @@ export default function PesertaNavbar() {
   const handleNavigation = (href: string) => {
     setMobileMenuOpen(false); // Tutup menu mobile
     setProfileDropdownOpen(false); // Tutup dropdown profil
-    setPelatihanDropdownOpen(false); // Tutup dropdown pelatihan
     router.push(href);
   };
 
@@ -54,10 +48,6 @@ export default function PesertaNavbar() {
       // Tampilkan pesan error ke pengguna jika perlu
       setIsLoggingOut(false); // Set loading ke false jika ada error
     }
-    // Jika logout berhasil, redirect sudah terjadi di server.
-    // Jika ada error di server action yg tidak redirect, loading akan berhenti di finally (jika ada).
-    // Tapi karena server action kita redirect, baris ini mungkin tidak tercapai
-    // setIsLoggingOut(false);
   };
 
   const cancelLogout = () => {
@@ -69,10 +59,6 @@ export default function PesertaNavbar() {
       return pathname === href;
     }
     return pathname.startsWith(href);
-  };
-
-  const isPelatihanSectionActive = () => {
-    return pelatihanDropdown.some((item) => isActiveLink(item.href));
   };
 
   return (
@@ -95,14 +81,14 @@ export default function PesertaNavbar() {
           {/* Desktop Navigation - Center Aligned */}
           <div className="hidden lg:flex flex-1 justify-center">
             <div className="flex items-baseline space-x-6">
-              {/* Regular Navigation Items */}
+              {/* All Navigation Items */}
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = isActiveLink(item.href);
                 return (
                   <button
                     key={item.name}
-                    onClick={() => handleNavigation(item.href)} // Gunakan handleNavigation
+                    onClick={() => handleNavigation(item.href)}
                     className={`transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 ${isActive ? "text-gold" : "text-silver hover:text-gold"}`}
                   >
                     <Icon className="w-4 h-4" />
@@ -110,69 +96,6 @@ export default function PesertaNavbar() {
                   </button>
                 );
               })}
-
-              {/* Pelatihan Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setPelatihanDropdownOpen(!pelatihanDropdownOpen)}
-                  className={`transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 group hover:bg-navy/50 ${isPelatihanSectionActive() ? "text-gold" : "text-silver hover:text-gold"}`}
-                >
-                  <BookOpenIcon className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
-                  <span>Pelatihan</span>
-                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${pelatihanDropdownOpen ? "rotate-180" : "rotate-0"}`} />
-                </button>
-
-                {/* Pelatihan Dropdown Menu */}
-                {pelatihanDropdownOpen && (
-                  <div className="absolute left-1/2 transform -translate-x-1/2 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transition-all duration-200 animate-slideInFromTop">
-                    <div className="py-2">
-                      <div className="px-4 py-2 text-xs font-semibold text-navy/60 uppercase tracking-wider border-b border-gray-100 bg-linear-to-r from-navy/5 to-blue-50">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-linear-to-r from-navy to-blue-600 rounded-full animate-pulse"></div>
-                          <span>Menu Pelatihan</span>
-                        </div>
-                      </div>
-                      {pelatihanDropdown.map((item, index) => {
-                        const Icon = item.icon;
-                        const isActive = isActiveLink(item.href);
-
-                        return (
-                          <button
-                            key={item.name}
-                            onClick={() => {
-                              setPelatihanDropdownOpen(false);
-                              handleNavigation(item.href);
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm flex items-center space-x-3 transition-all duration-200 group dropdown-item relative overflow-hidden transform hover:scale-[1.02] ${
-                              isActive ? "text-gold bg-linear-to-r from-gold/10 to-gold/5 border-r-2 border-gold shadow-sm" : "text-gray-700 hover:text-navy hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:shadow-sm"
-                            }`}
-                            style={{
-                              animationDelay: `${index * 50}ms`,
-                            }}
-                          >
-                            <div
-                              className={`p-1.5 rounded-lg transition-all duration-200 icon-hover ${
-                                isActive ? "bg-linear-to-br from-gold/20 to-gold/10 text-gold shadow-sm" : "bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"
-                              }`}
-                            >
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div className="flex-1">
-                              <span className="font-medium">{item.name}</span>
-                              <div className={`text-xs transition-all duration-200 ${isActive ? "text-gold/70" : "text-gray-500 group-hover:text-navy/70"}`}>
-                                {item.name === "Katalog Pelatihan" && "Lihat semua pelatihan tersedia"}
-                                {item.name === "Jadwal Pelatihan" && "Kelola jadwal pelatihan Anda"}
-                                {item.name === "Materi Pelatihan" && "Akses materi pembelajaran"}
-                              </div>
-                            </div>
-                            {isActive && <div className="w-2 h-2 rounded-full bg-linear-to-r from-gold to-yellow-500 animate-pulse shadow-sm"></div>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
@@ -295,7 +218,7 @@ export default function PesertaNavbar() {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gold/30 bg-navy">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {/* Regular Navigation Items */}
+              {/* All Navigation Items */}
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = isActiveLink(item.href);
@@ -314,29 +237,6 @@ export default function PesertaNavbar() {
                   </button>
                 );
               })}
-
-              {/* Mobile Pelatihan Section */}
-              <div className="border-t border-gold/30 pt-4 mt-4">
-                <div className="px-3 py-2 text-sm text-silver font-medium">Pelatihan</div>
-                {pelatihanDropdown.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = isActiveLink(item.href);
-
-                  return (
-                    <button
-                      key={item.name}
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        handleNavigation(item.href);
-                      }}
-                      className={`w-full text-left px-6 py-2 rounded-md text-base font-medium transition-colors duration-300 flex items-center space-x-2 ${isActive ? "text-gold bg-navy/50" : "text-silver hover:text-gold hover:bg-navy/50"}`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
 
               {/* Mobile Profile Section */}
               <div className="border-t border-gold/30 pt-4 mt-4">
@@ -428,7 +328,6 @@ export default function PesertaNavbar() {
 
       {/* Overlay for dropdowns */}
       {profileDropdownOpen && <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setProfileDropdownOpen(false)} />}
-      {pelatihanDropdownOpen && <div className="fixed inset-0 z-40" onClick={() => setPelatihanDropdownOpen(false)} />}
     </header>
   );
 }
