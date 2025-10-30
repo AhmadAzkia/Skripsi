@@ -53,12 +53,6 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
 
   const getMateriIcon = (tipe: string) => {
     switch (tipe) {
-      case "video":
-        return (
-          <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1M9 10V9a4 4 0 118 0v1M9 10c0 1.105.895 2 2 2h2c1.105 0 2-.895 2-2M9 10H7m10 0h2" />
-          </svg>
-        );
       case "pdf":
         return (
           <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,12 +70,6 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
             />
           </svg>
         );
-      case "zoom_recording":
-        return (
-          <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        );
       default:
         return (
           <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,14 +77,6 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
           </svg>
         );
     }
-  };
-
-  const formatFileSize = (sizeInBytes: number | null) => {
-    if (!sizeInBytes) return "Unknown";
-
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(sizeInBytes) / Math.log(1024));
-    return Math.round((sizeInBytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   if (materi.length === 0) {
@@ -110,7 +90,7 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-navy mb-3">Belum Ada Materi</h3>
-            <p className="text-silver mb-6">Mulai tambahkan materi pembelajaran untuk pelatihan "{kursus.judul}". Anda dapat mengunggah berbagai jenis file seperti PDF, PPT, video, atau rekaman Zoom.</p>
+            <p className="text-silver mb-6">Mulai tambahkan materi pembelajaran untuk pelatihan "{kursus.judul}". Anda dapat mengunggah file PDF atau PowerPoint, serta menambahkan link Zoom untuk kelas virtual.</p>
             <button
               onClick={() => router.push(`/pelatihan-pemateri/${kursus.id}/materi/tambah`)}
               className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl inline-flex items-center gap-2"
@@ -148,29 +128,11 @@ export default function MateriManagementClient({ kursus, materiData, profile }: 
                     {materiItem.deskripsi && <p className="text-silver text-sm mb-3 line-clamp-2">{materiItem.deskripsi}</p>}
 
                     <div className="flex items-center gap-4 text-sm text-silver">
-                      {materiItem.ukuran_file && (
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                          </svg>
-                          {formatFileSize(materiItem.ukuran_file)}
-                        </span>
-                      )}
-
-                      {materiItem.is_gratis !== null && (
-                        <span className={`flex items-center gap-1 ${materiItem.is_gratis ? "text-green-600" : "text-gold"}`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                          </svg>
-                          {materiItem.is_gratis ? "Gratis" : "Premium"}
-                        </span>
-                      )}
-
                       <span className="flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
-                        {new Date(materiItem.dibuat_pada).toLocaleDateString("id-ID")}
+                        File tersedia
                       </span>
                     </div>
                   </div>

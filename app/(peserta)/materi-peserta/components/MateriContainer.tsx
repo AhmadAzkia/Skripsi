@@ -4,14 +4,14 @@ import MateriFilters from "./MateriFilters";
 import MateriList from "./MateriList";
 import { SessionUser } from "@/contexts/AuthContext";
 
-type MateriPelajaran = {
+type MateriKursus = {
   id: string;
   judul: string;
   deskripsi: string | null;
-  durasi_menit: number | null;
-  urutan: number;
-  video_url: string | null;
-  konten: string;
+  tipe_materi: "pdf" | "ppt";
+  file_url: string | null;
+  zoom_link: string | null;
+  urutan: number | null;
   kursus: {
     id: string;
     judul: string;
@@ -37,7 +37,7 @@ type Kursus = {
 type MateriContainerProps = {
   user: SessionUser;
   stats: MateriStats;
-  materiList: MateriPelajaran[];
+  materiList: MateriKursus[];
   kursusOptions: Kursus[];
 };
 

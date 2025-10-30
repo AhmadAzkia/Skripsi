@@ -6,6 +6,7 @@ import type { SessionUser } from "@/contexts/AuthContext";
 
 type JadwalPelatihan = {
   id: string;
+  kursus_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
@@ -91,6 +92,7 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
 
       return {
         id: item.id,
+        kursus_id: kursusData?.id || "",
         judul: kursusData?.judul || "Kursus Tidak Diketahui",
         tanggal_mulai: kursusData?.tanggal_mulai || item.tanggal_daftar,
         tanggal_selesai: kursusData?.tanggal_selesai || item.tanggal_selesai || "",

@@ -11,8 +11,6 @@ interface Props {
 const tipeMateriOptions = [
   { value: "pdf", label: "PDF Document" },
   { value: "ppt", label: "PowerPoint" },
-  { value: "video", label: "Video File" },
-  { value: "zoom_recording", label: "Zoom Recording" },
 ];
 
 export default function TambahMateriForm({ kursusId }: Props) {
@@ -26,9 +24,8 @@ export default function TambahMateriForm({ kursusId }: Props) {
     deskripsi: "",
     tipe_materi: "pdf" as const,
     file_url: "",
+    zoom_link: "",
     urutan: "",
-    is_gratis: false,
-    ukuran_file: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -62,9 +59,8 @@ export default function TambahMateriForm({ kursusId }: Props) {
         kursus_id: kursusId,
         tipe_materi: formData.tipe_materi,
         file_url: formData.file_url || undefined,
+        zoom_link: formData.zoom_link || undefined,
         urutan: formData.urutan ? parseInt(formData.urutan) : undefined,
-        is_gratis: formData.is_gratis,
-        ukuran_file: formData.ukuran_file ? parseInt(formData.ukuran_file) : undefined,
       };
 
       const result = await createMateri(materiData);
@@ -155,7 +151,7 @@ export default function TambahMateriForm({ kursusId }: Props) {
       {/* File URL */}
       <div>
         <label htmlFor="file_url" className="block text-sm font-medium text-gray-700 mb-2">
-          URL File
+          URL File Materi
         </label>
         <input
           type="url"
@@ -169,8 +165,25 @@ export default function TambahMateriForm({ kursusId }: Props) {
         <p className="text-sm text-gray-500 mt-1">Link ke file materi (Google Drive, Dropbox, atau hosting lainnya)</p>
       </div>
 
-      {/* Row for Urutan and Ukuran File */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Zoom Link */}
+      <div>
+        <label htmlFor="zoom_link" className="block text-sm font-medium text-gray-700 mb-2">
+          Link Zoom Meeting (Opsional)
+        </label>
+        <input
+          type="url"
+          id="zoom_link"
+          name="zoom_link"
+          value={formData.zoom_link}
+          onChange={handleInputChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+          placeholder="https://zoom.us/j/123456789"
+        />
+        <p className="text-sm text-gray-500 mt-1">Link untuk meeting Zoom terkait materi ini</p>
+      </div>
+
+      {/* Row for Urutan */}
+      <div>
         {/* Urutan */}
         <div>
           <label htmlFor="urutan" className="block text-sm font-medium text-gray-700 mb-2">
@@ -188,32 +201,6 @@ export default function TambahMateriForm({ kursusId }: Props) {
           />
           <p className="text-sm text-gray-500 mt-1">Urutan tampil materi dalam kursus</p>
         </div>
-
-        {/* Ukuran File */}
-        <div>
-          <label htmlFor="ukuran_file" className="block text-sm font-medium text-gray-700 mb-2">
-            Ukuran File (KB)
-          </label>
-          <input
-            type="number"
-            id="ukuran_file"
-            name="ukuran_file"
-            min="1"
-            value={formData.ukuran_file}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
-            placeholder="1024"
-          />
-          <p className="text-sm text-gray-500 mt-1">Ukuran file dalam kilobytes</p>
-        </div>
-      </div>
-
-      {/* Is Gratis */}
-      <div className="flex items-center">
-        <input type="checkbox" id="is_gratis" name="is_gratis" checked={formData.is_gratis} onChange={handleInputChange} className="h-4 w-4 text-navy focus:ring-navy border-gray-300 rounded" />
-        <label htmlFor="is_gratis" className="ml-2 block text-sm text-gray-700">
-          Materi gratis (dapat diakses tanpa membeli kursus)
-        </label>
       </div>
 
       {/* Action Buttons */}

@@ -110,36 +110,6 @@ async function getRegistrationStatus(kursusId: string, pesertaId: string): Promi
   }
 }
 
-async function getMateriKursus(kursusId: string) {
-  const supabase = await createSupabaseServerClient();
-
-  try {
-    const { data, error } = await supabase
-      .from("materi_pelajaran")
-      .select(
-        `
-        id,
-        judul,
-        deskripsi,
-        durasi_menit,
-        urutan
-      `
-      )
-      .eq("kursus_id", kursusId)
-      .order("urutan", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching course materials:", error);
-      return [];
-    }
-
-    return data || [];
-  } catch (error) {
-    console.error("Error fetching course materials:", error);
-    return [];
-  }
-}
-
 async function getJumlahPeserta(kursusId: string): Promise<number> {
   const supabase = await createSupabaseServerClient();
 
@@ -178,7 +148,7 @@ export default async function DetailPelatihanPage({ params }: { params: Promise<
   }
 
   // Ambil data pendukung secara paralel
-  const [registrationStatus, materiKursus, jumlahPeserta] = await Promise.all([getRegistrationStatus(id, userData.profile.id), getMateriKursus(id), getJumlahPeserta(id)]);
+  const [registrationStatus, jumlahPeserta] = await Promise.all([getRegistrationStatus(id, userData.profile.id), getJumlahPeserta(id)]);
 
   return <DetailPelatihanContainer user={userData.user as SessionUser} profile={userData.profile} kursus={kursus} registrationStatus={registrationStatus} jumlahPeserta={jumlahPeserta} />;
 }

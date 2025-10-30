@@ -3,14 +3,14 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
-type MateriPelajaran = {
+type MateriKursus = {
   id: string;
   judul: string;
   deskripsi: string | null;
-  durasi_menit: number | null;
-  urutan: number;
-  video_url: string | null;
-  konten: string;
+  tipe_materi: "pdf" | "ppt";
+  file_url: string | null;
+  zoom_link: string | null;
+  urutan: number | null;
   kursus: {
     id: string;
     judul: string;
@@ -22,11 +22,11 @@ type MateriPelajaran = {
 };
 
 interface MateriListProps {
-  materiList: MateriPelajaran[];
+  materiList: MateriKursus[];
 }
 
 export default function MateriList({ materiList }: MateriListProps) {
-  const getProgressStatus = (progress: MateriPelajaran["progress"]) => {
+  const getProgressStatus = (progress: MateriKursus["progress"]) => {
     if (!progress) return { status: "belum_mulai", label: "Belum Mulai", color: "bg-gray-100 text-gray-800" };
     if (progress.selesai_pada) return { status: "selesai", label: "Selesai", color: "bg-green-100 text-green-800" };
     if (progress.persentase_progress && progress.persentase_progress > 0) {
@@ -35,12 +35,32 @@ export default function MateriList({ materiList }: MateriListProps) {
     return { status: "belum_mulai", label: "Belum Mulai", color: "bg-gray-100 text-gray-800" };
   };
 
-  const formatDuration = (minutes: number | null) => {
-    if (!minutes) return "Durasi tidak ditentukan";
-    if (minutes < 60) return `${minutes} menit`;
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `${hours} jam ${remainingMinutes} menit` : `${hours} jam`;
+  const getTipeIcon = (tipe: "pdf" | "ppt") => {
+    switch (tipe) {
+      case "pdf":
+        return (
+          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        );
+      case "ppt":
+        return (
+          <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        );
+      default:
+        return (
+          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        );
+    }
   };
 
   if (materiList.length === 0) {
@@ -125,16 +145,14 @@ export default function MateriList({ materiList }: MateriListProps) {
                   <div className="p-6">
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {formatDuration(materi.durasi_menit)}
+                        {getTipeIcon(materi.tipe_materi)}
+                        <span className="ml-2 capitalize">{materi.tipe_materi.toUpperCase()}</span>
                       </div>
                       <div className="flex items-center">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v1a1 1 0 01-1 1h-1v13a2 2 0 01-2 2H6a2 2 0 01-2-2V7H3a1 1 0 01-1-1V5a1 1 0 011-1h4z" />
                         </svg>
-                        Urutan {materi.urutan}
+                        Urutan {materi.urutan || 0}
                       </div>
                     </div>
 
@@ -156,12 +174,18 @@ export default function MateriList({ materiList }: MateriListProps) {
                       <Link href={`/peserta/materi-peserta/${materi.id}`} className="flex-1 bg-gold text-navy text-center py-2 px-4 rounded-lg hover:bg-gold/90 transition-colors duration-200 font-medium text-sm">
                         {progressStatus.status === "selesai" ? "Buka Ulang" : "Mulai Belajar"}
                       </Link>
-                      {materi.video_url && (
-                        <button className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                      {materi.zoom_link && (
+                        <a
+                          href={materi.zoom_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200 flex items-center justify-center"
+                          title="Join Zoom Meeting"
+                        >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1M9 16h1m4 0h1" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                           </svg>
-                        </button>
+                        </a>
                       )}
                     </div>
                   </div>

@@ -7,11 +7,10 @@ interface CreateMateriData {
   judul: string;
   deskripsi?: string;
   kursus_id: string;
-  tipe_materi: "pdf" | "ppt" | "video" | "zoom_recording";
+  tipe_materi: "pdf" | "ppt";
   file_url?: string;
+  zoom_link?: string;
   urutan?: number;
-  is_gratis?: boolean;
-  ukuran_file?: number;
 }
 
 export async function createMateri(data: CreateMateriData) {
@@ -66,11 +65,8 @@ export async function createMateri(data: CreateMateriData) {
       kursus_id: data.kursus_id,
       tipe_materi: data.tipe_materi,
       file_url: data.file_url?.trim() || null,
+      zoom_link: data.zoom_link?.trim() || null,
       urutan: data.urutan || null,
-      is_gratis: data.is_gratis ?? null,
-      ukuran_file: data.ukuran_file || null,
-      dibuat_pada: new Date().toISOString(),
-      diperbarui_pada: new Date().toISOString(),
     };
 
     // Insert materi data
@@ -142,7 +138,6 @@ export async function updateMateri(id: string, data: Partial<CreateMateriData>) 
     // Prepare update data
     const updateData = {
       ...data,
-      diperbarui_pada: new Date().toISOString(),
     };
 
     // Remove undefined fields

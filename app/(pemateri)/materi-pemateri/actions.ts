@@ -8,10 +8,6 @@ export interface MateriData {
   deskripsi: string | null;
   tipe_materi: "pdf" | "ppt" | "video" | "zoom_recording";
   file_url: string | null;
-  is_gratis: boolean | null;
-  ukuran_file: number | null;
-  dibuat_pada: string;
-  diperbarui_pada: string | null;
   kursus_id: string;
   kursus: {
     id: string;
@@ -61,10 +57,6 @@ export async function getMateriPemateri(userId: string): Promise<{
         deskripsi,
         tipe_materi,
         file_url,
-        is_gratis,
-        ukuran_file,
-        dibuat_pada,
-        diperbarui_pada,
         kursus_id,
         kursus!inner (
           id,
@@ -75,7 +67,7 @@ export async function getMateriPemateri(userId: string): Promise<{
       `
       )
       .eq("kursus.instruktur_id", profile.id)
-      .order("diperbarui_pada", { ascending: false });
+      .order("judul", { ascending: true });
 
     if (materiError) {
       console.error("Error fetching materi:", materiError);
@@ -189,10 +181,6 @@ export async function searchAndFilterMateri(
         deskripsi,
         tipe_materi,
         file_url,
-        is_gratis,
-        ukuran_file,
-        dibuat_pada,
-        diperbarui_pada,
         kursus_id,
         kursus!inner (
           id,
@@ -210,9 +198,9 @@ export async function searchAndFilterMateri(
     }
 
     if (tipeMateri && tipeMateri !== "all") {
-      const validTypes = ["pdf", "ppt", "video", "zoom_recording"];
+      const validTypes = ["pdf", "ppt"];
       if (validTypes.includes(tipeMateri)) {
-        query = query.eq("tipe_materi", tipeMateri as "pdf" | "ppt" | "video" | "zoom_recording");
+        query = query.eq("tipe_materi", tipeMateri as "pdf" | "ppt");
       }
     }
 
@@ -221,7 +209,7 @@ export async function searchAndFilterMateri(
       query = query.or(`judul.ilike.%${searchQuery}%,deskripsi.ilike.%${searchQuery}%`);
     }
 
-    const { data: materiData, error: materiError } = await query.order("diperbarui_pada", { ascending: false });
+    const { data: materiData, error: materiError } = await query.order("judul", { ascending: true });
 
     if (materiError) {
       console.error("Error searching materi:", materiError);

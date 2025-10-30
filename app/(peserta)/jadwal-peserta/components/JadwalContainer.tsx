@@ -6,6 +6,7 @@ import { SessionUser } from "@/contexts/AuthContext";
 
 type JadwalPelatihan = {
   id: string;
+  kursus_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;

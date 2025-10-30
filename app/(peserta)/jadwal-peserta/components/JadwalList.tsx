@@ -4,6 +4,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type JadwalPelatihan = {
   id: string;
+  kursus_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
@@ -153,10 +154,17 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
 
                     {/* Action Section */}
                     <div className="flex flex-col sm:flex-row gap-3 lg:ml-6">
-                      {jadwal.status === "sedang_belajar" && <button className="px-4 py-2 bg-gold text-navy font-medium rounded-lg hover:bg-gold/90 transition-colors duration-300">Lanjutkan Belajar</button>}
-                      {jadwal.status === "terdaftar" && <button className="px-4 py-2 bg-navy text-white font-medium rounded-lg hover:bg-navy/90 transition-colors duration-300">Mulai Belajar</button>}
+                      {jadwal.status === "sedang_belajar" && (
+                        <a href={`/materi-kursus/${jadwal.kursus_id}`} className="px-4 py-2 bg-gold text-navy font-medium rounded-lg hover:bg-gold/90 transition-colors duration-300 text-center">
+                          Lanjutkan Kursus
+                        </a>
+                      )}
+                      {jadwal.status === "terdaftar" && (
+                        <a href={`/materi-kursus/${jadwal.kursus_id}`} className="px-4 py-2 bg-navy text-white font-medium rounded-lg hover:bg-navy/90 transition-colors duration-300 text-center">
+                          Buka Kursus
+                        </a>
+                      )}
                       {jadwal.status === "selesai" && <button className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300">Lihat Sertifikat</button>}
-                      <button className="px-4 py-2 bg-transparent border-2 border-navy/20 text-navy font-medium rounded-lg hover:border-gold/60 hover:text-gold transition-colors duration-300">Detail</button>
                     </div>
                   </div>
                 </div>

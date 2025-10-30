@@ -4,14 +4,14 @@ import MateriContainer from "./components/MateriContainer";
 import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 
-type MateriPelajaran = {
+type MateriKursus = {
   id: string;
   judul: string;
   deskripsi: string | null;
-  durasi_menit: number | null;
-  urutan: number;
-  video_url: string | null;
-  konten: string;
+  tipe_materi: "pdf" | "ppt";
+  file_url: string | null;
+  zoom_link: string | null;
+  urutan: number | null;
   kursus: {
     id: string;
     judul: string;
@@ -43,7 +43,7 @@ async function getMateriStats(userId: string): Promise<MateriStats> {
 
     // 2. Hitung total materi dari semua kursus yang diikuti
     const { count: totalMateriCount, error: errorMateri } = await supabase
-      .from("materi_pelajaran")
+      .from("materi_kursus")
       .select(
         `
         *,
@@ -108,7 +108,7 @@ async function getMateriStats(userId: string): Promise<MateriStats> {
   }
 }
 
-async function getMateriList(userId: string): Promise<MateriPelajaran[]> {
+async function getMateriList(userId: string): Promise<MateriKursus[]> {
   const supabase = await createSupabaseServerClient();
 
   try {
@@ -124,16 +124,16 @@ async function getMateriList(userId: string): Promise<MateriPelajaran[]> {
 
     // Ambil semua materi dari kursus yang diikuti
     const { data: materiData, error: materiError } = await supabase
-      .from("materi_pelajaran")
+      .from("materi_kursus")
       .select(
         `
         id,
         judul,
         deskripsi,
-        durasi_menit,
+        tipe_materi,
+        file_url,
+        zoom_link,
         urutan,
-        video_url,
-        konten,
         kursus_id,
         kursus:kursus_id (
           id,
@@ -159,17 +159,17 @@ async function getMateriList(userId: string): Promise<MateriPelajaran[]> {
     }
 
     // Gabungkan data materi dengan progress
-    const result: MateriPelajaran[] = materiData.map((materi) => {
+    const result: MateriKursus[] = materiData.map((materi) => {
       const progress = progressData?.find((p) => p.materi_id === materi.id);
 
       return {
         id: materi.id,
         judul: materi.judul,
         deskripsi: materi.deskripsi,
-        durasi_menit: materi.durasi_menit,
+        tipe_materi: materi.tipe_materi,
+        file_url: materi.file_url,
+        zoom_link: materi.zoom_link,
         urutan: materi.urutan,
-        video_url: materi.video_url,
-        konten: materi.konten,
         kursus: {
           id: (materi.kursus as any)?.id || materi.kursus_id,
           judul: (materi.kursus as any)?.judul || "Kursus",
