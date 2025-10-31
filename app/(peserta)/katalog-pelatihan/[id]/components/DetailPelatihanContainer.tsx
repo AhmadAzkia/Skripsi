@@ -11,7 +11,6 @@ type Kursus = {
   judul: string;
   deskripsi: string | null;
   harga: number;
-  durasi_jam: number;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
   status: "draft" | "published" | "archived";
@@ -33,7 +32,6 @@ type RegistrationStatus = {
     id: string;
     status: "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
     tanggal_daftar: string;
-    persentase_progress: number | null;
   };
 };
 
@@ -168,13 +166,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                 <h1 className="text-3xl font-bold text-navy mb-4">{kursus.judul}</h1>
 
                 {/* Meta Info */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="flex items-center text-gray-600">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm">{kursus.durasi_jam} jam</span>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                   <div className="flex items-center text-gray-600">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -268,17 +260,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                       </svg>
                       <h4 className="font-semibold text-green-800 mb-1">Anda Sudah Terdaftar</h4>
                       <p className="text-sm text-green-700">Terdaftar sejak {formatTanggal(registrationStatus.registrationData!.tanggal_daftar)}</p>
-                      {registrationStatus.registrationData!.persentase_progress !== null && (
-                        <div className="mt-3">
-                          <div className="flex justify-between text-xs text-green-700 mb-1">
-                            <span>Progress</span>
-                            <span>{registrationStatus.registrationData!.persentase_progress}%</span>
-                          </div>
-                          <div className="w-full bg-green-200 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full" style={{ width: `${registrationStatus.registrationData!.persentase_progress}%` }}></div>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     {registrationStatus.registrationData!.status === "sedang_belajar" && (
@@ -328,10 +309,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
 
                 {/* Info Pelatihan */}
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Durasi</span>
-                    <span className="font-medium">{kursus.durasi_jam} jam</span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tipe</span>
                     <span className="font-medium capitalize">{kursus.tipe_kursus}</span>

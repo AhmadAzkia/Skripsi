@@ -12,9 +12,7 @@ type JadwalPelatihan = {
   tanggal_selesai: string;
   status: string;
   tipe_kursus: string;
-  durasi_jam: number;
   instruktur: string;
-  persentase_progress: number;
 };
 
 type JadwalStats = {
@@ -26,18 +24,47 @@ type JadwalStats = {
 
 async function getJadwalStats(userId: string): Promise<JadwalStats> {
   const supabase = await createSupabaseServerClient();
+  const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
 
   // Total jadwal (semua pendaftaran)
   const { count: totalJadwal, error: errorTotal } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId);
 
-  // Jadwal berlangsung
-  const { count: jadwalBerlangsung, error: errorBerlangsung } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId).eq("status", "sedang_belajar");
+  // Jadwal berlangsung - kursus yang sedang berjalan berdasarkan tanggal
+  const { count: jadwalBerlangsung, error: errorBerlangsung } = await supabase
+    .from("pendaftaran_kursus")
+    .select(
+      `
+      *,
+      kursus!inner(
+        tanggal_mulai,
+        tanggal_selesai
+      )
+    `,
+      { count: "exact", head: true }
+    )
+    .eq("pengguna_id", userId)
+    .in("status", ["terdaftar", "sedang_belajar"])
+    .lte("kursus.tanggal_mulai", today)
+    .gte("kursus.tanggal_selesai", today);
 
   // Jadwal selesai
   const { count: jadwalSelesai, error: errorSelesai } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId).eq("status", "selesai");
 
-  // Jadwal mendatang (terdaftar)
-  const { count: jadwalMendatang, error: errorMendatang } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId).eq("status", "terdaftar");
+  // Jadwal mendatang - kursus yang belum dimulai berdasarkan tanggal
+  const { count: jadwalMendatang, error: errorMendatang } = await supabase
+    .from("pendaftaran_kursus")
+    .select(
+      `
+      *,
+      kursus!inner(
+        tanggal_mulai
+      )
+    `,
+      { count: "exact", head: true }
+    )
+    .eq("pengguna_id", userId)
+    .in("status", ["terdaftar", "sedang_belajar"])
+    .gt("kursus.tanggal_mulai", today);
 
   if (errorTotal) console.error("Error fetching total schedule:", errorTotal.message);
   if (errorBerlangsung) console.error("Error fetching ongoing schedule:", errorBerlangsung.message);
@@ -64,14 +91,12 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
         status,
         tanggal_daftar,
         tanggal_selesai,
-        persentase_progress,
         kursus:kursus_id (
           id,
           judul,
           tanggal_mulai,
           tanggal_selesai,
           tipe_kursus,
-          durasi_jam,
           instruktur:instruktur_id (
             nama_lengkap
           )
@@ -98,9 +123,7 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
         tanggal_selesai: kursusData?.tanggal_selesai || item.tanggal_selesai || "",
         status: item.status,
         tipe_kursus: kursusData?.tipe_kursus || "online",
-        durasi_jam: kursusData?.durasi_jam || 0,
         instruktur: instrukturData?.nama_lengkap || "Instruktur",
-        persentase_progress: item.persentase_progress || 0,
       };
     });
 

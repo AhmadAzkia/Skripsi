@@ -10,8 +10,6 @@ interface PesertaStats {
   enrolledCourses: number;
   completedCourses: number;
   certificates: number;
-  totalHours: number;
-  progressPercentage: number;
 }
 
 interface ProfilPesertaClientProps {
@@ -26,14 +24,13 @@ interface ProfilPesertaClientProps {
 export default function ProfilPesertaClient({ initialData, error }: ProfilPesertaClientProps) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const router = useRouter();
   const [stats, setStats] = useState<PesertaStats>(
     initialData?.stats || {
       enrolledCourses: 0,
       completedCourses: 0,
       certificates: 0,
-      totalHours: 0,
-      progressPercentage: 0,
     }
   );
 
@@ -64,24 +61,19 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
   };
 
   const handleLogout = async () => {
-    if (isLoggingOut) return;
+    setShowLogoutModal(true);
+  };
 
+  const confirmLogout = async () => {
     setIsLoggingOut(true);
-    try {
-      // Sign out dari Supabase
-      await supabase.auth.signOut();
 
-      // Clear local storage dan session storage
-      localStorage.clear();
-      sessionStorage.clear();
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.href = "/";
+  };
 
-      // Redirect ke halaman utama
-      router.push("/");
-      router.refresh();
-    } catch (error) {
-      console.error("Error during logout:", error);
-      setIsLoggingOut(false);
-    }
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   // If changing password, show the change password form
@@ -135,9 +127,9 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
 
           {/* Right Column - Additional Info */}
           <div className="space-y-6">
-            {/* Learning Progress */}
+            {/* Learning Statistics */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Belajar</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Statistik Belajar</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Pelatihan Diikuti</span>
@@ -145,26 +137,11 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Pelatihan Selesai</span>
-                  <span className="text-lg font-semibold text-green-600">{stats.completedCourses}</span>
+                  <span className="text-lg font-semibold text-navy">{stats.completedCourses}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Sertifikat Diperoleh</span>
-                  <span className="text-lg font-semibold text-purple-600">{stats.certificates}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Jam Belajar</span>
-                  <span className="text-lg font-semibold text-orange-600">{stats.totalHours}</span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mt-6">
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                  <span>Progress Keseluruhan</span>
-                  <span>{stats.progressPercentage}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full transition-all duration-300" style={{ width: `${stats.progressPercentage}%` }}></div>
+                  <span className="text-lg font-semibold text-gold">{stats.certificates}</span>
                 </div>
               </div>
             </div>
@@ -174,7 +151,7 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h3>
               <div className="space-y-3">
                 <LinkButton href="/katalog-pelatihan" variant="secondary" size="md" className="w-full justify-start">
-                  <svg className="w-5 h-5 mr-3 text-navy/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 mr-3 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -182,16 +159,16 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                       d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                     />
                   </svg>
-                  Jelajahi Pelatihan
+                  Katalog Pelatihan
                 </LinkButton>
                 <LinkButton href="/jadwal-peserta" variant="secondary" size="md" className="w-full justify-start">
-                  <svg className="w-5 h-5 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 mr-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  Jadwal Saya
+                  Jadwal Pelatihan
                 </LinkButton>
                 <LinkButton href="/sertifikat" variant="secondary" size="md" className="w-full justify-start">
-                  <svg className="w-5 h-5 mr-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 mr-3 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -211,9 +188,9 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                 {stats.certificates > 0 || stats.completedCourses > 0 ? (
                   <div className="space-y-3">
                     {stats.completedCourses > 0 && (
-                      <div className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center p-3 bg-navy/5 border border-navy/20 rounded-lg">
                         <div className="shrink-0">
-                          <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-6 h-6 text-navy" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -222,15 +199,15 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                           </svg>
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-green-800">Pelatihan Selesai!</p>
-                          <p className="text-xs text-green-700">{stats.completedCourses} pelatihan telah diselesaikan</p>
+                          <p className="text-sm font-medium text-navy">Pelatihan Selesai!</p>
+                          <p className="text-xs text-navy">{stats.completedCourses} pelatihan telah diselesaikan</p>
                         </div>
                       </div>
                     )}
                     {stats.certificates > 0 && (
-                      <div className="flex items-center p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center p-3 bg-navy/5 border border-navy/20 rounded-lg">
                         <div className="shrink-0">
-                          <svg className="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-6 h-6 text-navy" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -239,16 +216,16 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                           </svg>
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium text-purple-800">Sertifikat Diperoleh!</p>
-                          <p className="text-xs text-purple-700">{stats.certificates} sertifikat telah diterbitkan</p>
+                          <p className="text-sm font-medium text-navy">Sertifikat Diperoleh!</p>
+                          <p className="text-xs text-navy">{stats.certificates} sertifikat telah diterbitkan</p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center p-3 bg-gold/5 border border-gold/20 rounded-lg">
                     <div className="shrink-0">
-                      <svg className="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-6 h-6 text-gold" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -257,8 +234,8 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-yellow-800">Selamat datang!</p>
-                      <p className="text-xs text-yellow-700">Mulai mengikuti pelatihan untuk mendapatkan pencapaian</p>
+                      <p className="text-sm font-medium text-gold">Selamat datang!</p>
+                      <p className="text-xs text-gold">Mulai mengikuti pelatihan untuk mendapatkan pencapaian</p>
                     </div>
                   </div>
                 )}
@@ -274,12 +251,6 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   Ganti Password
-                </Button>
-                <Button variant="secondary" size="md" className="w-full justify-start">
-                  <svg className="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM16 3H4v2h12V3zM4 9h12V7H4v2zM4 15h8v-2H4v2z" />
-                  </svg>
-                  Preferensi Notifikasi
                 </Button>
                 <Button onClick={handleLogout} disabled={isLoggingOut} variant="danger" size="md" className="w-full justify-start">
                   {isLoggingOut ? (
@@ -304,6 +275,53 @@ export default function ProfilPesertaClient({ initialData, error }: ProfilPesert
           </div>
         </div>
       </div>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300" onClick={cancelLogout} />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 mx-4 max-w-md w-full transform transition-all duration-300 animate-slideInFromTop">
+            {/* Header */}
+            <div className="flex items-center space-x-3 mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Konfirmasi Keluar</h3>
+                <p className="text-sm text-gray-500">Pastikan untuk menyimpan pekerjaan Anda</p>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="mb-6">
+              <p className="text-gray-700 leading-relaxed">Apakah Anda yakin ingin keluar dari portal peserta?</p>
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">⚠️ Anda akan diarahkan kembali ke halaman utama dan perlu login ulang untuk mengakses portal peserta.</p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex space-x-3">
+              <button onClick={cancelLogout} disabled={isLoggingOut} className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 disabled:opacity-50">
+                Batal
+              </button>
+              <button
+                onClick={confirmLogout}
+                disabled={isLoggingOut}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center space-x-2"
+              >
+                {isLoggingOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Keluar...</span>
+                  </>
+                ) : (
+                  <span>Ya, Keluar</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

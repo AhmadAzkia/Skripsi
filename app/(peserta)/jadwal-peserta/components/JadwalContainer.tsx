@@ -12,9 +12,7 @@ type JadwalPelatihan = {
   tanggal_selesai: string;
   status: string;
   tipe_kursus: string;
-  durasi_jam: number;
   instruktur: string;
-  persentase_progress: number;
 };
 
 type JadwalStats = {

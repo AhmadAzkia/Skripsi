@@ -12,7 +12,6 @@ type Kursus = {
   judul: string;
   deskripsi: string | null;
   harga: number;
-  durasi_jam: number;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
   status: "draft" | "published" | "archived";

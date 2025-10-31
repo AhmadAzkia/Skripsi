@@ -21,7 +21,6 @@ type KursusDetail = {
   judul: string;
   deskripsi: string;
   instruktur_nama: string;
-  durasi_jam: number;
   tipe_kursus: string;
 };
 
@@ -45,7 +44,6 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
         id,
         judul,
         deskripsi,
-        durasi_jam,
         tipe_kursus,
         instruktur:instruktur_id (
           nama_lengkap
@@ -67,7 +65,6 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
       judul: kursusData.judul,
       deskripsi: kursusData.deskripsi ?? "",
       instruktur_nama: instrukturData?.nama_lengkap || "Instruktur",
-      durasi_jam: kursusData.durasi_jam,
       tipe_kursus: kursusData.tipe_kursus,
     };
   } catch (error) {

@@ -6,7 +6,7 @@ import { ClockIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 interface InteractiveCardProps {
   id: string; // ID untuk link
   title: string;
-  duration: string; // Durasi sudah diformat
+  duration?: string; // Optional duration field
   participants: string; // Info peserta sudah diformat
   isOnline: boolean; // Tipe boolean
   price: number; // Harga sebagai angka
@@ -41,14 +41,16 @@ export default function InteractiveCard({ id, title, duration, participants, isO
       )}
 
       {/* Title */}
-      <h3 className="text-xl font-bold text-navy mb-4 text-balance flex-grow">{title}</h3>
+      <h3 className="text-xl font-bold text-navy mb-4 text-balance grow">{title}</h3>
 
       {/* Training Details */}
       <div className="space-y-3 mb-6">
-        <div className="flex items-center text-silver text-sm">
-          <ClockIcon className="w-4 h-4 mr-2" />
-          {duration}
-        </div>
+        {duration && (
+          <div className="flex items-center text-silver text-sm">
+            <ClockIcon className="w-4 h-4 mr-2" />
+            {duration}
+          </div>
+        )}
         <div className="flex items-center text-silver text-sm">
           <UserGroupIcon className="w-4 h-4 mr-2" />
           {participants}

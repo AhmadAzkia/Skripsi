@@ -15,7 +15,6 @@ type Kursus = {
   judul: string;
   deskripsi: string | null;
   harga: number;
-  durasi_jam: number;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
   status: "draft" | "published" | "archived";
@@ -74,7 +73,6 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
         judul,
         deskripsi,
         harga,
-        durasi_jam,
         kategori,
         tipe_kursus,
         status,

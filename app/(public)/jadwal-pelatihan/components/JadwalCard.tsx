@@ -21,7 +21,6 @@ export default function JadwalCard({ jadwal }: JadwalCardProps) {
   const isFree = jadwal.harga === 0;
 
   // Data untuk InteractiveCard
-  const duration = `${jadwal.durasi_jam} Jam`;
   const participants = `Maks. ${jadwal.maksimal_peserta} Peserta`;
   const price = isFree ? undefined : formatHarga(jadwal.harga);
   const href = `/login`;
@@ -29,7 +28,6 @@ export default function JadwalCard({ jadwal }: JadwalCardProps) {
   return InteractiveCard({
     id: jadwal.id,
     title: jadwal.judul,
-    duration,
     participants,
     isOnline,
     price: jadwal.harga,

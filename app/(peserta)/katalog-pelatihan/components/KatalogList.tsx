@@ -8,7 +8,6 @@ type Kursus = {
   judul: string;
   deskripsi: string | null;
   harga: number;
-  durasi_jam: number;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
   status: "draft" | "published" | "archived";
@@ -154,12 +153,6 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
 
                   {/* Meta Info */}
                   <div className="space-y-2 mb-6">
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {kursus.durasi_jam} jam
-                    </div>
                     {kursus.instruktur && (
                       <div className="flex items-center text-gray-500 text-sm">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

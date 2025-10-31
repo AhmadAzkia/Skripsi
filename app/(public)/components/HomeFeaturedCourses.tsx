@@ -39,7 +39,6 @@ export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCou
                   <InteractiveCard
                     id={course.id}
                     title={course.judul}
-                    duration={`${course.durasi_jam} Jam`}
                     participants={`Maks. ${course.maksimal_peserta || "N/A"} Peserta`}
                     isOnline={course.tipe_kursus === "online" || course.tipe_kursus === "hybrid"}
                     price={course.harga}

@@ -19,7 +19,6 @@ type KursusDetail = {
   judul: string;
   deskripsi: string;
   instruktur_nama: string;
-  durasi_jam: number;
   tipe_kursus: string;
 };
 

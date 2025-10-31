@@ -22,14 +22,38 @@ async function ProfilPesertaContent() {
     return <ProfilPesertaClient initialData={null} error="Gagal memuat profil pengguna." />;
   }
 
-  // Get peserta statistics (mock data for now)
-  const stats = {
-    enrolledCourses: 5,
-    completedCourses: 3,
-    certificates: 2,
-    totalHours: 45,
-    progressPercentage: 75,
-  };
+  // Get real peserta statistics from database
+  async function getStats(profileId: string) {
+    try {
+      // Count enrolled courses
+      const { count: enrolledCourses, error: enrolledError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId);
+
+      // Count completed courses
+      const { count: completedCourses, error: completedError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
+
+      // Count certificates (assuming completed courses have certificates)
+      const { count: certificates, error: certificatesError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
+
+      if (enrolledError || completedError || certificatesError) {
+        console.error("Error fetching stats:", { enrolledError, completedError, certificatesError });
+      }
+
+      return {
+        enrolledCourses: enrolledCourses || 0,
+        completedCourses: completedCourses || 0,
+        certificates: certificates || 0,
+      };
+    } catch (error) {
+      console.error("Error calculating stats:", error);
+      return {
+        enrolledCourses: 0,
+        completedCourses: 0,
+        certificates: 0,
+      };
+    }
+  }
+
+  const stats = await getStats(profile.id);
 
   return (
     <ProfilPesertaClient

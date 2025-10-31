@@ -9,7 +9,6 @@ type Kursus = {
   judul: string;
   deskripsi: string | null;
   harga: number;
-  durasi_jam: number;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
   status: "draft" | "published" | "archived";
@@ -31,7 +30,6 @@ type RegistrationStatus = {
     id: string;
     status: "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
     tanggal_daftar: string;
-    persentase_progress: number | null;
   };
 };
 
@@ -47,7 +45,6 @@ async function getKursusDetail(id: string): Promise<Kursus | null> {
         judul,
         deskripsi,
         harga,
-        durasi_jam,
         kategori,
         tipe_kursus,
         status,
@@ -88,8 +85,7 @@ async function getRegistrationStatus(kursusId: string, pesertaId: string): Promi
         `
         id,
         status,
-        tanggal_daftar,
-        persentase_progress
+        tanggal_daftar
       `
       )
       .eq("kursus_id", kursusId)

@@ -61,12 +61,6 @@ export default function JadwalFilters({}: JadwalFiltersProps) {
                 </select>
               </div>
             </div>
-
-            {/* Quick Actions */}
-            <div className="flex gap-3">
-              <button className="px-4 py-2 bg-transparent border-2 border-gold text-gold hover:bg-gold hover:text-navy transition-all duration-300 rounded-lg font-medium">Export PDF</button>
-              <button className="px-4 py-2 bg-gold text-navy hover:bg-gold/90 transition-all duration-300 rounded-lg font-medium">Lihat Kalender</button>
-            </div>
           </div>
         </ScrollReveal>
       </div>
