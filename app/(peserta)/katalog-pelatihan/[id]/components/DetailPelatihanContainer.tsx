@@ -176,12 +176,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    <span className="text-sm">{jumlahPeserta} peserta</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <span className={`text-sm ${isKursusPenuh ? "text-red-600 font-medium" : "text-green-600 font-medium"}`}>{isKursusPenuh ? "Penuh" : "Tersedia"}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,7 +274,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15c-.77.833.192 2.5 1.732 2.5z" />
                         </svg>
                         <h4 className="font-semibold text-red-800 mb-1">Pelatihan Penuh</h4>
-                        <p className="text-sm text-red-700">Kuota peserta ({kursus.maksimal_peserta}) sudah terpenuhi</p>
+                        <p className="text-sm text-red-700">Kuota peserta sudah terpenuhi</p>
                       </div>
                     ) : (
                       <button
@@ -296,13 +291,8 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                 {kursus.maksimal_peserta && (
                   <div className="mb-6">
                     <div className="flex justify-between text-sm text-gray-600 mb-2">
-                      <span>Kuota Peserta</span>
-                      <span>
-                        {jumlahPeserta}/{kursus.maksimal_peserta}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className={`h-2 rounded-full ${isKursusPenuh ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${(jumlahPeserta / kursus.maksimal_peserta) * 100}%` }}></div>
+                      <span>Status Kuota</span>
+                      <span className={`font-medium ${isKursusPenuh ? "text-red-600" : "text-green-600"}`}>{isKursusPenuh ? "Penuh" : "Tersedia"}</span>
                     </div>
                   </div>
                 )}

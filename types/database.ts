@@ -483,51 +483,6 @@ export type Database = {
           },
         ]
       }
-      ulasan_kursus: {
-        Row: {
-          dibuat_pada: string
-          diperbarui_pada: string | null
-          id: string
-          kursus_id: string
-          pengguna_id: string
-          rating: number
-          teks_ulasan: string | null
-        }
-        Insert: {
-          dibuat_pada?: string
-          diperbarui_pada?: string | null
-          id?: string
-          kursus_id: string
-          pengguna_id: string
-          rating: number
-          teks_ulasan?: string | null
-        }
-        Update: {
-          dibuat_pada?: string
-          diperbarui_pada?: string | null
-          id?: string
-          kursus_id?: string
-          pengguna_id?: string
-          rating?: number
-          teks_ulasan?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ulasan_kursus_kursus_id_fkey"
-            columns: ["kursus_id"]
-            isOneToOne: false
-            referencedRelation: "kursus"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ulasan_kursus_pengguna_id_fkey"
-            columns: ["pengguna_id"]
-            isOneToOne: false
-            referencedRelation: "profil_pengguna"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
