@@ -68,7 +68,7 @@ export default function DashboardRecentActivities({ activities }: DashboardRecen
       case "completed":
         return "Selesai";
       case "in-progress":
-        return "Berlangsung";
+        return "Sedang Berlangsung";
       case "upcoming":
         return "Mendatang";
       default:

@@ -1,28 +1,58 @@
 "use client";
 
+import { ChangeEvent, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 interface JadwalFiltersProps {
-  selectedStatus: string;
-  selectedPeriod: string;
-  onStatusChange: (status: string) => void;
-  onPeriodChange: (period: string) => void;
+  selectedStatus?: string;
+  selectedPeriod?: string;
   totalItems: number;
   filteredItems: number;
 }
 
-export default function JadwalFilters({ selectedStatus, selectedPeriod, onStatusChange, onPeriodChange, totalItems, filteredItems }: JadwalFiltersProps) {
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onStatusChange(e.target.value);
+export default function JadwalFilters({ selectedStatus = "semua", selectedPeriod = "semua", totalItems, filteredItems }: JadwalFiltersProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [status, setStatus] = useState<string>(selectedStatus);
+  const [period, setPeriod] = useState<string>(selectedPeriod);
+
+  const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setStatus(value);
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    if (value === "semua") {
+      params.delete("status");
+    } else {
+      params.set("status", value);
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
-  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onPeriodChange(e.target.value);
+  const handlePeriodChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setPeriod(value);
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    if (value === "semua") {
+      params.delete("period");
+    } else {
+      params.set("period", value);
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   const handleReset = () => {
-    onStatusChange("semua");
-    onPeriodChange("semua");
+    setStatus("semua");
+    setPeriod("semua");
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.delete("status");
+    params.delete("period");
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   const statusOptions = [
@@ -49,7 +79,7 @@ export default function JadwalFilters({ selectedStatus, selectedPeriod, onStatus
               {/* Status Filter */}
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-medium text-gray-700">Filter Status</label>
-                <select value={selectedStatus} onChange={handleStatusChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent bg-white text-gray-900 min-w-[200px]">
+                <select value={status} onChange={handleStatusChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent bg-white text-gray-900 min-w-[200px]">
                   {statusOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -61,7 +91,7 @@ export default function JadwalFilters({ selectedStatus, selectedPeriod, onStatus
               {/* Period Filter */}
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-medium text-gray-700">Filter Periode</label>
-                <select value={selectedPeriod} onChange={handlePeriodChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent bg-white text-gray-900 min-w-[200px]">
+                <select value={period} onChange={handlePeriodChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent bg-white text-gray-900 min-w-[200px]">
                   {periodOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -77,7 +107,7 @@ export default function JadwalFilters({ selectedStatus, selectedPeriod, onStatus
                 Menampilkan <span className="font-semibold text-navy">{filteredItems}</span> dari <span className="font-semibold text-navy">{totalItems}</span> jadwal
               </div>
 
-              {(selectedStatus !== "semua" || selectedPeriod !== "semua") && (
+              {(status !== "semua" || period !== "semua") && (
                 <button onClick={handleReset} className="px-4 py-2 text-sm text-gray-600 hover:text-navy border border-gray-300 rounded-lg hover:border-gold transition-colors duration-300">
                   Reset Filter
                 </button>

@@ -88,6 +88,38 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
   const supabase = await createSupabaseServerClient();
   const activities: RecentActivity[] = [];
 
+  // Helper function untuk menentukan status berdasarkan tanggal
+  function getStatusByDate(tanggalMulai: string, tanggalSelesai: string, statusDatabase: string): "completed" | "in-progress" | "upcoming" {
+    const today = new Date().toISOString().split("T")[0];
+
+    // Jika sudah dibatalkan, tetap upcoming (karena tidak ada status dibatalkan di activities)
+    if (statusDatabase === "dibatalkan") {
+      return "upcoming";
+    }
+
+    if (tanggalSelesai && today > tanggalSelesai) {
+      // Jika sudah melewati tanggal selesai -> Selesai
+      return "completed";
+    } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
+      // Jika sedang berlangsung -> Sedang belajar
+      return "in-progress";
+    } else if (tanggalMulai && today < tanggalMulai) {
+      // Jika belum dimulai -> Terdaftar
+      return "upcoming";
+    }
+
+    // Fallback ke mapping status database
+    switch (statusDatabase) {
+      case "selesai":
+        return "completed";
+      case "sedang_belajar":
+        return "in-progress";
+      case "terdaftar":
+      default:
+        return "upcoming";
+    }
+  }
+
   try {
     // 1. Ambil Pelatihan Terbaru dengan Status yang Akurat
     const { data: pelatihanData, error: pelatihanError } = await supabase
@@ -110,24 +142,11 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
       .limit(5);
 
     if (pelatihanData && !pelatihanError) {
-      const currentDate = new Date();
-
       pelatihanData.forEach((item) => {
         const kursusData = item.kursus as any;
-        let status: "completed" | "in-progress" | "upcoming" = "upcoming";
 
-        // Logic status berdasarkan status pendaftaran dan tanggal
-        if (item.status === "selesai") {
-          status = "completed";
-        } else if (item.status === "sedang_belajar") {
-          status = "in-progress";
-        } else if (item.status === "terdaftar") {
-          // Cek apakah kursus sudah dimulai
-          if (kursusData?.tanggal_mulai) {
-            const tanggalMulai = new Date(kursusData.tanggal_mulai);
-            status = tanggalMulai <= currentDate ? "in-progress" : "upcoming";
-          }
-        }
+        // Gunakan function getStatusByDate untuk konsistensi
+        const status = getStatusByDate(kursusData?.tanggal_mulai || "", kursusData?.tanggal_selesai || "", item.status);
 
         activities.push({
           id: `pelatihan-${item.id}`,
@@ -210,12 +229,16 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
 
       filteredJadwal.forEach((item) => {
         const kursusData = item.kursus as any;
+
+        // Gunakan function getStatusByDate untuk konsistensi
+        const status = getStatusByDate(kursusData?.tanggal_mulai || "", kursusData?.tanggal_selesai || "", item.status);
+
         activities.push({
           id: `jadwal-${item.id}`,
           title: `Jadwal: ${kursusData.judul}`,
           type: "jadwal",
           date: kursusData.tanggal_mulai,
-          status: "upcoming", // Jadwal selalu upcoming
+          status: status,
         });
       });
     }
