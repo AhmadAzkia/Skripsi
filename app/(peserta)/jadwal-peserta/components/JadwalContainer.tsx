@@ -1,30 +1,17 @@
-import JadwalHero from "./JadwalHero";
-import JadwalStats from "./JadwalStats";
-import JadwalFilters from "./JadwalFilters";
-import JadwalList from "./JadwalList";
+"use client";
+
 import { SessionUser } from "@/contexts/AuthContext";
+import { JadwalPelatihan, JadwalStats as JadwalStatsType } from "../page";
+import JadwalHero from "./JadwalHero";
+import JadwalStatsComponent from "./JadwalStats";
+import JadwalWithFilters from "./JadwalWithFilters";
 
-type JadwalPelatihan = {
-  id: string;
-  kursus_id: string;
-  judul: string;
-  tanggal_mulai: string;
-  tanggal_selesai: string;
-  status: string;
-  tipe_kursus: string;
-  instruktur: string;
-};
-
-type JadwalStats = {
-  totalJadwal: number;
-  jadwalBerlangsung: number;
-  jadwalSelesai: number;
-  jadwalMendatang: number;
-};
+// Rename to avoid conflict with type
+const JadwalStats = JadwalStatsComponent;
 
 type JadwalContainerProps = {
   user: SessionUser;
-  stats: JadwalStats;
+  stats: JadwalStatsType;
   jadwalList: JadwalPelatihan[];
 };
 
@@ -37,11 +24,8 @@ export default function JadwalContainer({ user, stats, jadwalList }: JadwalConta
       {/* Statistics Section */}
       <JadwalStats stats={stats} />
 
-      {/* Filters Section */}
-      <JadwalFilters />
-
-      {/* Jadwal List Section */}
-      <JadwalList jadwalList={jadwalList} />
+      {/* Filters and Jadwal List Section with Filters */}
+      <JadwalWithFilters jadwalList={jadwalList} />
     </>
   );
 }

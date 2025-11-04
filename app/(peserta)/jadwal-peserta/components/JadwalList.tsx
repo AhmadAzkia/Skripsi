@@ -38,9 +38,9 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
       case "selesai":
         return "Selesai";
       case "sedang_belajar":
-        return "Berlangsung";
+        return "Sedang Berlangsung";
       case "terdaftar":
-        return "Terdaftar";
+        return "Mendatang";
       case "dibatalkan":
         return "Dibatalkan";
       default:
@@ -138,12 +138,13 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                           Lanjutkan Kursus
                         </a>
                       )}
-                      {jadwal.status === "terdaftar" && (
-                        <a href={`/materi-kursus/${jadwal.kursus_id}`} className="px-4 py-2 bg-navy text-white font-medium rounded-lg hover:bg-navy/90 transition-colors duration-300 text-center">
-                          Buka Kursus
+                      {jadwal.status === "terdaftar" && <span className="px-4 py-2 bg-navy/10 text-navy font-medium rounded-lg text-center border border-navy/20">Menunggu Dimulai</span>}
+                      {jadwal.status === "selesai" && (
+                        <a href={`/sertifikat`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
+                          Lihat Sertifikat
                         </a>
                       )}
-                      {jadwal.status === "selesai" && <button className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300">Lihat Sertifikat</button>}
+                      {jadwal.status === "dibatalkan" && <span className="px-4 py-2 bg-red-50 text-red-700 font-medium rounded-lg text-center border border-red-200">Dibatalkan</span>}
                     </div>
                   </div>
                 </div>

@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import KatalogHero from "./KatalogHero";
 import KatalogStats from "./KatalogStats";
-import KatalogFilters from "./KatalogFilters";
-import KatalogList from "./KatalogList";
+import KatalogWithFilters from "./KatalogWithFilters";
 import { SessionUser } from "@/contexts/AuthContext";
 
 type Kursus = {
@@ -35,18 +33,6 @@ type KatalogContainerProps = {
 };
 
 export default function KatalogContainer({ user, stats, kursusList, kategoriList }: KatalogContainerProps) {
-  const [selectedKategori, setSelectedKategori] = useState("semua");
-  const [selectedTipe, setSelectedTipe] = useState("semua");
-
-  // Filter kursus berdasarkan kategori dan tipe yang dipilih
-  const filteredKursus = useMemo(() => {
-    return kursusList.filter((kursus) => {
-      const matchKategori = selectedKategori === "semua" || kursus.kategori === selectedKategori;
-      const matchTipe = selectedTipe === "semua" || kursus.tipe_kursus === selectedTipe;
-      return matchKategori && matchTipe;
-    });
-  }, [kursusList, selectedKategori, selectedTipe]);
-
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50">
       {/* Hero Section */}
@@ -55,11 +41,8 @@ export default function KatalogContainer({ user, stats, kursusList, kategoriList
       {/* Statistics Section */}
       <KatalogStats stats={stats} />
 
-      {/* Filters Section */}
-      <KatalogFilters kategoriList={kategoriList} />
-
-      {/* Kursus List Section */}
-      <KatalogList kursusList={filteredKursus} />
+      {/* Filters and Kursus List Section */}
+      <KatalogWithFilters kursusList={kursusList} kategoriList={kategoriList} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import JadwalContainer from "./components/JadwalContainer";
 import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 
-type JadwalPelatihan = {
+export type JadwalPelatihan = {
   id: string;
   kursus_id: string;
   judul: string;
@@ -15,7 +15,7 @@ type JadwalPelatihan = {
   instruktur: string;
 };
 
-type JadwalStats = {
+export type JadwalStats = {
   totalJadwal: number;
   jadwalBerlangsung: number;
   jadwalSelesai: number;
@@ -26,11 +26,8 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
   const supabase = await createSupabaseServerClient();
   const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
 
-  // Total jadwal (semua pendaftaran)
-  const { count: totalJadwal, error: errorTotal } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId);
-
-  // Jadwal berlangsung - kursus yang sedang berjalan berdasarkan tanggal
-  const { count: jadwalBerlangsung, error: errorBerlangsung } = await supabase
+  // Ambil semua data pendaftaran kursus dengan detail kursus
+  const { data: allJadwal, error: errorFetch } = await supabase
     .from("pendaftaran_kursus")
     .select(
       `
@@ -39,44 +36,74 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
         tanggal_mulai,
         tanggal_selesai
       )
-    `,
-      { count: "exact", head: true }
+    `
     )
     .eq("pengguna_id", userId)
-    .in("status", ["terdaftar", "sedang_belajar"])
-    .lte("kursus.tanggal_mulai", today)
-    .gte("kursus.tanggal_selesai", today);
+    .not("status", "eq", "dibatalkan"); // Exclude dibatalkan dari perhitungan
 
-  // Jadwal selesai
-  const { count: jadwalSelesai, error: errorSelesai } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", userId).eq("status", "selesai");
+  if (errorFetch) {
+    console.error("Error fetching schedule data:", errorFetch.message);
+    return {
+      totalJadwal: 0,
+      jadwalBerlangsung: 0,
+      jadwalSelesai: 0,
+      jadwalMendatang: 0,
+    };
+  }
 
-  // Jadwal mendatang - kursus yang belum dimulai berdasarkan tanggal
-  const { count: jadwalMendatang, error: errorMendatang } = await supabase
-    .from("pendaftaran_kursus")
-    .select(
-      `
-      *,
-      kursus!inner(
-        tanggal_mulai
-      )
-    `,
-      { count: "exact", head: true }
-    )
-    .eq("pengguna_id", userId)
-    .in("status", ["terdaftar", "sedang_belajar"])
-    .gt("kursus.tanggal_mulai", today);
+  const totalJadwal = allJadwal?.length ?? 0;
+  let jadwalBerlangsung = 0;
+  let jadwalSelesai = 0;
+  let jadwalMendatang = 0;
 
-  if (errorTotal) console.error("Error fetching total schedule:", errorTotal.message);
-  if (errorBerlangsung) console.error("Error fetching ongoing schedule:", errorBerlangsung.message);
-  if (errorSelesai) console.error("Error fetching completed schedule:", errorSelesai.message);
-  if (errorMendatang) console.error("Error fetching upcoming schedule:", errorMendatang.message);
+  // Kategorikan berdasarkan tanggal, bukan status database
+  allJadwal?.forEach((item) => {
+    const kursus = item.kursus as any;
+    const tanggalMulai = kursus?.tanggal_mulai;
+    const tanggalSelesai = kursus?.tanggal_selesai;
+
+    if (tanggalSelesai && today > tanggalSelesai) {
+      // Jika hari ini sudah melewati tanggal selesai -> Selesai
+      jadwalSelesai++;
+    } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
+      // Jika hari ini antara tanggal mulai dan selesai -> Berlangsung
+      jadwalBerlangsung++;
+    } else if (tanggalMulai && today < tanggalMulai) {
+      // Jika hari ini sebelum tanggal mulai -> Mendatang
+      jadwalMendatang++;
+    }
+  });
 
   return {
-    totalJadwal: totalJadwal ?? 0,
-    jadwalBerlangsung: jadwalBerlangsung ?? 0,
-    jadwalSelesai: jadwalSelesai ?? 0,
-    jadwalMendatang: jadwalMendatang ?? 0,
+    totalJadwal,
+    jadwalBerlangsung,
+    jadwalSelesai,
+    jadwalMendatang,
   };
+}
+
+// Fungsi untuk menentukan status berdasarkan tanggal
+function getStatusByDate(tanggalMulai: string, tanggalSelesai: string, statusDatabase: string): string {
+  const today = new Date().toISOString().split("T")[0];
+
+  // Jika sudah dibatalkan, tetap dibatalkan
+  if (statusDatabase === "dibatalkan") {
+    return "dibatalkan";
+  }
+
+  if (tanggalSelesai && today > tanggalSelesai) {
+    // Jika sudah melewati tanggal selesai -> Selesai
+    return "selesai";
+  } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
+    // Jika sedang berlangsung -> Sedang belajar
+    return "sedang_belajar";
+  } else if (tanggalMulai && today < tanggalMulai) {
+    // Jika belum dimulai -> Terdaftar
+    return "terdaftar";
+  }
+
+  // Fallback ke status database jika tidak ada tanggal
+  return statusDatabase;
 }
 
 async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
@@ -115,13 +142,18 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
       const kursusData = item.kursus as any;
       const instrukturData = kursusData?.instruktur as any;
 
+      // Tentukan status berdasarkan tanggal kursus
+      const tanggalMulai = kursusData?.tanggal_mulai || item.tanggal_daftar;
+      const tanggalSelesai = kursusData?.tanggal_selesai || item.tanggal_selesai || "";
+      const statusAktual = getStatusByDate(tanggalMulai, tanggalSelesai, item.status);
+
       return {
         id: item.id,
         kursus_id: kursusData?.id || "",
         judul: kursusData?.judul || "Kursus Tidak Diketahui",
-        tanggal_mulai: kursusData?.tanggal_mulai || item.tanggal_daftar,
-        tanggal_selesai: kursusData?.tanggal_selesai || item.tanggal_selesai || "",
-        status: item.status,
+        tanggal_mulai: tanggalMulai,
+        tanggal_selesai: tanggalSelesai,
+        status: statusAktual, // Gunakan status yang sudah dihitung berdasarkan tanggal
         tipe_kursus: kursusData?.tipe_kursus || "online",
         instruktur: instrukturData?.nama_lengkap || "Instruktur",
       };

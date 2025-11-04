@@ -17,7 +17,7 @@ type DashboardContainerProps = {
   stats: {
     pelatihanAktifCount: number;
     sertifikatCount: number;
-    jadwalHariIniCount: number;
+    jadwalBerlangsung: number;
   };
   activities: RecentActivity[];
 };

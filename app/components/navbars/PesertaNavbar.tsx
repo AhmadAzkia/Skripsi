@@ -5,7 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase/client";
 import { logout } from "@/(peserta)/actions";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import RoleIndicator from "@/components/ui/RoleIndicator";
 import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
@@ -23,7 +25,20 @@ export default function PesertaNavbar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+
+  // Listen to auth state changes untuk update navbar otomatis
+  React.useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+        refreshUser();
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [refreshUser]);
 
   const handleNavigation = (href: string) => {
     setMobileMenuOpen(false); // Tutup menu mobile

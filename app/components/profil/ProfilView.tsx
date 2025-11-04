@@ -62,15 +62,8 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
   };
 
   const getRoleGradient = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "bg-gradient-to-r from-red-500 to-red-600";
-      case "pemateri":
+    if (role) {
         return "bg-gradient-to-r from-navy to-navy/90";
-      case "peserta":
-        return "bg-gradient-to-r from-green-500 to-green-600";
-      default:
-        return "bg-gradient-to-r from-gray-500 to-gray-600";
     }
   };
 
