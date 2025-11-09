@@ -26,15 +26,14 @@ import {
 } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "Dashboard", href: "/admin", icon: HomeIcon },
-  { name: "Manajemen Pengguna", href: "/admin/users", icon: UsersIcon },
-  { name: "Transaksi & Laporan", href: "/admin/reports", icon: ChartBarIcon },
-  { name: "Manajemen Blog", href: "/admin/blog", icon: NewspaperIcon },
+  { name: "Dashboard", href: "/dashboard-admin", icon: HomeIcon },
+  { name: "Manajemen Pengguna", href: "/manajemen-pengguna", icon: UsersIcon },
+  { name: "Transaksi & Laporan", href: "/laporan", icon: ChartBarIcon },
+  { name: "Manajemen Blog", href: "/blog-admin", icon: NewspaperIcon },
 ];
 
 const pelatihanDropdown = [
-  { name: "Konten Pelatihan", href: "/admin/content", icon: BookOpenIcon, description: "Kelola materi dan video pelatihan" },
-  { name: "Jadwal & Pelatihan", href: "/admin/schedule", icon: CalendarDaysIcon, description: "Atur jadwal dan link zoom" },
+  { name: "Jadwal & Pelatihan", href: "/pelatihan-admin", icon: CalendarDaysIcon, description: "Atur jadwal dan link zoom" },
   { name: "Sertifikat", href: "/admin/certificates", icon: AcademicCapIcon, description: "Kelola sertifikat peserta" },
 ];
 
