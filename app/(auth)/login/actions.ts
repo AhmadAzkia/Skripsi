@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 function getRedirectPath(role: string): string {
   switch (role) {
     case "admin":
-      return "/pelatihan-admin";
+      return "/dashboard-admin";
     case "instruktur":
       return "/dashboard-pemateri";
     case "peserta":
