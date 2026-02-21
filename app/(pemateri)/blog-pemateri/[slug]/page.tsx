@@ -4,13 +4,16 @@ import PemateriBlogDetail from "./PemateriBlogDetail";
 import { getBlogDetailPemateri } from "./actions";
 
 interface BlogDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   try {
+
+    const { slug } = await params;
+
     const supabase = await createSupabaseServerClient();
 
     // Check auth
@@ -30,7 +33,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     }
 
     // Get blog detail data using server action
-    const result = await getBlogDetailPemateri(user.id, params.slug);
+    const result = await getBlogDetailPemateri(user.id, slug);
 
     if (!result.success || !result.data) {
       redirect("/blog-pemateri");
