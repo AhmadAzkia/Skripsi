@@ -3,18 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserWithRole } from "@/lib/user";
 
 // GET - Get specific report by ID
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUserWithRole();
-    
+
     if (!user || user.profile?.peran !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // In real implementation, query specific report from database
     // For now, return mock data
@@ -40,28 +37,17 @@ export async function GET(
 }
 
 // PUT - Update specific report
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUserWithRole();
-    
+
     if (!user || user.profile?.peran !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
-    const { 
-      judul, 
-      tipe_laporan, 
-      periode_mulai, 
-      periode_selesai, 
-      status, 
-      keterangan,
-      file_url 
-    } = body;
+    const { judul, tipe_laporan, periode_mulai, periode_selesai, status, keterangan, file_url } = body;
 
     // In real implementation, update report in database
     const updatedLaporan = {
@@ -86,18 +72,15 @@ export async function PUT(
 }
 
 // DELETE - Delete specific report
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUserWithRole();
-    
+
     if (!user || user.profile?.peran !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // In real implementation, delete report from database
     // const supabase = await createSupabaseServerClient();
@@ -111,9 +94,9 @@ export async function DELETE(
     // }
 
     // Simulate successful deletion
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: "Report deleted successfully",
-      id 
+      id,
     });
   } catch (error) {
     console.error("Error deleting report:", error);

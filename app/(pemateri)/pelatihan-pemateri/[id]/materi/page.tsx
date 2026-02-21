@@ -96,12 +96,6 @@ export default async function MateriKursusPage({ params }: PageProps) {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-silver">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>
-                        Durasi: <span className="font-semibold text-navy">{kursus.durasi_jam}</span> jam
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-silver">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                       <span>
                         Status: <span className="font-semibold text-navy capitalize">{kursus.status}</span>

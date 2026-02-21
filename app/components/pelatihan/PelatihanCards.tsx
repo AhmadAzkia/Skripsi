@@ -162,7 +162,6 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-2 py-1 bg-navy/10 text-navy text-xs font-medium rounded">{kursus.kategori}</span>
-                  <span className="px-2 py-1 bg-gold/10 text-gold text-xs font-medium rounded">{kursus.durasi_jam} jam</span>
                 </div>
 
                 <h3 className="text-xl font-semibold text-navy mb-2 group-hover:text-gold transition-colors duration-300 line-clamp-2">{kursus.judul}</h3>

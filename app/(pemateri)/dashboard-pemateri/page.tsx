@@ -37,7 +37,7 @@ async function getDashboardPemateriStats(profileId: string): Promise<DashboardPe
       *,
       kursus!inner(*)
     `,
-      { count: "exact", head: true }
+      { count: "exact", head: true },
     )
     .eq("kursus.instruktur_id", profileId);
 
@@ -57,7 +57,7 @@ async function getDashboardPemateriStats(profileId: string): Promise<DashboardPe
       `
       jumlah,
       kursus!inner(*)
-    `
+    `,
     )
     .eq("kursus.instruktur_id", profileId)
     .eq("status_pembayaran", "berhasil")
@@ -121,7 +121,7 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
         status,
         kursus!inner(judul, instruktur_id),
         profil_pengguna!inner(nama_lengkap)
-      `
+      `,
       )
       .eq("kursus.instruktur_id", profileId)
       .gte("tanggal_daftar", oneWeekAgoISO)
@@ -146,14 +146,14 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
 
     // 3. Ambil Materi Terbaru yang dibuat (seminggu terakhir)
     const { data: materiData, error: materiError } = await supabase
-      .from("materi_pelajaran")
+      .from("materi_kursus")
       .select(
         `
         id,
         judul,
         dibuat_pada,
         kursus!inner(judul, instruktur_id)
-      `
+      `,
       )
       .eq("kursus.instruktur_id", profileId)
       .gte("dibuat_pada", oneWeekAgoISO)

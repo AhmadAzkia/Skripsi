@@ -3,8 +3,12 @@ import { getUserWithRole } from "@/lib/user";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET - Get specific user
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> } // Diubah ke Promise
+) {
   try {
+    const { id } = await params; // Wajib di-await
     const user = await getUserWithRole();
 
     if (!user || user.profile?.peran !== "admin") {
@@ -13,7 +17,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase.from("profil_pengguna").select("*").eq("id", params.id).single();
+    const { data, error } = await supabase
+      .from("profil_pengguna")
+      .select("*")
+      .eq("id", id) // Gunakan id hasil await
+      .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -30,8 +38,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT - Update user
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> } // Diubah ke Promise
+) {
   try {
+    const { id } = await params; // Wajib di-await
     const user = await getUserWithRole();
 
     if (!user || user.profile?.peran !== "admin") {
@@ -59,7 +71,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         is_aktif: is_aktif ?? true,
         diperbarui_pada: new Date().toISOString(),
       })
-      .eq("id", params.id)
+      .eq("id", id) // Gunakan id hasil await
       .select()
       .single();
 
@@ -74,8 +86,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE - Delete user
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> } // Diubah ke Promise
+) {
   try {
+    const { id } = await params; // Wajib di-await
     const user = await getUserWithRole();
 
     if (!user || user.profile?.peran !== "admin") {
@@ -85,14 +101,21 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     const supabase = await createSupabaseServerClient();
 
     // Get user profile to get user_id
-    const { data: profileData, error: profileError } = await supabase.from("profil_pengguna").select("user_id").eq("id", params.id).single();
+    const { data: profileData, error: profileError } = await supabase
+      .from("profil_pengguna")
+      .select("user_id")
+      .eq("id", id) // Gunakan id hasil await
+      .single();
 
     if (profileError || !profileData) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Delete profile first
-    const { error: deleteProfileError } = await supabase.from("profil_pengguna").delete().eq("id", params.id);
+    const { error: deleteProfileError } = await supabase
+      .from("profil_pengguna")
+      .delete()
+      .eq("id", id); // Gunakan id hasil await
 
     if (deleteProfileError) {
       return NextResponse.json({ error: deleteProfileError.message }, { status: 400 });
@@ -103,7 +126,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     if (deleteAuthError) {
       console.error("Failed to delete auth user:", deleteAuthError);
-      // Don't return error here as profile is already deleted
     }
 
     return NextResponse.json({ message: "User deleted successfully" });
