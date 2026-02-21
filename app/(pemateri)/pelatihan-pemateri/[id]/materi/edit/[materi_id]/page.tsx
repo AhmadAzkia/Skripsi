@@ -3,10 +3,10 @@ import { redirect } from "next/navigation";
 import EditMateriFormComponent from "./components/EditMateriFormComponent";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
     materi_id: string;
-  };
+  }>;
 }
 
 async function getMateriData(kursusId: string, materiId: string) {
@@ -51,7 +51,8 @@ async function getMateriData(kursusId: string, materiId: string) {
 }
 
 export default async function EditMateriPage({ params }: Props) {
-  const { kursus, materi } = await getMateriData(params.id, params.materi_id);
+  const { id, materi_id } = await params;
+  const { kursus, materi } = await getMateriData(id, materi_id);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -63,7 +64,7 @@ export default async function EditMateriPage({ params }: Props) {
               Pelatihan Saya
             </a>
             <span>/</span>
-            <a href={`/pelatihan-pemateri/${params.id}/materi`} className="hover:text-navy transition-colors">
+            <a href={`/pelatihan-pemateri/${id}/materi`} className="hover:text-navy transition-colors">
               {kursus.judul}
             </a>
             <span>/</span>
@@ -77,7 +78,7 @@ export default async function EditMateriPage({ params }: Props) {
 
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <EditMateriFormComponent kursusId={params.id} materi={materi} />
+          <EditMateriFormComponent kursusId={id} materi={materi} />
         </div>
       </div>
     </div>

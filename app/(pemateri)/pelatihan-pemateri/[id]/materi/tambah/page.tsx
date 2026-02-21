@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import TambahMateriForm from "./components/TambahMateriForm";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getKursusInfo(id: string) {
@@ -43,7 +43,8 @@ async function getKursusInfo(id: string) {
 }
 
 export default async function TambahMateriPage({ params }: Props) {
-  const kursus = await getKursusInfo(params.id);
+  const { id } = await params;
+  const kursus = await getKursusInfo(id);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -55,7 +56,7 @@ export default async function TambahMateriPage({ params }: Props) {
               Pelatihan Saya
             </a>
             <span>/</span>
-            <a href={`/pelatihan-pemateri/${params.id}/materi`} className="hover:text-navy transition-colors">
+            <a href={`/pelatihan-pemateri/${id}/materi`} className="hover:text-navy transition-colors">
               {kursus.judul}
             </a>
             <span>/</span>
@@ -69,7 +70,7 @@ export default async function TambahMateriPage({ params }: Props) {
 
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <TambahMateriForm kursusId={params.id} />
+          <TambahMateriForm kursusId={id} />
         </div>
       </div>
     </div>

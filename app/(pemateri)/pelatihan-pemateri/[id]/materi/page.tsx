@@ -37,10 +37,11 @@ async function getKursusWithMateri(kursusId: string, userId: string) {
 }
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function MateriKursusPage({ params }: PageProps) {
+  const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
   // Verifikasi autentikasi
@@ -54,7 +55,7 @@ export default async function MateriKursusPage({ params }: PageProps) {
   }
 
   try {
-    const data = await getKursusWithMateri(params.id, user.id);
+    const data = await getKursusWithMateri(id, user.id);
 
     if (!data) {
       notFound(); // Kursus tidak ditemukan atau bukan milik pemateri
@@ -112,7 +113,7 @@ export default async function MateriKursusPage({ params }: PageProps) {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
-                    href={`/pelatihan-pemateri/${params.id}/materi/tambah`}
+                    href={`/pelatihan-pemateri/${id}/materi/tambah`}
                     className="px-6 py-3 bg-linear-to-r from-navy to-gold text-white rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover-lift flex items-center gap-2 text-center justify-center"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

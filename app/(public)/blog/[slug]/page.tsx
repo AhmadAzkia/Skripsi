@@ -3,15 +3,16 @@ import PublicBlogDetail from "./PublicBlogDetail";
 import { getPublicBlogDetail } from "./actions";
 
 interface BlogDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
+  const { slug } = await params;
   try {
     // Get blog detail data using server action
-    const result = await getPublicBlogDetail(params.slug);
+    const result = await getPublicBlogDetail(slug);
 
     if (!result.success || !result.data) {
       notFound();

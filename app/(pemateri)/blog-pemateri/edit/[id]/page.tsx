@@ -4,12 +4,13 @@ import ScrollReveal from "../../../../components/ui/ScrollReveal";
 import EditArticleFormClient from "../../components/EditArticleFormClient";
 
 interface EditArtikelPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditArtikelPage({ params }: EditArtikelPageProps) {
+  const { id } = await params;
   const supabase = await createSupabaseServerClient();
 
   // Check authentication
@@ -29,7 +30,7 @@ export default async function EditArtikelPage({ params }: EditArtikelPageProps) 
   }
 
   // Get article data
-  const { data: article } = await supabase.from("artikel_blog").select("*").eq("id", params.id).eq("penulis_id", profile.id).single();
+  const { data: article } = await supabase.from("artikel_blog").select("*").eq("id", id).eq("penulis_id", profile.id).single();
 
   if (!article) {
     notFound();
