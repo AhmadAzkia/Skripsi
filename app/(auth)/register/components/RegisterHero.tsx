@@ -16,16 +16,6 @@ export default function RegisterHero() {
         Daftar <span className="text-gold">Akun</span>
       </h1>
       <p className="text-silver animate-slide-up mb-6">Bergabunglah dengan ribuan profesional lainnya dan tingkatkan karir Anda</p>
-
-      {/* Back to Home */}
-      <div className="mb-6">
-        <Link href="/" className="inline-flex items-center text-silver hover:text-gold transition-colors duration-300 group">
-          <svg className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Kembali ke Beranda
-        </Link>
-      </div>
     </div>
   );
 }
