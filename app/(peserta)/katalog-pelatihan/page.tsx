@@ -26,27 +26,39 @@ type Kursus = {
   } | null;
 };
 
+function isKursusAktif(tanggalSelesai: string | null) {
+  if (!tanggalSelesai) {
+    return true;
+  }
+
+  const endDate = new Date(tanggalSelesai);
+  const today = new Date();
+  endDate.setHours(23, 59, 59, 999);
+  today.setHours(0, 0, 0, 0);
+
+  return endDate >= today;
+}
+
 async function getKatalogStats(): Promise<KatalogStats> {
   const supabase = await createSupabaseServerClient();
 
   try {
-    // 1. Hitung Total Kursus yang Published
-    const { count: totalKursusCount, error: errorKursus } = await supabase.from("kursus").select("*", { count: "exact", head: true }).eq("status", "published");
+    // 1. Ambil kursus published yang belum melewati tanggal selesai
+    const { data: kursusData, error: errorKursus } = await supabase.from("kursus").select("kategori, tanggal_selesai").eq("status", "published");
 
-    // 2. Hitung Jumlah Kategori Unik
-    const { data: kategoriData, error: errorKategori } = await supabase.from("kursus").select("kategori").eq("status", "published");
+    const kursusAktif = kursusData ? kursusData.filter((item) => isKursusAktif(item.tanggal_selesai)) : [];
 
-    const kategoriUnik = kategoriData ? [...new Set(kategoriData.map((item) => item.kategori))] : [];
+    // 2. Hitung Jumlah Kategori Unik dari kursus aktif
+    const kategoriUnik = [...new Set(kursusAktif.map((item) => item.kategori))];
 
     // 3. Hitung Jumlah Instruktur
     const { count: instrukturCount, error: errorInstruktur } = await supabase.from("profil_pengguna").select("*", { count: "exact", head: true }).eq("peran", "instruktur").eq("is_aktif", true);
 
     if (errorKursus) console.error("Error fetching courses count:", errorKursus.message);
-    if (errorKategori) console.error("Error fetching categories:", errorKategori.message);
     if (errorInstruktur) console.error("Error fetching instructors count:", errorInstruktur.message);
 
     return {
-      totalKursusCount: totalKursusCount ?? 0,
+      totalKursusCount: kursusAktif.length,
       kategoriCount: kategoriUnik.length,
       instrukturCount: instrukturCount ?? 0,
     };
@@ -64,7 +76,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
   const supabase = await createSupabaseServerClient();
 
   try {
-    // Ambil semua kursus yang published dengan data instruktur
+    // Ambil semua kursus yang published dengan data instruktur, lalu buang yang sudah lewat tanggal selesai
     const { data: kursusData, error: kursusError } = await supabase
       .from("kursus")
       .select(
@@ -82,7 +94,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
         instruktur:instruktur_id (
           nama_lengkap
         )
-      `
+      `,
       )
       .eq("status", "published")
       .order("dibuat_pada", { ascending: false });
@@ -92,7 +104,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
       return { kursusList: [], kategoriList: [] };
     }
 
-    const kursusList = kursusData || [];
+    const kursusList = (kursusData || []).filter((kursus) => isKursusAktif(kursus.tanggal_selesai));
     const kategoriList = [...new Set(kursusList.map((kursus) => kursus.kategori))];
 
     return {

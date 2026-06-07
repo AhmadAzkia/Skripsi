@@ -6,8 +6,8 @@ import SertifikatContainer from "./components/SertifikatContainer";
 import { redirect } from "next/navigation";
 import { Tables } from "@/../types/database";
 import type { SessionUser } from "@/contexts/AuthContext";
-import { createCertificateNumber, getCertificatePrice } from "@/lib/certificates";
-import { generateAndUploadCertificate } from "@/lib/certificate-generator";
+import { getCertificatePrice } from "@/lib/certificates";
+import { ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export type CertificateWithCourse = Tables<"sertifikat"> & {
   kursus: Pick<Tables<"kursus">, "judul" | "kategori"> | null;
@@ -37,47 +37,6 @@ function isCourseCompleted(tanggalSelesai: string | null, registrationStatus: st
   return today > tanggalSelesai;
 }
 
-async function ensureCertificate(profileId: string, kursusId: string) {
-  const supabase = await createSupabaseServerClient();
-  const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("kursus_id", kursusId).maybeSingle();
-
-  if (existingCertificate) {
-    if (!existingCertificate.sertifikat_url) {
-      try {
-        await generateAndUploadCertificate(existingCertificate.id);
-      } catch (error) {
-        console.error("Gagal generate file sertifikat:", error);
-      }
-    }
-    return existingCertificate.id;
-  }
-
-  const { data: certificate, error } = await supabase
-    .from("sertifikat")
-    .insert({
-      kursus_id: kursusId,
-      peserta_id: profileId,
-      nomor_sertifikat: createCertificateNumber(kursusId, profileId),
-      status: "terbit",
-      tanggal_terbit: new Date().toISOString(),
-    })
-    .select("id")
-    .single();
-
-  if (error || !certificate) {
-    console.error("Gagal membuat sertifikat:", error?.message);
-    return null;
-  }
-
-  try {
-    await generateAndUploadCertificate(certificate.id);
-  } catch (error) {
-    console.error("Gagal generate file sertifikat:", error);
-  }
-
-  return certificate.id;
-}
-
 async function getCertificates(profileId: string): Promise<CertificateWithCourse[]> {
   const supabase = await createSupabaseServerClient();
   const { data: certificates, error } = await supabase
@@ -86,7 +45,7 @@ async function getCertificates(profileId: string): Promise<CertificateWithCourse
       `
       *,
       kursus ( judul, kategori )
-    `
+    `,
     )
     .eq("peserta_id", profileId)
     .eq("status", "terbit")
@@ -115,7 +74,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
         harga,
         tanggal_selesai
       )
-    `
+    `,
     )
     .eq("pengguna_id", profileId)
     .not("status", "eq", "dibatalkan");
@@ -141,12 +100,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
 
   const [{ data: certificates }, { data: payments }] = await Promise.all([
     supabase.from("sertifikat").select("id, kursus_id").eq("peserta_id", profileId).in("kursus_id", kursusIds),
-    supabase
-      .from("pembayaran")
-      .select("id, kursus_id, status_pembayaran, tipe_pembayaran")
-      .eq("pengguna_id", profileId)
-      .in("kursus_id", kursusIds)
-      .order("dibuat_pada", { ascending: false }),
+    supabase.from("pembayaran").select("id, kursus_id, status_pembayaran, tipe_pembayaran").eq("pengguna_id", profileId).in("kursus_id", kursusIds).order("dibuat_pada", { ascending: false }),
   ]);
 
   const claims: CertificateClaim[] = [];
@@ -160,20 +114,22 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     const certificatePayment = payments?.find((payment) => payment.kursus_id === kursus.id && payment.tipe_pembayaran === "klaim_sertifikat");
 
     if (!certificateId && kursus.harga > 0 && coursePayment) {
-      certificateId = await ensureCertificate(profileId, kursus.id);
+      try {
+        certificateId = await ensureCertificateForCourse(profileId, kursus.id);
+      } catch (error) {
+        console.error("Gagal memastikan sertifikat untuk kursus berbayar:", error);
+      }
     }
 
     if (!certificateId && kursus.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
-      certificateId = await ensureCertificate(profileId, kursus.id);
+      try {
+        certificateId = await ensureCertificateForCourse(profileId, kursus.id);
+      } catch (error) {
+        console.error("Gagal memastikan sertifikat untuk kursus gratis:", error);
+      }
     }
 
-    const status: CertificateClaim["status"] = certificateId
-      ? "sertifikat_tersedia"
-      : kursus.harga > 0
-        ? "termasuk_pelatihan_berbayar"
-        : certificatePayment?.status_pembayaran === "menunggu"
-          ? "menunggu_pembayaran"
-          : "tawarkan_pembelian";
+    const status: CertificateClaim["status"] = certificateId ? "sertifikat_tersedia" : kursus.harga > 0 ? "termasuk_pelatihan_berbayar" : certificatePayment?.status_pembayaran === "menunggu" ? "menunggu_pembayaran" : "tawarkan_pembelian";
 
     claims.push({
       kursusId: kursus.id,
@@ -228,14 +184,5 @@ export default async function SertifikatPage({ searchParams }: { searchParams: P
   const stats = getSertifikatStats(certificates);
   const selectedClaim = kursusId ? claims.find((claim) => claim.kursusId === kursusId) || null : null;
 
-  return (
-    <SertifikatContainer
-      user={userData.user as SessionUser}
-      certificates={certificates}
-      stats={stats}
-      claims={claims}
-      selectedClaim={selectedClaim}
-      certificatePrice={getCertificatePrice()}
-    />
-  );
+  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} stats={stats} claims={claims} selectedClaim={selectedClaim} certificatePrice={getCertificatePrice()} />;
 }

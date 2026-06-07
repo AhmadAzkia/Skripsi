@@ -33,6 +33,19 @@ type RegistrationStatus = {
   };
 };
 
+function isKursusAktif(tanggalSelesai: string | null) {
+  if (!tanggalSelesai) {
+    return true;
+  }
+
+  const endDate = new Date(tanggalSelesai);
+  const today = new Date();
+  endDate.setHours(23, 59, 59, 999);
+  today.setHours(0, 0, 0, 0);
+
+  return endDate >= today;
+}
+
 async function getKursusDetail(id: string): Promise<Kursus | null> {
   const supabase = await createSupabaseServerClient();
 
@@ -58,13 +71,17 @@ async function getKursusDetail(id: string): Promise<Kursus | null> {
           bio,
           foto_profil_url
         )
-      `
+      `,
       )
       .eq("id", id)
       .eq("status", "published")
       .single();
 
     if (error || !data) {
+      return null;
+    }
+
+    if (!isKursusAktif(data.tanggal_selesai)) {
       return null;
     }
 
@@ -86,7 +103,7 @@ async function getRegistrationStatus(kursusId: string, pesertaId: string): Promi
         id,
         status,
         tanggal_daftar
-      `
+      `,
       )
       .eq("kursus_id", kursusId)
       .eq("pengguna_id", pesertaId)

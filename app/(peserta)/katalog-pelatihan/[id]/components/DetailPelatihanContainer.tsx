@@ -52,6 +52,18 @@ interface DetailPelatihanContainerProps {
 
 export default function DetailPelatihanContainer({ user, profile, kursus, registrationStatus, jumlahPeserta }: DetailPelatihanContainerProps) {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const isPendaftaranDitutup = (() => {
+    if (!kursus.tanggal_mulai) {
+      return false;
+    }
+
+    const startDate = new Date(kursus.tanggal_mulai);
+    const today = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return startDate <= today;
+  })();
 
   // Function untuk membuka modal pendaftaran
   const handleBukaModal = () => {
@@ -265,6 +277,16 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                         Lanjutkan Belajar
                       </Link>
                     )}
+                  </div>
+                ) : isPendaftaranDitutup ? (
+                  <div className="mb-6">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center mb-4">
+                      <svg className="w-12 h-12 text-amber-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m9.75 0c0 5.385-4.365 9.75-9.75 9.75S2.25 18.135 2.25 12.75 6.615 3 12 3s9.75 4.365 9.75 9.75zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                      <h4 className="font-semibold text-amber-800 mb-1">Pendaftaran Ditutup</h4>
+                      <p className="text-sm text-amber-700">Pelatihan ini sudah dimulai, jadi peserta baru tidak bisa mendaftar lagi.</p>
+                    </div>
                   </div>
                 ) : (
                   <div className="mb-6">

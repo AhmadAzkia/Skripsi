@@ -41,6 +41,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Pelatihan tidak ditemukan atau belum dipublikasikan." }, { status: 404 });
     }
 
+    const { data: kursusJadwal, error: jadwalError } = await supabase.from("kursus").select("tanggal_mulai").eq("id", kursus.id).single();
+
+    if (jadwalError) {
+      return NextResponse.json({ error: `Gagal memeriksa jadwal pelatihan: ${jadwalError.message}` }, { status: 500 });
+    }
+
+    if (kursusJadwal?.tanggal_mulai) {
+      const startDate = new Date(kursusJadwal.tanggal_mulai);
+      const today = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      if (startDate <= today) {
+        return NextResponse.json({ error: "Pendaftaran ditutup karena pelatihan sudah dimulai." }, { status: 400 });
+      }
+    }
+
     const phone = body.nomor_hp?.trim() || profile.nomor_hp || "";
 
     if (phone && phone !== profile.nomor_hp) {

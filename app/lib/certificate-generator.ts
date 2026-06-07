@@ -3,6 +3,7 @@ import path from "path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createCertificateNumber } from "@/lib/certificates";
 
 type CertificatePdfData = {
   certificateNumber: string;
@@ -116,7 +117,7 @@ export async function generateAndUploadCertificate(certificateId: string) {
         judul,
         kategori
       )
-    `
+    `,
     )
     .eq("id", certificateId)
     .single();
@@ -168,4 +169,46 @@ export async function generateAndUploadCertificate(certificateId: string) {
   }
 
   return certificateUrl;
+}
+
+export async function ensureCertificateForCourse(profileId: string, kursusId: string) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY belum diisi. Generator sertifikat membutuhkan akses server-side.");
+  }
+
+  const { data: existingCertificate, error: existingCertificateError } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("kursus_id", kursusId).maybeSingle();
+
+  if (existingCertificateError) {
+    throw new Error(`Gagal memeriksa sertifikat yang sudah ada: ${existingCertificateError.message}`);
+  }
+
+  if (existingCertificate) {
+    if (!existingCertificate.sertifikat_url) {
+      await generateAndUploadCertificate(existingCertificate.id);
+    }
+
+    return existingCertificate.id;
+  }
+
+  const { data: certificate, error } = await supabase
+    .from("sertifikat")
+    .insert({
+      kursus_id: kursusId,
+      peserta_id: profileId,
+      nomor_sertifikat: createCertificateNumber(kursusId, profileId),
+      status: "terbit",
+      tanggal_terbit: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (error || !certificate) {
+    throw new Error(`Gagal membuat sertifikat: ${error?.message || "data kosong"}`);
+  }
+
+  await generateAndUploadCertificate(certificate.id);
+
+  return certificate.id;
 }
