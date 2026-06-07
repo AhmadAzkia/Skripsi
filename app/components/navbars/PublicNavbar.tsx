@@ -33,9 +33,6 @@ export default function Header() {
               <Link href="/jadwal-pelatihan" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
                 Jadwal Pelatihan
               </Link>
-              <Link href="/blog" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
-                Blog
-              </Link>
               <Link href="/tentang-kami" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
                 Tentang Kami
               </Link>
@@ -81,9 +78,6 @@ export default function Header() {
               </Link>
               <Link href="/jadwal-pelatihan" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
                 Jadwal Pelatihan
-              </Link>
-              <Link href="/blog" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
-                Blog
               </Link>
               <Link href="/tentang-kami" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
                 Tentang Kami

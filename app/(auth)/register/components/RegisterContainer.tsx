@@ -8,9 +8,9 @@ import Link from "next/link";
 export default function RegisterContainer() {
   return (
     <div className="relative w-full max-w-md">
-      {/* <ScrollReveal>
+      <ScrollReveal>
         <RegisterHero />
-      </ScrollReveal> */}
+      </ScrollReveal>
 
       {/* Under Development Banner */}
       <div className="mt-10 mb-6">
@@ -52,9 +52,9 @@ export default function RegisterContainer() {
           Kembali ke Beranda
         </Link>
       </div>
-      {/* <ScrollReveal delay={200}>
+      <ScrollReveal delay={200}>
         <RegisterForm />
-      </ScrollReveal> */}
+      </ScrollReveal>
     </div>
   );
 }

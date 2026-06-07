@@ -6,35 +6,16 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import RoleIndicator from "@/components/ui/RoleIndicator";
-import {
-  HomeIcon,
-  UsersIcon,
-  BookOpenIcon,
-  CalendarDaysIcon,
-  AcademicCapIcon,
-  CreditCardIcon,
-  NewspaperIcon,
-  UserIcon,
-  Bars3Icon,
-  XMarkIcon,
-  ChevronDownIcon,
-  ArrowRightOnRectangleIcon,
-  ChartBarIcon,
-  DocumentTextIcon,
-  VideoCameraIcon,
-  ClipboardDocumentCheckIcon,
-} from "@heroicons/react/24/outline";
+import { HomeIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard-admin", icon: HomeIcon },
   { name: "Manajemen Pengguna", href: "/manajemen-pengguna", icon: UsersIcon },
-  { name: "Transaksi & Laporan", href: "/laporan", icon: ChartBarIcon },
-  { name: "Manajemen Blog", href: "/blog-admin", icon: NewspaperIcon },
 ];
 
 const pelatihanDropdown = [
   { name: "Jadwal & Pelatihan", href: "/pelatihan-admin", icon: CalendarDaysIcon, description: "Atur jadwal dan link zoom" },
-  { name: "Sertifikat", href: "/admin/certificates", icon: AcademicCapIcon, description: "Kelola sertifikat peserta" },
+  { name: "Sertifikat", href: "/manajemen-sertifikat", icon: AcademicCapIcon, description: "Kelola sertifikat peserta" },
 ];
 
 export default function AdminNavbar() {

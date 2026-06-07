@@ -11,9 +11,9 @@ export default function LoginContainer() {
       <ScrollReveal>
         <LoginHero />
       </ScrollReveal>
-      {/* <ScrollReveal delay={200}>
+      <ScrollReveal delay={200}>
         <LoginForm />
-      </ScrollReveal> */}
+      </ScrollReveal>
 
       {/* Under Development Banner */}
       <div className="mt-10 mb-6">
