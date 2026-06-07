@@ -140,7 +140,7 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                       )}
                       {jadwal.status === "terdaftar" && <span className="px-4 py-2 bg-navy/10 text-navy font-medium rounded-lg text-center border border-navy/20">Menunggu Dimulai</span>}
                       {jadwal.status === "selesai" && (
-                        <a href={`/sertifikat`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
+                        <a href={`/sertifikat?kursusId=${jadwal.kursus_id}`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
                           Lihat Sertifikat
                         </a>
                       )}

@@ -16,6 +16,28 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Midtrans Sandbox Setup
+
+Tambahkan environment berikut ke `.env.local` sebelum menguji checkout:
+
+```bash
+MIDTRANS_SERVER_KEY=SB-Mid-server-xxxxxxxx
+NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxxxxxx
+MIDTRANS_IS_PRODUCTION=false
+NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION=false
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+SUPABASE_SERVICE_ROLE_KEY=isi_untuk_webhook_status_pembayaran
+CERTIFICATE_PRICE=50000
+NEXT_PUBLIC_CERTIFICATE_PRICE=50000
+SUPABASE_CERTIFICATE_BUCKET=certificates
+```
+
+Webhook notification URL untuk dashboard Midtrans:
+
+```text
+https://domain-anda.com/api/midtrans/notification
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

@@ -8,10 +8,10 @@ import Link from "next/link";
 export default function LoginContainer() {
   return (
     <div className="relative w-full max-w-md">
-      {/* <ScrollReveal>
+      <ScrollReveal>
         <LoginHero />
       </ScrollReveal>
-      <ScrollReveal delay={200}>
+      {/* <ScrollReveal delay={200}>
         <LoginForm />
       </ScrollReveal> */}
 

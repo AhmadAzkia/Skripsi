@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../../../lib/supabase/client";
+import Script from "next/script";
 
 type Kursus = {
   id: string;
@@ -25,6 +25,7 @@ interface RegistrationModalProps {
 
 export default function RegistrationModal({ kursus, profile, isOpen }: RegistrationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
   const [formData, setFormData] = useState({
     nama_lengkap: profile.nama_lengkap,
     email: profile.email,
@@ -45,6 +46,9 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
   };
 
   if (!isOpen) return null;
+
+  const snapScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true" ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
+  const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
 
   const formatHarga = (harga: number) => {
     if (harga === 0) return "Gratis";
@@ -98,131 +102,56 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
     setIsSubmitting(true);
 
     try {
-      console.log("Starting registration process...");
-      console.log("Form data:", formData);
-      console.log("Kursus ID:", kursus.id);
-      console.log("Profile ID:", profile.id);
+      setSubmitMessage(kursus.harga > 0 ? "Membuat checkout Midtrans..." : "Memproses pendaftaran...");
 
-      // 1. Update profil pengguna jika ada perubahan
-      const normalizedProfilePhone = profile.nomor_hp || "";
-      const normalizedFormPhone = formData.nomor_hp || "";
-
-      if (normalizedFormPhone !== normalizedProfilePhone) {
-        console.log("Updating profile phone number...");
-        console.log("From:", normalizedProfilePhone, "To:", normalizedFormPhone);
-
-        const { error: updateError } = await supabase.from("profil_pengguna").update({ nomor_hp: normalizedFormPhone }).eq("id", profile.id);
-
-        if (updateError) {
-          console.error("Profile update error:", updateError);
-          throw updateError;
-        }
-        console.log("Profile updated successfully");
-      } else {
-        console.log("No phone number update needed");
-      }
-
-      // 2. Check existing registration first
-      console.log("Checking existing registration...");
-      const { data: existingRegistration, error: checkError } = await supabase.from("pendaftaran_kursus").select("id").eq("kursus_id", kursus.id).eq("pengguna_id", profile.id).single();
-
-      if (checkError && checkError.code !== "PGRST116") {
-        console.error("Error checking existing registration:", checkError);
-        throw checkError;
-      }
-
-      if (existingRegistration) {
-        console.log("User already registered for this course");
-        throw new Error("Anda sudah terdaftar di pelatihan ini.");
-      }
-
-      // 3. Daftar ke kursus
-      console.log("Inserting course registration...");
-      const registrationData = {
-        kursus_id: kursus.id,
-        pengguna_id: profile.id,
-        status: "terdaftar" as const,
-        tanggal_daftar: new Date().toISOString(),
-      };
-      console.log("Registration data:", registrationData);
-
-      // Create timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Registration timeout after 10 seconds")), 10000);
+      const response = await fetch("/api/midtrans/snap", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          kursusId: kursus.id,
+          nama_lengkap: formData.nama_lengkap,
+          email: formData.email,
+          nomor_hp: formData.nomor_hp,
+        }),
       });
 
-      // Race between registration and timeout
-      const registrationPromise = supabase.from("pendaftaran_kursus").insert(registrationData).select();
+      const result = await response.json();
 
-      const { error: registrationError, data: registrationResult } = (await Promise.race([registrationPromise, timeoutPromise])) as any;
-
-      if (registrationError) {
-        console.error("Registration error:", registrationError);
-        throw registrationError;
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Gagal membuat checkout Midtrans.");
       }
-      console.log("Course registration successful:", registrationResult);
-
-      // 4. Jika kursus berbayar, buat record pembayaran
-      if (kursus.harga > 0) {
-        console.log("Creating payment record...");
-        const paymentData = {
-          pengguna_id: profile.id,
-          kursus_id: kursus.id,
-          jumlah: kursus.harga,
-          status_pembayaran: "menunggu" as const,
-          tipe_pembayaran: "pendaftaran_kursus" as const,
-        };
-        console.log("Payment data:", paymentData);
-
-        const timeoutPaymentPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("Payment creation timeout after 10 seconds")), 10000);
-        });
-
-        const paymentPromise = supabase.from("pembayaran").insert(paymentData).select();
-
-        const { error: paymentError, data: paymentResult } = (await Promise.race([paymentPromise, timeoutPaymentPromise])) as any;
-
-        if (paymentError) {
-          console.error("Payment creation error:", paymentError);
-          throw paymentError;
-        }
-        console.log("Payment record created:", paymentResult);
-      }
-
-      // 5. Buat notifikasi
-      console.log("Creating notification...");
-      const notificationData = {
-        pengguna_id: profile.id,
-        judul: "Pendaftaran Berhasil",
-        pesan: `Anda berhasil mendaftar pelatihan "${kursus.judul}". ${kursus.harga > 0 ? "Silakan lakukan pembayaran untuk mengaktifkan akses." : "Anda dapat mulai belajar sekarang."}`,
-        tipe: "pendaftaran",
-        terkait_id: kursus.id,
-      };
-      console.log("Notification data:", notificationData);
-
-      const { error: notificationError } = await supabase.from("notifikasi").insert(notificationData);
-
-      if (notificationError) {
-        console.error("Notification creation error:", notificationError);
-        // Don't throw error for notification, just log it
-      } else {
-        console.log("Notification created successfully");
-      }
-
-      console.log("Registration process completed successfully!");
 
       handleSuccess();
 
-      if (kursus.harga > 0) {
-        alert("Pendaftaran berhasil! Silakan lakukan pembayaran untuk mengaktifkan akses pelatihan.");
-      } else {
-        alert("Pendaftaran berhasil! Anda dapat mulai belajar sekarang.");
+      if (result.isFree) {
+        window.location.href = "/jadwal-peserta";
+        return;
       }
 
-      // Refresh halaman untuk memperbarui status
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      const finishUrl = result.finishUrl || `/pembayaran/${result.paymentId}`;
+
+      if ((window as any).snap && result.token) {
+        (window as any).snap.pay(result.token, {
+          onSuccess: () => {
+            window.location.href = finishUrl;
+          },
+          onPending: () => {
+            window.location.href = finishUrl;
+          },
+          onError: () => {
+            window.location.href = finishUrl;
+          },
+          onClose: () => {
+            window.location.href = finishUrl;
+          },
+        });
+      } else if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      } else {
+        throw new Error("Token checkout Midtrans tidak tersedia.");
+      }
     } catch (error: any) {
       console.error("Error during registration:", error);
 
@@ -233,12 +162,13 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
       } else if (error.code === "23503") {
         errorMessage = "Data pelatihan atau profil tidak valid.";
       } else if (error.message) {
-        errorMessage = `Error: ${error.message}`;
+        errorMessage = error.message;
       }
 
-      alert(errorMessage);
+      setErrors({ submit: errorMessage });
     } finally {
       setIsSubmitting(false);
+      setSubmitMessage("");
     }
   };
 
@@ -250,6 +180,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop:blur-sm transition-opacity duration-300 flex items-center justify-center p-4 z-50" onClick={handleBackdropClick}>
+      {midtransClientKey && <Script src={snapScriptUrl} data-client-key={midtransClientKey} strategy="afterInteractive" />}
       <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[95vh] overflow-y-auto p-2" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-[#001233] text-white p-6 rounded-t-xl">
@@ -269,6 +200,18 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
         {/* Content */}
         <div className="bg-white rounded-b-xl">
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
+            {errors.submit && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+                {errors.submit}
+              </div>
+            )}
+
+            {submitMessage && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                {submitMessage}
+              </div>
+            )}
+
             {/* Info Pelatihan */}
             <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 shadow-sm">
               <div className="flex items-center mb-4">
@@ -433,7 +376,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
                     Mendaftar...
                   </div>
                 ) : (
-                  "Daftar Sekarang"
+                  kursus.harga > 0 ? "Lanjut ke Pembayaran" : "Daftar Sekarang"
                 )}
               </button>
             </div>

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { CertificateWithCourse } from "../page";
+import GenerateCertificateButton from "./GenerateCertificateButton";
 
 interface SertifikatListProps {
   certificates: CertificateWithCourse[];
@@ -39,7 +40,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
               <h3 className="text-2xl font-bold text-navy mb-4">Belum Ada Sertifikat</h3>
               <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">Selesaikan pelatihan untuk mendapatkan sertifikat profesional Anda</p>
               <Link
-                href="/jadwal-pelatihan"
+                href="/katalog-pelatihan"
                 className="inline-flex items-center px-6 py-3 bg-linear-to-r from-gold to-gold/90 text-navy font-semibold rounded-lg hover:from-gold/90 hover:to-gold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +148,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                       Unduh Sertifikat
                     </a>
                   ) : (
-                    <div className="w-full text-center py-3 text-gray-400 text-sm italic bg-gray-50 rounded-lg">URL tidak tersedia</div>
+                    <GenerateCertificateButton certificateId={cert.id} />
                   )}
                 </div>
               </div>

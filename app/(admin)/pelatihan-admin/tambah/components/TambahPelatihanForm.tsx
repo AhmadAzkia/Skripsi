@@ -10,7 +10,6 @@ interface FormData {
   deskripsi: string;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
-  durasi_jam: number;
   harga: number;
   maksimal_peserta: number;
   tanggal_mulai: string;
@@ -32,7 +31,6 @@ const initialFormData: FormData = {
   deskripsi: "",
   kategori: "",
   tipe_kursus: "online",
-  durasi_jam: 0,
   harga: 0,
   maksimal_peserta: 0,
   tanggal_mulai: "",
@@ -74,7 +72,7 @@ export default function TambahPelatihanForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "durasi_jam" || name === "harga" || name === "maksimal_peserta" ? Number(value) : value,
+      [name]: name === "harga" || name === "maksimal_peserta" ? Number(value) : value,
     }));
 
     // Clear error when user starts typing
@@ -89,7 +87,6 @@ export default function TambahPelatihanForm() {
     if (!formData.judul.trim()) newErrors.judul = "Judul pelatihan harus diisi";
     if (!formData.deskripsi.trim()) newErrors.deskripsi = "Deskripsi harus diisi";
     if (!formData.kategori.trim()) newErrors.kategori = "Kategori harus diisi";
-    if (formData.durasi_jam <= 0) newErrors.durasi_jam = "Durasi harus lebih dari 0 jam";
     if (formData.harga < 0) newErrors.harga = "Harga tidak boleh negatif";
     if (formData.maksimal_peserta <= 0) newErrors.maksimal_peserta = "Maksimal peserta harus lebih dari 0";
     if (!formData.tanggal_mulai) newErrors.tanggal_mulai = "Tanggal mulai harus diisi";
@@ -321,23 +318,6 @@ export default function TambahPelatihanForm() {
                   <option value="offline">Offline</option>
                   <option value="hybrid">Hybrid</option>
                 </select>
-              </div>
-
-              {/* Durasi */}
-              <div>
-                <label className="block text-sm font-medium text-navy mb-2">
-                  Durasi (Jam) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="durasi_jam"
-                  value={formData.durasi_jam}
-                  onChange={handleInputChange}
-                  min="1"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200 ${errors.durasi_jam ? "border-red-300 bg-red-50" : "border-silver/30"}`}
-                  placeholder="8"
-                />
-                {errors.durasi_jam && <p className="text-red-500 text-sm mt-1">{errors.durasi_jam}</p>}
               </div>
 
               {/* Harga */}

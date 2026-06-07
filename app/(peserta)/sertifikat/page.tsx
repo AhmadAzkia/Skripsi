@@ -1,14 +1,26 @@
 // app/(peserta)/sertifikat/page.tsx
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUserWithRole } from "@/lib/user"; // Helper user
-import SertifikatContainer from "./components/SertifikatContainer"; // Komponen container baru
+import { getUserWithRole } from "@/lib/user";
+import SertifikatContainer from "./components/SertifikatContainer";
 import { redirect } from "next/navigation";
 import { Tables } from "@/../types/database";
 import type { SessionUser } from "@/contexts/AuthContext";
+import { createCertificateNumber, getCertificatePrice } from "@/lib/certificates";
+import { generateAndUploadCertificate } from "@/lib/certificate-generator";
 
 export type CertificateWithCourse = Tables<"sertifikat"> & {
-  kursus: Pick<Tables<"kursus">, "judul" | "kategori"> | null; // Ambil 'judul' dan 'kategori' dari kursus
+  kursus: Pick<Tables<"kursus">, "judul" | "kategori"> | null;
+};
+
+export type CertificateClaim = {
+  kursusId: string;
+  judul: string;
+  kategori: string;
+  harga: number;
+  status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran";
+  certificateId: string | null;
+  certificatePaymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
 };
 
 type SertifikatStats = {
@@ -18,25 +30,57 @@ type SertifikatStats = {
   rataRataNilai: number;
 };
 
-async function getCertificates(userId: string): Promise<CertificateWithCourse[]> {
+function isCourseCompleted(tanggalSelesai: string | null, registrationStatus: string) {
+  if (registrationStatus === "selesai") return true;
+  if (!tanggalSelesai) return false;
+  const today = new Date().toISOString().split("T")[0];
+  return today > tanggalSelesai;
+}
+
+async function ensureCertificate(profileId: string, kursusId: string) {
   const supabase = await createSupabaseServerClient();
+  const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("kursus_id", kursusId).maybeSingle();
 
-  // Pertama, dapatkan ID profil pengguna berdasarkan user_id dari auth
-  const { data: profile, error: profileError } = await supabase
-    .from("profil_pengguna")
-    .select("id") // Ambil ID dari tabel profil_pengguna
-    .eq("user_id", userId)
-    .single();
-
-  if (profileError || !profile) {
-    console.error("Error fetching profile ID for certificates:", profileError?.message);
-    return []; // Kembalikan array kosong jika profil tidak ditemukan
+  if (existingCertificate) {
+    if (!existingCertificate.sertifikat_url) {
+      try {
+        await generateAndUploadCertificate(existingCertificate.id);
+      } catch (error) {
+        console.error("Gagal generate file sertifikat:", error);
+      }
+    }
+    return existingCertificate.id;
   }
 
-  const profileId = profile.id; // ID dari tabel profil_pengguna
+  const { data: certificate, error } = await supabase
+    .from("sertifikat")
+    .insert({
+      kursus_id: kursusId,
+      peserta_id: profileId,
+      nomor_sertifikat: createCertificateNumber(kursusId, profileId),
+      status: "terbit",
+      tanggal_terbit: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
 
-  // Kedua, ambil data sertifikat berdasarkan profileId
-  const { data: certificates, error: certError } = await supabase
+  if (error || !certificate) {
+    console.error("Gagal membuat sertifikat:", error?.message);
+    return null;
+  }
+
+  try {
+    await generateAndUploadCertificate(certificate.id);
+  } catch (error) {
+    console.error("Gagal generate file sertifikat:", error);
+  }
+
+  return certificate.id;
+}
+
+async function getCertificates(profileId: string): Promise<CertificateWithCourse[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data: certificates, error } = await supabase
     .from("sertifikat")
     .select(
       `
@@ -44,89 +88,154 @@ async function getCertificates(userId: string): Promise<CertificateWithCourse[]>
       kursus ( judul, kategori )
     `
     )
-    .eq("peserta_id", profileId) // Filter berdasarkan ID profil pengguna
-    .eq("status", "terbit") // Ambil hanya sertifikat yang sudah terbit
-    .order("tanggal_terbit", { ascending: false }); // Urutkan dari yang terbaru
+    .eq("peserta_id", profileId)
+    .eq("status", "terbit")
+    .order("tanggal_terbit", { ascending: false });
 
-  if (certError) {
-    console.error("Gagal mengambil data sertifikat:", certError);
+  if (error) {
+    console.error("Gagal mengambil data sertifikat:", error.message);
     return [];
   }
 
-  // Pastikan data yang dikembalikan sesuai tipe CertificateWithCourse
   return certificates as CertificateWithCourse[];
 }
 
-async function getSertifikatStats(userId: string, certificates: CertificateWithCourse[]): Promise<SertifikatStats> {
+async function getCertificateClaims(profileId: string): Promise<CertificateClaim[]> {
   const supabase = await createSupabaseServerClient();
+  const { data: registrations, error } = await supabase
+    .from("pendaftaran_kursus")
+    .select(
+      `
+      id,
+      status,
+      kursus:kursus_id (
+        id,
+        judul,
+        kategori,
+        harga,
+        tanggal_selesai
+      )
+    `
+    )
+    .eq("pengguna_id", profileId)
+    .not("status", "eq", "dibatalkan");
 
-  // Ambil profile ID untuk user ini
-  const { data: profile, error: profileError } = await supabase.from("profil_pengguna").select("id").eq("user_id", userId).single();
-
-  if (profileError || !profile) {
-    return {
-      totalSertifikat: 0,
-      sertifikatBulanIni: 0,
-      kategoriTerlengkap: "Belum Ada",
-      rataRataNilai: 0,
-    };
+  if (error || !registrations) {
+    console.error("Gagal mengambil daftar klaim sertifikat:", error?.message);
+    return [];
   }
 
-  const profileId = profile.id;
+  const completedRegistrations = registrations.filter((registration) => {
+    const kursus = Array.isArray(registration.kursus) ? registration.kursus[0] : registration.kursus;
+    return kursus && isCourseCompleted(kursus.tanggal_selesai, registration.status);
+  });
 
-  // 1. Total sertifikat (dari data yang sudah diambil)
+  if (completedRegistrations.length === 0) {
+    return [];
+  }
+
+  const kursusIds = completedRegistrations.map((registration) => {
+    const kursus = Array.isArray(registration.kursus) ? registration.kursus[0] : registration.kursus;
+    return kursus!.id;
+  });
+
+  const [{ data: certificates }, { data: payments }] = await Promise.all([
+    supabase.from("sertifikat").select("id, kursus_id").eq("peserta_id", profileId).in("kursus_id", kursusIds),
+    supabase
+      .from("pembayaran")
+      .select("id, kursus_id, status_pembayaran, tipe_pembayaran")
+      .eq("pengguna_id", profileId)
+      .in("kursus_id", kursusIds)
+      .order("dibuat_pada", { ascending: false }),
+  ]);
+
+  const claims: CertificateClaim[] = [];
+
+  for (const registration of completedRegistrations) {
+    const kursus = Array.isArray(registration.kursus) ? registration.kursus[0] : registration.kursus;
+    if (!kursus) continue;
+
+    let certificateId = certificates?.find((certificate) => certificate.kursus_id === kursus.id)?.id || null;
+    const coursePayment = payments?.find((payment) => payment.kursus_id === kursus.id && payment.tipe_pembayaran === "pendaftaran_kursus" && payment.status_pembayaran === "berhasil");
+    const certificatePayment = payments?.find((payment) => payment.kursus_id === kursus.id && payment.tipe_pembayaran === "klaim_sertifikat");
+
+    if (!certificateId && kursus.harga > 0 && coursePayment) {
+      certificateId = await ensureCertificate(profileId, kursus.id);
+    }
+
+    if (!certificateId && kursus.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
+      certificateId = await ensureCertificate(profileId, kursus.id);
+    }
+
+    const status: CertificateClaim["status"] = certificateId
+      ? "sertifikat_tersedia"
+      : kursus.harga > 0
+        ? "termasuk_pelatihan_berbayar"
+        : certificatePayment?.status_pembayaran === "menunggu"
+          ? "menunggu_pembayaran"
+          : "tawarkan_pembelian";
+
+    claims.push({
+      kursusId: kursus.id,
+      judul: kursus.judul,
+      kategori: kursus.kategori,
+      harga: kursus.harga,
+      status,
+      certificateId,
+      certificatePaymentStatus: certificatePayment?.status_pembayaran || null,
+    });
+  }
+
+  return claims;
+}
+
+function getSertifikatStats(certificates: CertificateWithCourse[]): SertifikatStats {
   const totalSertifikat = certificates.length;
-
-  // 2. Sertifikat bulan ini
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   const sertifikatBulanIni = certificates.filter((cert) => {
     const certDate = new Date(cert.tanggal_terbit);
     return certDate.getMonth() === currentMonth && certDate.getFullYear() === currentYear;
   }).length;
+  const kategoriCount: Record<string, number> = {};
 
-  // 3. Kategori terlengkap (kategori dengan sertifikat terbanyak)
-  const kategoriCount: { [key: string]: number } = {};
   certificates.forEach((cert) => {
-    const kategori = (cert.kursus as any)?.kategori || "Lainnya";
+    const kategori = cert.kursus?.kategori || "Lainnya";
     kategoriCount[kategori] = (kategoriCount[kategori] || 0) + 1;
   });
 
   const kategoriTerlengkap = Object.keys(kategoriCount).length > 0 ? Object.keys(kategoriCount).reduce((a, b) => (kategoriCount[a] > kategoriCount[b] ? a : b)) : "Belum Ada";
 
-  // 4. Rata-rata nilai (placeholder - bisa diambil dari tabel nilai jika ada)
-  // Untuk sementara, kita asumsikan nilai default 85
-  const rataRataNilai = totalSertifikat > 0 ? 85 : 0;
-
   return {
     totalSertifikat,
     sertifikatBulanIni,
     kategoriTerlengkap,
-    rataRataNilai,
+    rataRataNilai: totalSertifikat > 0 ? 85 : 0,
   };
 }
 
-export default async function SertifikatPage() {
+export default async function SertifikatPage({ searchParams }: { searchParams: Promise<{ kursusId?: string }> }) {
   const userData = await getUserWithRole();
 
-  // Pengaman jika user tidak ditemukan (meskipun layout sudah melindungi)
   if (!userData?.user || userData.role !== "peserta") {
-    redirect("/login"); // Arahkan ke login jika tidak sesuai
+    redirect("/login");
   }
 
-  // 1. Jalankan kode BE di server untuk mendapatkan data sertifikat
-  const certificates = userData.user.id ? await getCertificates(userData.user.id) : [];
+  const { kursusId } = await searchParams;
+  const profileId = userData.profile.id;
+  const claims = await getCertificateClaims(profileId);
+  const certificates = await getCertificates(profileId);
+  const stats = getSertifikatStats(certificates);
+  const selectedClaim = kursusId ? claims.find((claim) => claim.kursusId === kursusId) || null : null;
 
-  // 2. Dapatkan statistik sertifikat
-  const stats = userData.user.id
-    ? await getSertifikatStats(userData.user.id, certificates)
-    : {
-        totalSertifikat: 0,
-        sertifikatBulanIni: 0,
-        kategoriTerlengkap: "Belum Ada",
-        rataRataNilai: 0,
-      };
-
-  // 3. Render komponen FE dan kirimkan data user, sertifikat, dan stats sebagai props
-  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} stats={stats} />;
+  return (
+    <SertifikatContainer
+      user={userData.user as SessionUser}
+      certificates={certificates}
+      stats={stats}
+      claims={claims}
+      selectedClaim={selectedClaim}
+      certificatePrice={getCertificatePrice()}
+    />
+  );
 }

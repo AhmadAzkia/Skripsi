@@ -8,7 +8,6 @@ interface CreatePelatihanData {
   deskripsi: string;
   kategori: string;
   tipe_kursus: "online" | "offline" | "hybrid";
-  durasi_jam: number;
   harga: number;
   maksimal_peserta: number;
   tanggal_mulai: string;
@@ -97,13 +96,6 @@ export async function createPelatihan(data: CreatePelatihanData) {
       };
     }
 
-    if (data.durasi_jam <= 0) {
-      return {
-        success: false,
-        error: "Durasi harus lebih dari 0 jam",
-      };
-    }
-
     if (data.harga < 0) {
       return {
         success: false,
@@ -159,7 +151,6 @@ export async function createPelatihan(data: CreatePelatihanData) {
       deskripsi: data.deskripsi.trim(),
       kategori: data.kategori.trim(),
       tipe_kursus: data.tipe_kursus,
-      durasi_jam: data.durasi_jam,
       harga: data.harga,
       maksimal_peserta: data.maksimal_peserta,
       tanggal_mulai: data.tanggal_mulai,
@@ -178,13 +169,13 @@ export async function createPelatihan(data: CreatePelatihanData) {
       console.error("Database insert error:", insertError);
       return {
         success: false,
-        error: "Gagal menyimpan data pelatihan ke database",
+        error: `Gagal menyimpan data pelatihan ke database: ${insertError.message}`,
       };
     }
 
     // Revalidate the admin pelatihan page
-    revalidatePath("/admin/pelatihan-admin");
-    revalidatePath("/admin/pelatihan-admin/tambah");
+    revalidatePath("/pelatihan-admin");
+    revalidatePath("/pelatihan-admin/tambah");
     revalidatePath("/jadwal-pelatihan");
     revalidatePath("/katalog-pelatihan");
 
@@ -266,7 +257,7 @@ export async function updatePelatihan(id: string, data: Partial<CreatePelatihanD
     }
 
     // Revalidate the admin pelatihan page
-    revalidatePath("/admin/pelatihan-admin");
+    revalidatePath("/pelatihan-admin");
     revalidatePath("/jadwal-pelatihan");
     revalidatePath("/katalog-pelatihan");
 
@@ -323,7 +314,7 @@ export async function deletePelatihan(id: string) {
     }
 
     // Revalidate the admin pelatihan page
-    revalidatePath("/admin/pelatihan-admin");
+    revalidatePath("/pelatihan-admin");
     revalidatePath("/jadwal-pelatihan");
     revalidatePath("/katalog-pelatihan");
 
