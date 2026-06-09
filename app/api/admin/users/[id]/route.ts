@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getUserWithRole } from "@/lib/user";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -99,6 +100,11 @@ export async function DELETE(
     }
 
     const supabase = await createSupabaseServerClient();
+    const admin = createSupabaseAdminClient();
+
+    if (!admin) {
+      return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY belum diisi." }, { status: 500 });
+    }
 
     // Get user profile to get user_id
     const { data: profileData, error: profileError } = await supabase
@@ -122,7 +128,7 @@ export async function DELETE(
     }
 
     // Delete auth user
-    const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(profileData.user_id);
+    const { error: deleteAuthError } = await admin.auth.admin.deleteUser(profileData.user_id);
 
     if (deleteAuthError) {
       console.error("Failed to delete auth user:", deleteAuthError);

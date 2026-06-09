@@ -96,7 +96,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
   const getViewLink = (kursusId: string) => {
     switch (userRole) {
       case "admin":
-        return `/admin/kursus/${kursusId}`;
+        return `/pelatihan-admin/edit/${kursusId}`;
       case "instruktur":
         return `/pelatihan-pemateri/${kursusId}/materi`;
       case "peserta":

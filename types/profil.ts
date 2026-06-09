@@ -6,9 +6,6 @@ export type UserProfile = Tables<"profil_pengguna">;
 // Type untuk role/peran pengguna
 export type UserRole = "admin" | "pemateri" | "peserta";
 
-// Type untuk artikel blog
-export type BlogArticle = Tables<"artikel_blog">;
-
 // Type untuk kursus
 export type Course = Tables<"kursus">;
 

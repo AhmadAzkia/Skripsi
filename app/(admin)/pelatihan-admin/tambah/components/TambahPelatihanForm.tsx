@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { createPelatihan, getInstruktur } from "../actions";
+import { createPelatihan, getInstruktur, updatePelatihan } from "../actions";
 
 interface FormData {
   judul: string;
@@ -40,8 +40,14 @@ const initialFormData: FormData = {
   instruktur_id: "",
 };
 
-export default function TambahPelatihanForm() {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+interface TambahPelatihanFormProps {
+  mode?: "create" | "edit";
+  courseId?: string;
+  initialData?: FormData;
+}
+
+export default function TambahPelatihanForm({ mode = "create", courseId, initialData }: TambahPelatihanFormProps) {
+  const [formData, setFormData] = useState<FormData>(initialData || initialFormData);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [instrukturList, setInstrukturList] = useState<Instruktur[]>([]);
@@ -110,7 +116,7 @@ export default function TambahPelatihanForm() {
 
     setLoading(true);
     try {
-      const result = await createPelatihan(formData);
+      const result = mode === "edit" && courseId ? await updatePelatihan(courseId, formData) : await createPelatihan(formData);
 
       if (result.success) {
         router.push("/pelatihan-admin");
@@ -424,7 +430,7 @@ export default function TambahPelatihanForm() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Simpan Pelatihan
+                  {mode === "edit" ? "Simpan Perubahan" : "Simpan Pelatihan"}
                 </>
               )}
             </button>

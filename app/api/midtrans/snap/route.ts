@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Akun peserta tidak valid." }, { status: 403 });
     }
 
-    const { data: kursus, error: kursusError } = await supabase.from("kursus").select("id, judul, harga, status").eq("id", body.kursusId).eq("status", "published").single();
+    const { data: kursus, error: kursusError } = await supabase.from("kursus").select("id, judul, harga, status, maksimal_peserta").eq("id", body.kursusId).eq("status", "published").single();
 
     if (kursusError || !kursus) {
       return NextResponse.json({ error: "Pelatihan tidak ditemukan atau belum dipublikasikan." }, { status: 404 });
@@ -70,17 +70,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Gagal memeriksa pendaftaran: ${registrationCheckError.message}` }, { status: 500 });
     }
 
-    if (!existingRegistration) {
-      const { error: registrationError } = await supabase.from("pendaftaran_kursus").insert({
-        kursus_id: kursus.id,
-        pengguna_id: profile.id,
-        status: "terdaftar",
-        tanggal_daftar: new Date().toISOString(),
-      });
+    if (existingRegistration) {
+      return NextResponse.json({ error: "Anda sudah terdaftar di pelatihan ini." }, { status: 409 });
+    }
 
-      if (registrationError) {
-        return NextResponse.json({ error: `Gagal membuat pendaftaran: ${registrationError.message}` }, { status: 500 });
+    if (kursus.maksimal_peserta) {
+      const { count, error: countError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("kursus_id", kursus.id).in("status", ["terdaftar", "sedang_belajar", "selesai"]);
+
+      if (countError) {
+        return NextResponse.json({ error: `Gagal memeriksa kuota pelatihan: ${countError.message}` }, { status: 500 });
       }
+
+      if ((count || 0) >= kursus.maksimal_peserta) {
+        return NextResponse.json({ error: "Pendaftaran ditolak karena kuota pelatihan sudah penuh." }, { status: 400 });
+      }
+    }
+
+    const { error: registrationError } = await supabase.from("pendaftaran_kursus").insert({
+      kursus_id: kursus.id,
+      pengguna_id: profile.id,
+      status: "terdaftar",
+      tanggal_daftar: new Date().toISOString(),
+    });
+
+    if (registrationError) {
+      return NextResponse.json({ error: `Gagal membuat pendaftaran: ${registrationError.message}` }, { status: 500 });
     }
 
     if (kursus.harga <= 0) {

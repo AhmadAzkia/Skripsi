@@ -5,12 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { logout } from "@/(peserta)/actions";
 import RoleIndicator from "@/components/ui/RoleIndicator";
-import { HomeIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon, CreditCardIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard-admin", icon: HomeIcon },
   { name: "Manajemen Pengguna", href: "/manajemen-pengguna", icon: UsersIcon },
+  { name: "Riwayat Transaksi", href: "/riwayat-transaksi", icon: CreditCardIcon },
 ];
 
 const pelatihanDropdown = [
@@ -60,10 +62,7 @@ export default function AdminNavbar() {
 
   const confirmLogout = async () => {
     setIsLoggingOut(true);
-
-    sessionStorage.clear();
-    localStorage.clear();
-    window.location.href = "/";
+    await logout();
   };
 
   const cancelLogout = () => {
@@ -220,7 +219,7 @@ export default function AdminNavbar() {
                         <button
                           onClick={() => {
                             setProfileDropdownOpen(false);
-                            handleNavigation("/profile");
+                            handleNavigation("/profil-peserta");
                           }}
                           className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                         >

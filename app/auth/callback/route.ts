@@ -2,13 +2,11 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
-import { Tables } from "@/../types/database";
-
 // Fungsi untuk menentukan path redirect berdasarkan peran
 function getRedirectPath(role: string): string {
   switch (role) {
     case 'admin':
-      return '/dashboard';
+      return '/dashboard-admin';
     case 'instruktur':
       return '/dashboard-pemateri';
     case 'peserta':

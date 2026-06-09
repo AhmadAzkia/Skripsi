@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { Database } from "@/../types/database";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -35,20 +35,11 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Me-refresh sesi pengguna
   await supabase.auth.getSession();
 
   return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Cocokkan semua path request kecuali untuk:
-     * - _next/static (file statis)
-     * - _next/image (optimisasi gambar)
-     * - favicon.ico (file favicon)
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

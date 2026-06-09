@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getUserWithRole } from "@/lib/user";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -42,9 +43,14 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createSupabaseServerClient();
+    const admin = createSupabaseAdminClient();
+
+    if (!admin) {
+      return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY belum diisi." }, { status: 500 });
+    }
 
     // Create auth user first
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await admin.auth.admin.createUser({
       email,
       password: "TempPassword123!", // Temporary password
       email_confirm: true,
@@ -71,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     if (profileError) {
       // Cleanup auth user if profile creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id);
+      await admin.auth.admin.deleteUser(authData.user.id);
       return NextResponse.json({ error: profileError.message }, { status: 400 });
     }
 
