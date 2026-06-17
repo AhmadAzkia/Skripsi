@@ -4,9 +4,10 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 type DashboardStats = {
-  pelatihanAktifCount: number;
+  totalPelatihanDiikuti: number;
   sertifikatCount: number;
   jadwalBerlangsung: number;
+  totalPengeluaran: number;
 };
 
 interface DashboardStatsProps {
@@ -16,8 +17,8 @@ interface DashboardStatsProps {
 export default function DashboardStats({ stats }: DashboardStatsProps) {
   const statsData = [
     {
-      end: stats.pelatihanAktifCount,
-      label: "Pelatihan Aktif",
+      end: stats.totalPelatihanDiikuti,
+      label: "Total Pelatihan Diikuti",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -61,6 +62,19 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
       borderColor: "border-silver/30",
       hoverBorderColor: "hover:border-silver/50",
     },
+    {
+      end: stats.totalPengeluaran,
+      label: "Total Pengeluaran",
+      prefix: "Rp ",
+      icon: (
+        <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      bgColor: "from-green-100/50 to-green-200/50",
+      borderColor: "border-green-300/50",
+      hoverBorderColor: "hover:border-green-400/50",
+    },
   ];
 
   return (
@@ -88,7 +102,7 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
                 <div className="flex items-center justify-center mb-6">
                   <div className="bg-white/60 p-4 rounded-full shadow-md group-hover:shadow-lg transition-shadow duration-300">{stat.icon}</div>
                 </div>
-                <AnimatedCounter end={stat.end} label={stat.label} />
+                <AnimatedCounter end={stat.end} label={stat.label} prefix={"prefix" in stat ? (stat.prefix as string) : ""} />
               </div>
             ))}
           </div>

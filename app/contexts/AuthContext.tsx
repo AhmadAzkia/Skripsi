@@ -108,27 +108,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    // Pantau perubahan status login (SIGNED_IN, SIGNED_OUT)
+    // Pantau perubahan status login (SIGNED_IN, SIGNED_OUT, INITIAL_SESSION)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       setLoading(true);
 
-      if (event === "SIGNED_IN" && session) {
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
+        // Clear stale user data sebelum fetch baru supaya navbar gak nampilin data lama
+        setUser(null);
         const profile = await getProfile(session.user);
         setUser({ ...session.user, profile });
+        setLoading(false);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
+        setLoading(false);
       }
       // Tangani TOKEN_REFRESHED untuk update otomatis
       else if (event === "TOKEN_REFRESHED" && session) {
         const profile = await getProfile(session.user);
         setUser({ ...session.user, profile });
+        setLoading(false);
       }
       // Juga tangani USER_UPDATED jika ingin profil update otomatis
       else if (event === "USER_UPDATED" && session) {
         const profile = await getProfile(session.user);
         setUser({ ...session.user, profile });
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     // Hentikan pemantauan saat komponen di-unmount

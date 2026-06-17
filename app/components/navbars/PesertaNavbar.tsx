@@ -5,9 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase/client";
 import { logout } from "@/(peserta)/actions";
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import RoleIndicator from "@/components/ui/RoleIndicator";
 import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
@@ -25,20 +23,19 @@ export default function PesertaNavbar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, refreshUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const [loading, setLoading] = useState(authLoading);
 
-  // Listen to auth state changes untuk update navbar otomatis
+  // Sync dengan auth loading, tapi kalau stuck lebih dari 3 detik, paksa stop
   React.useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
-        refreshUser();
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [refreshUser]);
+    if (authLoading) {
+      setLoading(true);
+      const timeout = setTimeout(() => setLoading(false), 3000);
+      return () => clearTimeout(timeout);
+    } else {
+      setLoading(false);
+    }
+  }, [authLoading]);
 
   const handleNavigation = (href: string) => {
     setMobileMenuOpen(false); // Tutup menu mobile
@@ -116,108 +113,110 @@ export default function PesertaNavbar() {
 
           {/* Profile Dropdown - Desktop */}
           <div className="hidden lg:block relative shrink-0">
-            <button
-              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-silver hover:text-gold hover:bg-navy/50 transition-all duration-300 group"
-            >
-              <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 text-navy rounded-full flex items-center justify-center text-xs font-semibold transition-transform duration-200 group-hover:scale-110 shadow-lg">
-                {/* Access email directly from user */}
-                {user?.email?.charAt(0).toUpperCase() || "U"}
+            {loading ? (
+              <div className="flex items-center space-x-2 px-3 py-2">
+                <div className="w-8 h-8 bg-white/10 rounded-full animate-pulse" />
+                <div className="w-20 h-4 bg-white/10 rounded animate-pulse" />
               </div>
-              <span className="max-w-32 truncate text-white-text">
-                {/* Access email directly from user */}
-                {user?.email || "User"}
-                {/* Optionally, display the user's full name from the profile if available: */}
-                {/* {user?.profile?.nama_lengkap || user?.email || "User"} */}
-              </span>
-              <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
-            </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-silver hover:text-gold hover:bg-navy/50 transition-all duration-300 group"
+                >
+                  <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 text-navy rounded-full flex items-center justify-center text-xs font-semibold transition-transform duration-200 group-hover:scale-110 shadow-lg">
+                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                  <span className="max-w-32 truncate text-white-text">
+                    {user?.profile?.nama_lengkap || user?.email || "User"}
+                  </span>
+                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
+                </button>
 
-            {/* Dropdown Menu */}
-            {profileDropdownOpen && (
-              <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transform transition-all duration-200 animate-slideInFromTop">
-                <div className="py-2">
-                  {/* User Info Header */}
-                  <div className="px-4 py-3 border-b border-gray-100 bg-linear-to-r from-navy/5 to-blue-50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-linear-to-br from-navy to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
-                        <UserIcon className="w-5 h-5 text-white" />
+                {/* Dropdown Menu */}
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 ring-1 ring-navy/10 z-50 transform transition-all duration-200 animate-slideInFromTop">
+                    <div className="py-2">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 border-b border-gray-100 bg-linear-to-r from-navy/5 to-blue-50">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-linear-to-br from-navy to-blue-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                            <UserIcon className="w-5 h-5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-semibold text-navy text-sm gradient-text">
+                              {user?.profile?.nama_lengkap || user?.email?.split("@")[0] || "Peserta"}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">
+                              {user?.email}
+                            </div>
+                            <div className="mt-1">
+                              <RoleIndicator />
+                            </div>
+                          </div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-navy text-sm gradient-text">
-                          {/* Corrected path: Access name from profile */}
-                          {user?.profile?.nama_lengkap || user?.email?.split("@")[0] || "Peserta"}
-                        </div>
-                        <div className="text-xs text-gray-500 truncate">
-                          {/* Corrected path: Access email directly */}
-                          {user?.email}
-                        </div>
-                        <div className="mt-1">
-                          {/* RoleIndicator already uses useAuth internally or receives role as prop */}
-                          <RoleIndicator />
-                        </div>
+
+                      {/* Menu Items */}
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            handleNavigation("/profil-peserta");
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                        >
+                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
+                            <UserIcon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium">Profil Saya</span>
+                            <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Kelola informasi akun</div>
+                          </div>
+                          <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            handleNavigation("/riwayat-peserta");
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                        >
+                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
+                            <CreditCardIcon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium">Riwayat Transaksi</span>
+                            <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Lihat riwayat pembayaran</div>
+                          </div>
+                          <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
+                        </button>
                       </div>
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+
+                      {/* Separator */}
+                      <div className="border-t border-gray-100 my-1"></div>
+
+                      {/* Logout Button */}
+                      <div className="py-1">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-linear-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                        >
+                          <div className="p-1.5 rounded-lg bg-red-100 text-red-600 group-hover:bg-linear-to-br group-hover:from-red-200 group-hover:to-red-100 group-hover:text-red-700 transition-all duration-200 icon-hover">
+                            <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="font-medium">Keluar</span>
+                            <div className="text-xs text-red-500 group-hover:text-red-600 transition-all duration-200">Logout dari akun</div>
+                          </div>
+                          <div className="w-1 h-1 bg-red-300 rounded-full group-hover:bg-red-500 transition-all duration-200"></div>
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Menu Items */}
-                  <div className="py-1">
-                    <button
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        handleNavigation("/profil-peserta");
-                      }}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
-                    >
-                      <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
-                        <UserIcon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="font-medium">Profil Saya</span>
-                        <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Kelola informasi akun</div>
-                      </div>
-                      <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        handleNavigation("/riwayat-peserta");
-                      }}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
-                    >
-                      <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
-                        <CreditCardIcon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="font-medium">Riwayat Transaksi</span>
-                        <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Lihat riwayat pembayaran</div>
-                      </div>
-                      <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
-                    </button>
-                  </div>
-
-                  {/* Separator */}
-                  <div className="border-t border-gray-100 my-1"></div>
-
-                  {/* Logout Button */}
-                  <div className="py-1">
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-linear-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
-                    >
-                      <div className="p-1.5 rounded-lg bg-red-100 text-red-600 group-hover:bg-linear-to-br group-hover:from-red-200 group-hover:to-red-100 group-hover:text-red-700 transition-all duration-200 icon-hover">
-                        <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="font-medium">Keluar</span>
-                        <div className="text-xs text-red-500 group-hover:text-red-600 transition-all duration-200">Logout dari akun</div>
-                      </div>
-                      <div className="w-1 h-1 bg-red-300 rounded-full group-hover:bg-red-500 transition-all duration-200"></div>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                )}
+              </>
             )}
           </div>
 

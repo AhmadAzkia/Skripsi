@@ -3,9 +3,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signup } from "../actions";
-import { supabase } from "@/lib/supabase/client";
 
 interface RegisterFormProps {
   className?: string;
@@ -32,9 +30,6 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showResend, setShowResend] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
-  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -63,6 +58,12 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       return;
     }
 
+    if (!formData.phone.trim()) {
+      setError("Nomor telepon wajib diisi");
+      setLoading(false);
+      return;
+    }
+
     if (!formData.agreeToTerms) {
       setError("Anda harus menyetujui syarat dan ketentuan");
       setLoading(false);
@@ -75,35 +76,12 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       if (error) {
         setError(error);
       } else if (user) {
-        setSuccess("Pendaftaran berhasil! 📧 Kami telah mengirim link verifikasi ke email Anda. " + "Silakan cek inbox (dan folder spam) untuk mengaktifkan akun Anda.");
-        setUserEmail(formData.email);
-        setShowResend(true);
-        // Tidak auto redirect, biarkan user membaca pesan
+        // Signup action sudah sign in server-side (signInWithPassword)
+        // Full page reload supaya AuthProvider reinitializes dengan session baru
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError("Terjadi kesalahan saat pendaftaran");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendVerification = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: userEmail,
-      });
-
-      if (error) {
-        setError("Gagal mengirim ulang email verifikasi: " + error.message);
-      } else {
-        setSuccess("Email verifikasi telah dikirim ulang ke " + userEmail + ". Silakan cek inbox Anda.");
-      }
-    } catch (err) {
-      setError("Terjadi kesalahan saat mengirim ulang email verifikasi");
     } finally {
       setLoading(false);
     }
@@ -118,14 +96,6 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       {success && (
         <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm">
           {success}
-          {showResend && (
-            <div className="mt-3 pt-3 border-t border-green-500/30">
-              <p className="text-xs text-green-200 mb-2">Tidak menerima email?</p>
-              <button type="button" onClick={handleResendVerification} disabled={loading} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition-colors disabled:opacity-50">
-                {loading ? "Mengirim..." : "Kirim Ulang Email Verifikasi"}
-              </button>
-            </div>
-          )}
         </div>
       )}
 
@@ -200,11 +170,12 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
               id="phone"
               name="phone"
               type="tel"
+              required
               value={formData.phone}
               onChange={handleChange}
               disabled={loading}
               className="block w-full pl-10 pr-3 py-3 border border-white/30 rounded-lg bg-white/5 text-white-text placeholder-silver/70 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all duration-300 disabled:opacity-50"
-              placeholder="Masukkan nomor telepon (opsional)"
+              placeholder="Masukkan nomor telepon"
             />
           </div>
         </div>

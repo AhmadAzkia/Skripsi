@@ -50,5 +50,7 @@ export async function login(formData: FormData) {
   const redirectPath = getRedirectPath(profile.peran);
 
   revalidatePath("/", "layout");
-  redirect(redirectPath);
+  // Return redirect path instead of calling redirect() supaya client bisa
+  // refresh auth state dulu sebelum navigate (mencegah navbar nampilin data lama)
+  return { redirectPath };
 }

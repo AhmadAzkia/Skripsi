@@ -7,15 +7,16 @@ import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 
 type DashboardStats = {
-  pelatihanAktifCount: number;
+  totalPelatihanDiikuti: number;
   sertifikatCount: number;
-  jadwalBerlangsung: number; // Ganti dari jadwalHariIniCount ke jadwalBerlangsung
+  jadwalBerlangsung: number;
+  totalPengeluaran: number;
 };
 
 type RecentActivity = {
   id: string;
   title: string;
-  type: "pelatihan" | "sertifikat" | "jadwal";
+  type: "pelatihan" | "sertifikat" | "jadwal" | "pembayaran";
   date: string;
   status: "completed" | "in-progress" | "upcoming";
 };
@@ -24,39 +25,24 @@ async function getDashboardStats(profileId: string): Promise<DashboardStats> {
   const supabase = await createSupabaseServerClient();
   const today = new Date().toISOString().split("T")[0];
 
-  // 1. Hitung Pelatihan Aktif - menggunakan logic yang sama dengan jadwal-peserta
-  // Pelatihan aktif = jadwal berlangsung dari halaman jadwal-peserta
-  const { count: pelatihanAktifCount, error: errorAktif } = await supabase
+  // 1. Total Pelatihan Diikuti (semua pendaftaran)
+  const { count: totalPelatihanDiikuti, error: errorTotal } = await supabase
     .from("pendaftaran_kursus")
-    .select(
-      `
-      *,
-      kursus!inner(
-        tanggal_mulai,
-        tanggal_selesai
-      )
-    `,
-      { count: "exact", head: true }
-    )
-    .eq("pengguna_id", profileId)
-    .in("status", ["terdaftar", "sedang_belajar"])
-    .lte("kursus.tanggal_mulai", today)
-    .gte("kursus.tanggal_selesai", today);
+    .select("*", { count: "exact", head: true })
+    .eq("pengguna_id", profileId);
 
   // 2. Hitung Sertifikat yang Terbit
-  const { count: sertifikatCount, error: errorSertifikat } = await supabase.from("sertifikat").select("*", { count: "exact", head: true }).eq("peserta_id", profileId).eq("status", "terbit");
+  const { count: sertifikatCount, error: errorSertifikat } = await supabase
+    .from("sertifikat")
+    .select("*", { count: "exact", head: true })
+    .eq("peserta_id", profileId)
+    .eq("status", "terbit");
 
-  // 3. Hitung Jadwal Berlangsung - sama dengan "sedang berlangsung" di halaman jadwal-peserta
+  // 3. Jadwal Berlangsung (kursus yang sedang dalam periode)
   const { count: jadwalBerlangsung, error: errorJadwal } = await supabase
     .from("pendaftaran_kursus")
     .select(
-      `
-      *,
-      kursus!inner(
-        tanggal_mulai,
-        tanggal_selesai
-      )
-    `,
+      `*, kursus!inner(tanggal_mulai, tanggal_selesai)`,
       { count: "exact", head: true }
     )
     .eq("pengguna_id", profileId)
@@ -64,23 +50,25 @@ async function getDashboardStats(profileId: string): Promise<DashboardStats> {
     .lte("kursus.tanggal_mulai", today)
     .gte("kursus.tanggal_selesai", today);
 
-  // Debug logging
-  console.log("Dashboard Stats:", {
-    profileId,
-    pelatihanAktifCount,
-    sertifikatCount,
-    jadwalBerlangsung,
-    today,
-  });
+  // 4. Total Pengeluaran (pembayaran berhasil)
+  const { data: pembayaranData, error: errorPembayaran } = await supabase
+    .from("pembayaran")
+    .select("jumlah")
+    .eq("pengguna_id", profileId)
+    .eq("status_pembayaran", "berhasil");
 
-  if (errorAktif) console.error("Error fetching active courses:", errorAktif.message);
+  const totalPengeluaran = pembayaranData?.reduce((sum, p) => sum + (p.jumlah || 0), 0) ?? 0;
+
+  if (errorTotal) console.error("Error fetching total pelatihan:", errorTotal.message);
   if (errorSertifikat) console.error("Error fetching certificates:", errorSertifikat.message);
   if (errorJadwal) console.error("Error fetching ongoing schedule:", errorJadwal.message);
+  if (errorPembayaran) console.error("Error fetching pembayaran:", errorPembayaran.message);
 
   return {
-    pelatihanAktifCount: pelatihanAktifCount ?? 0,
+    totalPelatihanDiikuti: totalPelatihanDiikuti ?? 0,
     sertifikatCount: sertifikatCount ?? 0,
     jadwalBerlangsung: jadwalBerlangsung ?? 0,
+    totalPengeluaran,
   };
 }
 
@@ -243,13 +231,46 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
       });
     }
 
-    // 4. Sort berdasarkan tanggal terbaru dan ambil 8 teratas
+    // 4. Riwayat Pembayaran
+    const { data: pembayaranData, error: pembayaranError } = await supabase
+      .from("pembayaran")
+      .select(
+        `
+        id,
+        jumlah,
+        status_pembayaran,
+        dibayar_pada,
+        dibuat_pada,
+        kursus:kursus_id ( judul )
+      `
+      )
+      .eq("pengguna_id", profileId)
+      .order("dibuat_pada", { ascending: false })
+      .limit(5);
+
+    if (pembayaranData && !pembayaranError) {
+      pembayaranData.forEach((item) => {
+        const judulKursus = (item.kursus as any)?.judul || "sebuah pelatihan";
+        const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
+        const statusText = item.status_pembayaran === "berhasil" ? "Berhasil" : item.status_pembayaran === "menunggu" ? "Menunggu" : "Gagal";
+        activities.push({
+          id: `pembayaran-${item.id}`,
+          title: `Pembayaran ${statusText}: ${judulKursus}`,
+          type: "pembayaran",
+          date: item.dibayar_pada || item.dibuat_pada,
+          status: item.status_pembayaran === "berhasil" ? "completed" : "upcoming",
+        });
+      });
+    }
+
+    // 5. Sort berdasarkan tanggal terbaru dan ambil 8 teratas
     activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     // Error handling untuk debugging jika diperlukan
     if (pelatihanError) console.error("Error fetching pelatihan:", pelatihanError.message);
     if (sertifikatError) console.error("Error fetching sertifikat:", sertifikatError.message);
     if (jadwalError) console.error("Error fetching jadwal:", jadwalError.message);
+    if (pembayaranError) console.error("Error fetching pembayaran:", pembayaranError.message);
 
     return activities.slice(0, 8);
   } catch (error) {
@@ -272,9 +293,10 @@ export default async function DashboardPesertaPage() {
   const stats = userData.profile?.id
     ? await getDashboardStats(userData.profile.id)
     : {
-        pelatihanAktifCount: 0,
+        totalPelatihanDiikuti: 0,
         sertifikatCount: 0,
         jadwalBerlangsung: 0,
+        totalPengeluaran: 0,
       };
 
   const activities = userData.profile?.id ? await getRecentActivities(userData.profile.id) : [];

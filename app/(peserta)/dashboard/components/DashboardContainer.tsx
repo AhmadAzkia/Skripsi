@@ -7,7 +7,7 @@ import { SessionUser } from "@/contexts/AuthContext";
 type RecentActivity = {
   id: string;
   title: string;
-  type: "pelatihan" | "sertifikat" | "jadwal";
+  type: "pelatihan" | "sertifikat" | "jadwal" | "pembayaran";
   date: string;
   status: "completed" | "in-progress" | "upcoming";
 };
@@ -15,9 +15,10 @@ type RecentActivity = {
 type DashboardContainerProps = {
   user: SessionUser;
   stats: {
-    pelatihanAktifCount: number;
+    totalPelatihanDiikuti: number;
     sertifikatCount: number;
     jadwalBerlangsung: number;
+    totalPengeluaran: number;
   };
   activities: RecentActivity[];
 };

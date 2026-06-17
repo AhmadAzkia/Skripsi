@@ -22,8 +22,12 @@ export default function LoginForm() {
 
     if (result?.error) {
       setError(result.error);
+      setIsSubmitting(false);
+    } else if (result?.redirectPath) {
+      // Login berhasil — full page reload supaya AuthProvider reinitializes
+      // dan baca session baru dari cookies (router.push ga cukup karena React tree ga re-mount)
+      window.location.href = result.redirectPath;
     }
-    setIsSubmitting(false);
   };
 
   return (

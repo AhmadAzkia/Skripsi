@@ -36,6 +36,17 @@ export async function signup(data: SignupData) {
     return { user: null, error: error.message };
   }
 
+  // Sign in langsung setelah signup supaya ada session aktif
+  // (email confirmation dimatikan di Supabase, jadi bisa langsung login)
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: data.email,
+    password: data.password,
+  });
+
+  if (signInError) {
+    return { user: null, error: "Pendaftaran berhasil, namun gagal login otomatis. Silakan login manual." };
+  }
+
   // Kirim data user kembali ke Frontend
   return { user: authData.user, error: null };
 }

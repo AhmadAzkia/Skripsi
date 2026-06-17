@@ -9,26 +9,28 @@ import type { AdminRecentActivity } from "./components/AdminDashboardRecentActiv
 async function getAdminStats(): Promise<AdminDashboardStatsData> {
   const supabase = await createSupabaseServerClient();
 
-  const [penggunaRes, pelatihanTotalRes, pelatihanPublishedRes, pendaftaranRes, sertifikatRes] = await Promise.all([
+  const [penggunaRes, pelatihanTotalRes, pelatihanPublishedRes, pendaftaranAktifRes, pendapatanRes] = await Promise.all([
     supabase.from("profil_pengguna").select("*", { count: "exact", head: true }),
     supabase.from("kursus").select("*", { count: "exact", head: true }),
     supabase.from("kursus").select("*", { count: "exact", head: true }).eq("status", "published"),
-    supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }),
-    supabase.from("sertifikat").select("*", { count: "exact", head: true }).eq("status", "terbit"),
+    supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).in("status", ["terdaftar", "sedang_belajar"]),
+    supabase.from("pembayaran").select("jumlah").eq("status_pembayaran", "berhasil"),
   ]);
 
   if (penggunaRes.error) console.error("Error fetching total pengguna:", penggunaRes.error.message);
   if (pelatihanTotalRes.error) console.error("Error fetching total pelatihan:", pelatihanTotalRes.error.message);
   if (pelatihanPublishedRes.error) console.error("Error fetching published pelatihan:", pelatihanPublishedRes.error.message);
-  if (pendaftaranRes.error) console.error("Error fetching total pendaftaran:", pendaftaranRes.error.message);
-  if (sertifikatRes.error) console.error("Error fetching sertifikat terbit:", sertifikatRes.error.message);
+  if (pendaftaranAktifRes.error) console.error("Error fetching pendaftaran aktif:", pendaftaranAktifRes.error.message);
+  if (pendapatanRes.error) console.error("Error fetching pendapatan:", pendapatanRes.error.message);
+
+  const totalPendapatan = pendapatanRes.data?.reduce((sum, p) => sum + (p.jumlah || 0), 0) ?? 0;
 
   return {
     totalPengguna: penggunaRes.count ?? 0,
     totalPelatihan: pelatihanTotalRes.count ?? 0,
     pelatihanPublished: pelatihanPublishedRes.count ?? 0,
-    totalPendaftaran: pendaftaranRes.count ?? 0,
-    sertifikatTerbit: sertifikatRes.count ?? 0,
+    pendaftaranAktif: pendaftaranAktifRes.count ?? 0,
+    totalPendapatan,
   };
 }
 
@@ -37,7 +39,7 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
   const activities: AdminRecentActivity[] = [];
 
   try {
-    const [penggunaRes, pendaftaranRes, sertifikatRes] = await Promise.all([
+    const [penggunaRes, pendaftaranRes, sertifikatRes, pembayaranRes] = await Promise.all([
       // 1. Pengguna baru
       supabase.from("profil_pengguna").select("id, nama_lengkap, peran, dibuat_pada").order("dibuat_pada", { ascending: false }).limit(5),
       // 2. Pendaftaran kursus terbaru
@@ -67,6 +69,22 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
         )
         .eq("status", "terbit")
         .order("tanggal_terbit", { ascending: false })
+        .limit(5),
+      // 4. Pembayaran berhasil terbaru
+      supabase
+        .from("pembayaran")
+        .select(
+          `
+          id,
+          jumlah,
+          dibayar_pada,
+          dibuat_pada,
+          pengguna:pengguna_id ( nama_lengkap ),
+          kursus:kursus_id ( judul )
+        `
+        )
+        .eq("status_pembayaran", "berhasil")
+        .order("dibayar_pada", { ascending: false })
         .limit(5),
     ]);
 
@@ -110,9 +128,25 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
       });
     }
 
+    if (pembayaranRes.data && !pembayaranRes.error) {
+      pembayaranRes.data.forEach((item) => {
+        const namaPengguna = (item.pengguna as any)?.nama_lengkap || "Peserta";
+        const judulKursus = (item.kursus as any)?.judul || "sebuah pelatihan";
+        const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
+        activities.push({
+          id: `pembayaran-${item.id}`,
+          title: `Pembayaran dari ${namaPengguna}`,
+          subtitle: `${judulKursus} — ${jumlah}`,
+          type: "pembayaran",
+          date: item.dibayar_pada || item.dibuat_pada,
+        });
+      });
+    }
+
     if (penggunaRes.error) console.error("Error fetching pengguna activities:", penggunaRes.error.message);
     if (pendaftaranRes.error) console.error("Error fetching pendaftaran activities:", pendaftaranRes.error.message);
     if (sertifikatRes.error) console.error("Error fetching sertifikat activities:", sertifikatRes.error.message);
+    if (pembayaranRes.error) console.error("Error fetching pembayaran activities:", pembayaranRes.error.message);
 
     // Urutkan semua aktivitas berdasarkan tanggal terbaru, ambil 8 teratas
     activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

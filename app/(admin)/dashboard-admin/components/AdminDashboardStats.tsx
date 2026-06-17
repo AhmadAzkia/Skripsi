@@ -7,8 +7,8 @@ export type AdminDashboardStatsData = {
   totalPengguna: number;
   totalPelatihan: number;
   pelatihanPublished: number;
-  totalPendaftaran: number;
-  sertifikatTerbit: number;
+  pendaftaranAktif: number;
+  totalPendapatan: number;
 };
 
 interface AdminDashboardStatsProps {
@@ -49,9 +49,23 @@ export default function AdminDashboardStats({ stats }: AdminDashboardStatsProps)
       textColor: "text-gold",
     },
     {
-      title: "Total Pendaftaran",
-      value: stats.totalPendaftaran,
-      caption: "Pendaftaran kursus peserta",
+      title: "Pendapatan Total",
+      value: stats.totalPendapatan,
+      caption: "Pembayaran berhasil",
+      isCurrency: true,
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      color: "from-green-500 to-emerald-600",
+      bgColor: "bg-green-50",
+      textColor: "text-green-600",
+    },
+    {
+      title: "Pendaftaran Aktif",
+      value: stats.pendaftaranAktif,
+      caption: "Terdaftar & sedang belajar",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -60,24 +74,6 @@ export default function AdminDashboardStats({ stats }: AdminDashboardStatsProps)
       color: "from-silver to-gray-500",
       bgColor: "bg-silver/10",
       textColor: "text-silver",
-    },
-    {
-      title: "Sertifikat Terbit",
-      value: stats.sertifikatTerbit,
-      caption: "Sertifikat telah diterbitkan",
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-          />
-        </svg>
-      ),
-      color: "from-navy to-gold",
-      bgColor: "bg-gold/10",
-      textColor: "text-gold",
     },
   ];
 
@@ -108,7 +104,7 @@ export default function AdminDashboardStats({ stats }: AdminDashboardStatsProps)
                     <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center ${stat.textColor} mb-4`}>{stat.icon}</div>
                     <h3 className="text-gray-600 text-sm font-medium mb-2">{stat.title}</h3>
                     <div className="text-3xl font-bold text-navy">
-                      <AnimatedCounter end={stat.value} duration={2000} label={stat.caption} />
+                      <AnimatedCounter end={stat.value} duration={2000} label={stat.caption} prefix={"isCurrency" in stat && stat.isCurrency ? "Rp " : ""} />
                     </div>
                   </div>
                   <div className={`w-1 h-16 bg-linear-to-b ${stat.color} rounded-full`}></div>

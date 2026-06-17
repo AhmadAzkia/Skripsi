@@ -6,7 +6,7 @@ export type AdminRecentActivity = {
   id: string;
   title: string;
   subtitle: string;
-  type: "pengguna" | "pendaftaran" | "sertifikat";
+  type: "pengguna" | "pendaftaran" | "sertifikat" | "pembayaran";
   date: string;
 };
 
@@ -40,6 +40,12 @@ export default function AdminDashboardRecentActivities({ activities }: AdminDash
             />
           </svg>
         );
+      case "pembayaran":
+        return (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        );
       default:
         return null;
     }
@@ -53,6 +59,8 @@ export default function AdminDashboardRecentActivities({ activities }: AdminDash
         return "text-silver bg-silver/10 border border-silver/20";
       case "sertifikat":
         return "text-gold bg-gold/10 border border-gold/20";
+      case "pembayaran":
+        return "text-green-700 bg-green-50 border border-green-200";
       default:
         return "text-gray-600 bg-gray-100 border border-gray-200";
     }
@@ -66,6 +74,8 @@ export default function AdminDashboardRecentActivities({ activities }: AdminDash
         return "Pendaftaran";
       case "sertifikat":
         return "Sertifikat";
+      case "pembayaran":
+        return "Pembayaran";
       default:
         return "Aktivitas";
     }
