@@ -10,7 +10,6 @@ type JadwalPelatihan = {
   tanggal_selesai: string;
   status: string;
   tipe_kursus: string;
-  instruktur: string;
 };
 
 interface JadwalListProps {
@@ -113,7 +112,7 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="grid grid-cols-1 gap-4 mb-4">
                         <div className="flex items-center text-navy/70">
                           <svg className="w-4 h-4 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -121,12 +120,6 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                           <span className="text-sm">
                             {new Date(jadwal.tanggal_mulai).toLocaleDateString("id-ID")} - {new Date(jadwal.tanggal_selesai).toLocaleDateString("id-ID")}
                           </span>
-                        </div>
-                        <div className="flex items-center text-navy/70">
-                          <svg className="w-4 h-4 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          <span className="text-sm">{jadwal.instruktur}</span>
                         </div>
                       </div>
                     </div>

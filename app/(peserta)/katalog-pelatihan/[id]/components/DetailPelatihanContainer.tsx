@@ -18,12 +18,6 @@ type Kursus = {
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
   maksimal_peserta: number | null;
-  instruktur: {
-    id: string;
-    nama_lengkap: string;
-    bio: string | null;
-    foto_profil_url: string | null;
-  } | null;
 };
 
 type RegistrationStatus = {
@@ -221,31 +215,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
               </div>
             </ScrollReveal>
 
-            {/* Instruktur */}
-            {kursus.instruktur && (
-              <ScrollReveal delay={300}>
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-semibold text-navy mb-4">Instruktur</h3>
-                  <div className="flex items-start space-x-4">
-                    <div className="shrink-0">
-                      {kursus.instruktur.foto_profil_url ? (
-                        <img src={kursus.instruktur.foto_profil_url} alt={kursus.instruktur.nama_lengkap} className="w-16 h-16 rounded-full object-cover" />
-                      ) : (
-                        <div className="w-16 h-16 bg-navy/10 rounded-full flex items-center justify-center">
-                          <svg className="w-8 h-8 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-navy">{kursus.instruktur.nama_lengkap}</h4>
-                      {kursus.instruktur.bio && <p className="text-gray-600 text-sm mt-1">{kursus.instruktur.bio}</p>}
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            )}
           </div>
 
           {/* Sidebar */}

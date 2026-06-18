@@ -14,10 +14,10 @@ export type UserProfile = {
   nomor_hp: string | null;
   bio: string | null;
   foto_profil_url: string | null;
-  peran: "admin" | "instruktur" | "peserta";
+  peran: "admin" | "peserta";
   is_aktif: boolean;
   dibuat_pada: string;
   diperbarui_pada: string | null;
 };
 
-export type UserRole = "admin" | "pemateri" | "peserta";
+export type UserRole = "admin" | "peserta";

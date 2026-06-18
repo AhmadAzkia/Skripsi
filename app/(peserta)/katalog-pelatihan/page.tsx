@@ -7,7 +7,6 @@ import type { SessionUser } from "@/contexts/AuthContext";
 type KatalogStats = {
   totalKursusCount: number;
   kategoriCount: number;
-  instrukturCount: number;
 };
 
 type Kursus = {
@@ -21,9 +20,6 @@ type Kursus = {
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
-  instruktur: {
-    nama_lengkap: string;
-  } | null;
 };
 
 function isKursusAktif(tanggalSelesai: string | null) {
@@ -51,23 +47,17 @@ async function getKatalogStats(): Promise<KatalogStats> {
     // 2. Hitung Jumlah Kategori Unik dari kursus aktif
     const kategoriUnik = [...new Set(kursusAktif.map((item) => item.kategori))];
 
-    // 3. Hitung Jumlah Instruktur
-    const { count: instrukturCount, error: errorInstruktur } = await supabase.from("profil_pengguna").select("*", { count: "exact", head: true }).eq("peran", "instruktur").eq("is_aktif", true);
-
     if (errorKursus) console.error("Error fetching courses count:", errorKursus.message);
-    if (errorInstruktur) console.error("Error fetching instructors count:", errorInstruktur.message);
 
     return {
       totalKursusCount: kursusAktif.length,
       kategoriCount: kategoriUnik.length,
-      instrukturCount: instrukturCount ?? 0,
     };
   } catch (error) {
     console.error("Error fetching catalog stats:", error);
     return {
       totalKursusCount: 0,
       kategoriCount: 0,
-      instrukturCount: 0,
     };
   }
 }
@@ -76,7 +66,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
   const supabase = await createSupabaseServerClient();
 
   try {
-    // Ambil semua kursus yang published dengan data instruktur, lalu buang yang sudah lewat tanggal selesai
+    // Ambil semua kursus yang published, lalu buang yang sudah lewat tanggal selesai
     const { data: kursusData, error: kursusError } = await supabase
       .from("kursus")
       .select(
@@ -90,10 +80,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
         status,
         tanggal_mulai,
         tanggal_selesai,
-        thumbnail_url,
-        instruktur:instruktur_id (
-          nama_lengkap
-        )
+        thumbnail_url
       `,
       )
       .eq("status", "published")

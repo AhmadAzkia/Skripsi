@@ -1,22 +1,20 @@
-import { Tables } from "./database";
+import { Tables, Enums } from "./database";
 
 // Type untuk profil pengguna berdasarkan database schema
 export type UserProfile = Tables<"profil_pengguna">;
 
-// Type untuk role/peran pengguna
-export type UserRole = "admin" | "pemateri" | "peserta";
+// Type untuk role/peran pengguna — sesuai enum DB: "admin" | "peserta"
+export type UserRole = Enums<"peran_pengguna">;
 
 // Type untuk kursus
 export type Course = Tables<"kursus">;
 
-// Type untuk form profil
+// Type untuk form profil — menggunakan nama kolom DB
 export interface ProfileFormData {
-  full_name: string;
-  phone_number: string;
+  nama_lengkap: string;
+  nomor_hp: string;
   bio: string;
-  address: string;
-  expertise?: string;
-  education_level?: string;
+  email: string;
 }
 
 // Type untuk update profil

@@ -14,37 +14,6 @@ interface CreatePelatihanData {
   tanggal_selesai: string;
   thumbnail_url: string;
   status: "draft" | "published";
-  instruktur_id: string;
-}
-
-export async function getInstruktur() {
-  try {
-    const supabase = await createSupabaseServerClient();
-
-    // Get all users with 'instruktur' role
-    const { data: instruktur, error } = await supabase.from("profil_pengguna").select("id, nama_lengkap, email, foto_profil_url").eq("peran", "instruktur").eq("is_aktif", true).order("nama_lengkap");
-
-    if (error) {
-      console.error("Error fetching instruktur:", error);
-      return {
-        success: false,
-        error: "Gagal mengambil data instruktur",
-        data: [],
-      };
-    }
-
-    return {
-      success: true,
-      data: instruktur || [],
-    };
-  } catch (error) {
-    console.error("Unexpected error in getInstruktur:", error);
-    return {
-      success: false,
-      error: "Terjadi kesalahan yang tidak terduga",
-      data: [],
-    };
-  }
 }
 
 export async function createPelatihan(data: CreatePelatihanData) {
@@ -117,23 +86,6 @@ export async function createPelatihan(data: CreatePelatihanData) {
       };
     }
 
-    if (!data.instruktur_id?.trim()) {
-      return {
-        success: false,
-        error: "Instruktur harus dipilih",
-      };
-    }
-
-    // Validate instruktur exists and is active
-    const { data: instruktur, error: instrukturError } = await supabase.from("profil_pengguna").select("id").eq("id", data.instruktur_id.trim()).eq("peran", "instruktur").eq("is_aktif", true).single();
-
-    if (instrukturError || !instruktur) {
-      return {
-        success: false,
-        error: "Instruktur tidak valid atau tidak aktif",
-      };
-    }
-
     // Validate date logic
     const startDate = new Date(data.tanggal_mulai);
     const endDate = new Date(data.tanggal_selesai);
@@ -157,7 +109,6 @@ export async function createPelatihan(data: CreatePelatihanData) {
       tanggal_selesai: data.tanggal_selesai,
       thumbnail_url: data.thumbnail_url?.trim() || null,
       status: data.status,
-      instruktur_id: data.instruktur_id.trim(),
       dibuat_pada: new Date().toISOString(),
       diperbarui_pada: new Date().toISOString(),
     };
@@ -218,18 +169,6 @@ export async function updatePelatihan(id: string, data: Partial<CreatePelatihanD
         success: false,
         error: "Unauthorized: Admin access required",
       };
-    }
-
-    // Validate instruktur_id if provided
-    if (data.instruktur_id) {
-      const { data: instruktur, error: instrukturError } = await supabase.from("profil_pengguna").select("id").eq("id", data.instruktur_id).eq("peran", "instruktur").eq("is_aktif", true).single();
-
-      if (instrukturError || !instruktur) {
-        return {
-          success: false,
-          error: "Instruktur tidak valid atau tidak aktif",
-        };
-      }
     }
 
     // Prepare update data

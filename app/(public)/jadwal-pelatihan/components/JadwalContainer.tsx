@@ -28,7 +28,6 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
   const totalKursus = initialJadwal.length;
   const kursusOnline = initialJadwal.filter((j) => j.tipe_kursus === "online").length;
   const kursusGratis = initialJadwal.filter((j) => j.harga === 0).length;
-  const instrukturUnik = new Set(initialJadwal.map((j) => j.profil_pengguna?.nama_lengkap).filter(Boolean)).size;
 
   const filterButtons: { label: string; filter: FilterType }[] = [
     { label: "Semua Program", filter: "semua" },
@@ -104,11 +103,6 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
               </div>
             </ScrollReveal>
 
-            <ScrollReveal delay={600}>
-              <div className="bg-white p-6 rounded-xl shadow-lg hover-lift hover-glow border border-gold/20">
-                <AnimatedCounter end={instrukturUnik} suffix="+" label="Instruktur Expert" duration={2600} />
-              </div>
-            </ScrollReveal>
           </div>
         </div>
       </section>

@@ -10,12 +10,11 @@ type KursusData = Tables<"kursus"> & {
   // Tambahan data yang mungkin di-join dari tabel lain
   jumlah_peserta?: number;
   jumlah_materi?: number;
-  nama_instruktur?: string;
 };
 
 interface PelatihanCardsProps {
   kursusData: KursusData[];
-  userRole: "admin" | "instruktur" | "peserta";
+  userRole: "admin" | "peserta";
   showActions?: boolean;
   onEdit?: (kursus: KursusData) => void;
   onDelete?: (kursusId: string) => void;
@@ -97,8 +96,6 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
     switch (userRole) {
       case "admin":
         return `/pelatihan-admin/edit/${kursusId}`;
-      case "instruktur":
-        return `/pelatihan-pemateri/${kursusId}/materi`;
       case "peserta":
         return `/kursus/${kursusId}`;
       default:
@@ -116,7 +113,7 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-navy mb-3">Belum ada pelatihan</h3>
-          <p className="text-silver text-balance max-w-md mx-auto">{userRole === "admin" ? "Buat pelatihan baru untuk memulai" : userRole === "instruktur" ? "Buat pelatihan pertama Anda" : "Belum ada pelatihan yang tersedia"}</p>
+          <p className="text-silver text-balance max-w-md mx-auto">{userRole === "admin" ? "Buat pelatihan baru untuk memulai" : "Belum ada pelatihan yang tersedia"}</p>
         </div>
       </ScrollReveal>
     );
@@ -187,19 +184,6 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
                 </div>
               )}
 
-              {/* Instructor Info (for admin/peserta view) */}
-              {kursus.nama_instruktur && userRole !== "instruktur" && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span className="text-sm text-gray-600">Instruktur:</span>
-                    <span className="text-sm font-medium text-navy">{kursus.nama_instruktur}</span>
-                  </div>
-                </div>
-              )}
-
               {/* Dates */}
               {(kursus.tanggal_mulai || kursus.tanggal_selesai) && (
                 <div className="mb-4 space-y-1 text-xs text-gray-500">
@@ -247,11 +231,11 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
                 <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200">
                   {/* View/Access Button */}
                   <Link href={getViewLink(kursus.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
-                    {userRole === "instruktur" ? "Kelola Materi" : userRole === "admin" ? "Kelola Kursus" : "Lihat Detail"}
+                    {userRole === "admin" ? "Kelola Kursus" : "Lihat Detail"}
                   </Link>
 
-                  {/* Additional Actions for Admin/Instruktur */}
-                  {(userRole === "admin" || userRole === "instruktur") && (
+                  {/* Additional Actions for Admin */}
+                  {userRole === "admin" && (
                     <div className="flex items-center gap-2">
                       {onEdit && (
                         <button

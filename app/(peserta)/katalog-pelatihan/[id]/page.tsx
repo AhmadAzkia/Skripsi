@@ -16,12 +16,6 @@ type Kursus = {
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
   maksimal_peserta: number | null;
-  instruktur: {
-    id: string;
-    nama_lengkap: string;
-    bio: string | null;
-    foto_profil_url: string | null;
-  } | null;
 };
 
 type RegistrationStatus = {
@@ -64,13 +58,7 @@ async function getKursusDetail(id: string): Promise<Kursus | null> {
         tanggal_mulai,
         tanggal_selesai,
         thumbnail_url,
-        maksimal_peserta,
-        instruktur:instruktur_id (
-          id,
-          nama_lengkap,
-          bio,
-          foto_profil_url
-        )
+        maksimal_peserta
       `,
       )
       .eq("id", id)

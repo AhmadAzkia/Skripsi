@@ -9,7 +9,6 @@ import { deletePelatihan } from "../actions";
 type KursusData = Tables<"kursus"> & {
   jumlah_peserta?: number;
   jumlah_materi?: number;
-  nama_instruktur?: string;
 };
 
 type JadwalStatus = "berjalan" | "belum" | "lewat";

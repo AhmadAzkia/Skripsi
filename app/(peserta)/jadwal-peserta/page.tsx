@@ -12,7 +12,6 @@ export type JadwalPelatihan = {
   tanggal_selesai: string;
   status: string;
   tipe_kursus: string;
-  instruktur: string;
 };
 
 export type JadwalStats = {
@@ -123,10 +122,7 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
           judul,
           tanggal_mulai,
           tanggal_selesai,
-          tipe_kursus,
-          instruktur:instruktur_id (
-            nama_lengkap
-          )
+          tipe_kursus
         )
       `
       )
@@ -140,7 +136,6 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
 
     const jadwalList: JadwalPelatihan[] = jadwalData.map((item) => {
       const kursusData = item.kursus as any;
-      const instrukturData = kursusData?.instruktur as any;
 
       // Tentukan status berdasarkan tanggal kursus
       const tanggalMulai = kursusData?.tanggal_mulai || item.tanggal_daftar;
@@ -155,7 +150,6 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
         tanggal_selesai: tanggalSelesai,
         status: statusAktual, // Gunakan status yang sudah dihitung berdasarkan tanggal
         tipe_kursus: kursusData?.tipe_kursus || "online",
-        instruktur: instrukturData?.nama_lengkap || "Instruktur",
       };
     });
 

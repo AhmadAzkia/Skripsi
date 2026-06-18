@@ -20,7 +20,6 @@ type KursusDetail = {
   id: string;
   judul: string;
   deskripsi: string;
-  instruktur_nama: string;
   tipe_kursus: string;
 };
 
@@ -44,10 +43,7 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
         id,
         judul,
         deskripsi,
-        tipe_kursus,
-        instruktur:instruktur_id (
-          nama_lengkap
-        )
+        tipe_kursus
       `
       )
       .eq("id", kursusId)
@@ -58,13 +54,10 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
       return null;
     }
 
-    const instrukturData = kursusData?.instruktur as any;
-
     return {
       id: kursusData.id,
       judul: kursusData.judul,
       deskripsi: kursusData.deskripsi ?? "",
-      instruktur_nama: instrukturData?.nama_lengkap || "Instruktur",
       tipe_kursus: kursusData.tipe_kursus,
     };
   } catch (error) {

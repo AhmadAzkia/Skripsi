@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { createPelatihan, getInstruktur, updatePelatihan } from "../actions";
+import { createPelatihan, updatePelatihan } from "../actions";
 
 interface FormData {
   judul: string;
@@ -16,14 +16,6 @@ interface FormData {
   tanggal_selesai: string;
   thumbnail_url: string;
   status: "draft" | "published";
-  instruktur_id: string;
-}
-
-interface Instruktur {
-  id: string;
-  nama_lengkap: string;
-  email: string;
-  foto_profil_url: string | null;
 }
 
 const initialFormData: FormData = {
@@ -37,7 +29,6 @@ const initialFormData: FormData = {
   tanggal_selesai: "",
   thumbnail_url: "",
   status: "draft",
-  instruktur_id: "",
 };
 
 interface TambahPelatihanFormProps {
@@ -50,29 +41,7 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
   const [formData, setFormData] = useState<FormData>(initialData || initialFormData);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [instrukturList, setInstrukturList] = useState<Instruktur[]>([]);
-  const [loadingInstruktur, setLoadingInstruktur] = useState(true);
   const router = useRouter();
-
-  // Load instruktur data when component mounts
-  useEffect(() => {
-    async function loadInstruktur() {
-      try {
-        const result = await getInstruktur();
-        if (result.success) {
-          setInstrukturList(result.data);
-        } else {
-          setErrors((prev) => ({ ...prev, instruktur: result.error || "Gagal memuat data instruktur" }));
-        }
-      } catch (error) {
-        setErrors((prev) => ({ ...prev, instruktur: "Terjadi kesalahan saat memuat data instruktur" }));
-      } finally {
-        setLoadingInstruktur(false);
-      }
-    }
-
-    loadInstruktur();
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -97,7 +66,6 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
     if (formData.maksimal_peserta <= 0) newErrors.maksimal_peserta = "Maksimal peserta harus lebih dari 0";
     if (!formData.tanggal_mulai) newErrors.tanggal_mulai = "Tanggal mulai harus diisi";
     if (!formData.tanggal_selesai) newErrors.tanggal_selesai = "Tanggal selesai harus diisi";
-    if (!formData.instruktur_id) newErrors.instruktur_id = "Instruktur harus dipilih";
 
     if (formData.tanggal_mulai && formData.tanggal_selesai) {
       if (new Date(formData.tanggal_selesai) <= new Date(formData.tanggal_mulai)) {
@@ -147,18 +115,6 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-red-700">{errors.submit}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Instruktur Loading Error */}
-          {errors.instruktur && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-orange-700">{errors.instruktur}</span>
               </div>
             </div>
           )}
@@ -230,78 +186,6 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
               />
             </div>
 
-            {/* Instruktur Selection */}
-            <div>
-              <label className="block text-sm font-medium text-navy mb-2">
-                Pilih Instruktur/Pemateri <span className="text-red-500">*</span>
-              </label>
-              {loadingInstruktur ? (
-                <div className="w-full px-4 py-3 border border-silver/30 rounded-lg bg-gray-50 flex items-center">
-                  <div className="w-4 h-4 border-2 border-navy/30 border-t-navy rounded-full animate-spin mr-2"></div>
-                  <span className="text-silver">Memuat data instruktur...</span>
-                </div>
-              ) : instrukturList.length > 0 ? (
-                <div className="space-y-2">
-                  <select
-                    name="instruktur_id"
-                    value={formData.instruktur_id}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200 ${errors.instruktur_id ? "border-red-300 bg-red-50" : "border-silver/30"}`}
-                  >
-                    <option value="">-- Pilih Instruktur --</option>
-                    {instrukturList.map((instruktur) => (
-                      <option key={instruktur.id} value={instruktur.id}>
-                        {instruktur.nama_lengkap} ({instruktur.email})
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Selected Instructor Preview */}
-                  {formData.instruktur_id && (
-                    <div className="mt-3 p-3 bg-navy/5 rounded-lg border border-navy/10">
-                      {(() => {
-                        const selectedInstruktur = instrukturList.find((i) => i.id === formData.instruktur_id);
-                        if (!selectedInstruktur) return null;
-                        return (
-                          <div className="flex items-center space-x-3">
-                            <div className="shrink-0">
-                              {selectedInstruktur.foto_profil_url ? (
-                                <img src={selectedInstruktur.foto_profil_url} alt={selectedInstruktur.nama_lengkap} className="w-10 h-10 rounded-full object-cover border-2 border-gold/20" />
-                              ) : (
-                                <div className="w-10 h-10 bg-linear-to-br from-navy to-gold rounded-full flex items-center justify-center">
-                                  <span className="text-white font-semibold text-sm">{selectedInstruktur.nama_lengkap.charAt(0).toUpperCase()}</span>
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium text-navy text-sm">{selectedInstruktur.nama_lengkap}</p>
-                              <p className="text-silver text-xs">{selectedInstruktur.email}</p>
-                            </div>
-                            <div className="flex-1 flex justify-end">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                Terpilih
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full px-4 py-3 border border-orange-300 rounded-lg bg-orange-50 flex items-center">
-                  <svg className="w-5 h-5 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-orange-700">Tidak ada instruktur yang tersedia</span>
-                </div>
-              )}
-              {errors.instruktur_id && <p className="text-red-500 text-sm mt-1">{errors.instruktur_id}</p>}
-              <p className="text-xs text-silver mt-1">Instruktur yang akan mengajar pelatihan ini</p>
-            </div>
           </div>
 
           {/* Configuration */}

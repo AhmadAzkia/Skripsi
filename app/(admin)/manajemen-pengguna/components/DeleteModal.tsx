@@ -14,7 +14,7 @@ export default function DeleteModal({ isOpen, onClose, onConfirm, user, loading 
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100">
         <div className="text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

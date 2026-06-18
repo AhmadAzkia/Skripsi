@@ -14,9 +14,6 @@ type Kursus = {
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
-  instruktur: {
-    nama_lengkap: string;
-  } | null;
 };
 
 interface KatalogListProps {
@@ -153,14 +150,6 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
 
                   {/* Meta Info */}
                   <div className="space-y-2 mb-6">
-                    {kursus.instruktur && (
-                      <div className="flex items-center text-gray-500 text-sm">
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {kursus.instruktur.nama_lengkap}
-                      </div>
-                    )}
                     {kursus.tanggal_mulai && (
                       <div className="flex items-center text-gray-500 text-sm">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

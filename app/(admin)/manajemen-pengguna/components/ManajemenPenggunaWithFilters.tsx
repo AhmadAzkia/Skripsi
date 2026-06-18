@@ -5,6 +5,7 @@ import { PenggunaData } from "../page";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import UserModal from "./UserModal";
 import DeleteModal from "./DeleteModal";
+import ToastContainer, { useToast } from "@/components/ui/Toast";
 
 interface ManajemenPenggunaWithFiltersProps {
   penggunaList: PenggunaData[];
@@ -23,8 +24,11 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
   const [selectedUser, setSelectedUser] = useState<PenggunaData | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Toast
+  const { toasts, toast, removeToast } = useToast();
+
   // CRUD Functions
-  const handleCreateUser = async (userData: Partial<PenggunaData>) => {
+  const handleCreateUser = async (userData: Partial<PenggunaData> & { password?: string }) => {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/users", {
@@ -42,10 +46,11 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
 
       const { data } = await response.json();
       setPenggunaList((prev) => [data, ...prev]);
-      alert("Pengguna berhasil ditambahkan!");
+      toast.success("Pengguna berhasil ditambahkan!", `Akun untuk ${data.nama_lengkap || data.email} telah dibuat.`);
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("Gagal menambahkan pengguna. Silakan coba lagi.");
+      const message = error instanceof Error ? error.message : "Gagal menambahkan pengguna.";
+      toast.error("Gagal menambahkan pengguna", message);
     } finally {
       setLoading(false);
     }
@@ -71,10 +76,10 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
 
       const { data } = await response.json();
       setPenggunaList((prev) => prev.map((user) => (user.id === selectedUser.id ? data : user)));
-      alert("Pengguna berhasil diperbarui!");
+      toast.success("Pengguna berhasil diperbarui!", `Data ${data.nama_lengkap} telah diperbarui.`);
     } catch (error) {
       console.error("Error updating user:", error);
-      alert("Gagal memperbarui pengguna. Silakan coba lagi.");
+      toast.error("Gagal memperbarui pengguna", "Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -87,6 +92,7 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
     try {
       const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -97,10 +103,10 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
       setPenggunaList((prev) => prev.filter((user) => user.id !== selectedUser.id));
       setIsDeleteModalOpen(false);
       setSelectedUser(null);
-      alert("Pengguna berhasil dihapus!");
+      toast.success("Pengguna berhasil dihapus!", "Data pengguna telah dihapus secara permanen.");
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Gagal menghapus pengguna. Silakan coba lagi.");
+      toast.error("Gagal menghapus pengguna", "Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -157,8 +163,6 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
     switch (role) {
       case "admin":
         return "bg-purple-100 text-purple-800 border-purple-200";
-      case "instruktur":
-        return "bg-green-100 text-green-800 border-green-200";
       case "peserta":
         return "bg-blue-100 text-blue-800 border-blue-200";
       default:
@@ -170,8 +174,6 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
     switch (role) {
       case "admin":
         return "Admin";
-      case "instruktur":
-        return "Instruktur";
       case "peserta":
         return "Peserta";
       default:
@@ -241,7 +243,6 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
                     <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-gold transition-colors bg-white">
                       <option value="semua">Semua Peran</option>
                       <option value="admin">Admin</option>
-                      <option value="instruktur">Instruktur</option>
                       <option value="peserta">Peserta</option>
                     </select>
                   </div>
@@ -352,6 +353,9 @@ export default function ManajemenPenggunaWithFilters({ penggunaList: initialPeng
       <UserModal isOpen={isUserModalOpen} onClose={() => setIsUserModalOpen(false)} onSave={modalMode === "create" ? handleCreateUser : handleUpdateUser} user={selectedUser} mode={modalMode} />
 
       <DeleteModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteUser} user={selectedUser} loading={loading} />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   );
 }

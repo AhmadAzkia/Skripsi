@@ -15,9 +15,6 @@ type Kursus = {
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
-  instruktur: {
-    nama_lengkap: string;
-  } | null;
 };
 
 interface KatalogWithFiltersProps {

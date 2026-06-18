@@ -236,7 +236,7 @@ export async function updateUserProfile(formData: FormData) {
 }
 
 // Create new user profile
-export async function createUserProfile(userData: { user_id: string; nama_lengkap: string; email: string; peran: "admin" | "instruktur" | "peserta" }) {
+export async function createUserProfile(userData: { user_id: string; nama_lengkap: string; email: string; peran: "admin" | "peserta" }) {
   const supabase = await createSupabaseServerClient();
 
   try {
@@ -342,7 +342,7 @@ export async function deleteUserAvatar() {
   }
 }
 
-// Get profile with role mapping
+// Get profile with role — langsung dari DB (enum: admin | peserta)
 export async function getProfileWithRole(userId?: string) {
   const result = await getUserProfile(userId);
 
@@ -350,15 +350,8 @@ export async function getProfileWithRole(userId?: string) {
     return result;
   }
 
-  // Map database role to frontend role
-  const roleMapping: Record<string, "admin" | "pemateri" | "peserta"> = {
-    admin: "admin",
-    instruktur: "pemateri",
-    peserta: "peserta",
-  };
-
   return {
     ...result,
-    role: roleMapping[result.profile.peran] || "peserta",
+    role: result.profile.peran as "admin" | "peserta",
   };
 }

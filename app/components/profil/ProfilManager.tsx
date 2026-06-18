@@ -13,13 +13,13 @@ interface UserProfile {
   nomor_hp: string | null;
   bio: string | null;
   foto_profil_url: string | null;
-  peran: "admin" | "instruktur" | "peserta";
+  peran: "admin" | "peserta";
   is_aktif: boolean;
   dibuat_pada: string;
   diperbarui_pada: string | null;
 }
 
-type UserRole = "admin" | "pemateri" | "peserta";
+type UserRole = "admin" | "peserta";
 
 interface ProfilManagerProps {
   user?: {

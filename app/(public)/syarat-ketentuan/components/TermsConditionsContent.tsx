@@ -27,7 +27,7 @@ const termsSections = [
     content: [
       "Peserta wajib memberikan informasi yang akurat dan lengkap saat mendaftar program pelatihan.",
       "Peserta bertanggung jawab untuk menjaga kerahasiaan akun dan password mereka.",
-      "Peserta diharapkan berpartisipasi aktif dalam seluruh kegiatan pelatihan dan menghormati peserta lain serta instruktur.",
+      "Peserta diharapkan berpartisipasi aktif dalam seluruh kegiatan pelatihan dan menghormati peserta lain.",
     ],
   },
   {

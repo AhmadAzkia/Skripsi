@@ -14,59 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      artikel_blog: {
-        Row: {
-          dibuat_pada: string
-          diperbarui_pada: string | null
-          dipublikasi_pada: string | null
-          gambar_utama_url: string | null
-          id: string
-          judul: string
-          konten: string | null
-          penulis_id: string
-          ringkasan: string | null
-          slug: string
-          status: Database["public"]["Enums"]["status_blog"]
-          tags: string[] | null
-        }
-        Insert: {
-          dibuat_pada?: string
-          diperbarui_pada?: string | null
-          dipublikasi_pada?: string | null
-          gambar_utama_url?: string | null
-          id?: string
-          judul: string
-          konten?: string | null
-          penulis_id: string
-          ringkasan?: string | null
-          slug: string
-          status?: Database["public"]["Enums"]["status_blog"]
-          tags?: string[] | null
-        }
-        Update: {
-          dibuat_pada?: string
-          diperbarui_pada?: string | null
-          dipublikasi_pada?: string | null
-          gambar_utama_url?: string | null
-          id?: string
-          judul?: string
-          konten?: string | null
-          penulis_id?: string
-          ringkasan?: string | null
-          slug?: string
-          status?: Database["public"]["Enums"]["status_blog"]
-          tags?: string[] | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "artikel_blog_penulis_id_fkey"
-            columns: ["penulis_id"]
-            isOneToOne: false
-            referencedRelation: "profil_pengguna"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       kursus: {
         Row: {
           deskripsi: string | null
@@ -74,7 +21,6 @@ export type Database = {
           diperbarui_pada: string | null
           harga: number
           id: string
-          instruktur_id: string
           judul: string
           kategori: string
           maksimal_peserta: number | null
@@ -90,7 +36,6 @@ export type Database = {
           diperbarui_pada?: string | null
           harga?: number
           id?: string
-          instruktur_id: string
           judul: string
           kategori: string
           maksimal_peserta?: number | null
@@ -106,7 +51,6 @@ export type Database = {
           diperbarui_pada?: string | null
           harga?: number
           id?: string
-          instruktur_id?: string
           judul?: string
           kategori?: string
           maksimal_peserta?: number | null
@@ -116,15 +60,7 @@ export type Database = {
           thumbnail_url?: string | null
           tipe_kursus?: Database["public"]["Enums"]["tipe_kursus"]
         }
-        Relationships: [
-          {
-            foreignKeyName: "kursus_instruktur_id_fkey"
-            columns: ["instruktur_id"]
-            isOneToOne: false
-            referencedRelation: "profil_pengguna"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       materi_kursus: {
         Row: {
@@ -505,8 +441,7 @@ export type Database = {
       }
     }
     Enums: {
-      peran_pengguna: "admin" | "instruktur" | "peserta"
-      status_blog: "draft" | "review" | "published" | "ditolak"
+      peran_pengguna: "admin" | "peserta"
       status_kursus: "draft" | "published" | "archived"
       status_pembayaran: "menunggu" | "berhasil" | "gagal" | "dikembalikan"
       status_pendaftaran:
@@ -647,8 +582,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      peran_pengguna: ["admin", "instruktur", "peserta"],
-      status_blog: ["draft", "review", "published", "ditolak"],
+      peran_pengguna: ["admin", "peserta"],
       status_kursus: ["draft", "published", "archived"],
       status_pembayaran: ["menunggu", "berhasil", "gagal", "dikembalikan"],
       status_pendaftaran: [

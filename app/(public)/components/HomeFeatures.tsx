@@ -28,8 +28,8 @@ const features = [
         />
       </svg>
     ),
-    title: "Instruktur Berpengalaman",
-    description: "Dipandu oleh para ahli dan praktisi berpengalaman di bidangnya masing-masing",
+    title: "Dukungan Karir",
+    description: "Bimbingan dan jaringan profesional untuk membantu mengembangkan karir Anda",
   },
   {
     icon: (

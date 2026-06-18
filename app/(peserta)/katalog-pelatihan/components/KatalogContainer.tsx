@@ -16,9 +16,6 @@ type Kursus = {
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
-  instruktur: {
-    nama_lengkap: string;
-  } | null;
 };
 
 type KatalogContainerProps = {
@@ -26,7 +23,6 @@ type KatalogContainerProps = {
   stats: {
     totalKursusCount: number;
     kategoriCount: number;
-    instrukturCount: number;
   };
   kursusList: Kursus[];
   kategoriList: string[];

@@ -6,7 +6,6 @@ import AnimatedCounter from "@/components/ui/AnimatedCounter";
 type KatalogStats = {
   totalKursusCount: number;
   kategoriCount: number;
-  instrukturCount: number;
 };
 
 interface KatalogStatsProps {
@@ -44,23 +43,6 @@ export default function KatalogStats({ stats }: KatalogStatsProps) {
       borderColor: "border-gold/20",
       hoverBorderColor: "hover:border-gold/30",
     },
-    {
-      end: stats.instrukturCount,
-      label: "Instruktur Ahli",
-      icon: (
-        <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-      ),
-      bgColor: "from-silver/5 to-silver/10",
-      borderColor: "border-silver/20",
-      hoverBorderColor: "hover:border-silver/30",
-    },
   ];
 
   return (
@@ -77,12 +59,12 @@ export default function KatalogStats({ stats }: KatalogStatsProps) {
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
               Statistik <span className="text-gold">Pelatihan</span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Jelajahi berbagai pelatihan berkualitas dari instruktur berpengalaman</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Jelajahi berbagai pelatihan berkualitas untuk mengembangkan karir Anda</p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={200}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {statsData.map((stat, index) => (
               <div key={index} className={`group text-center p-8 bg-linear-to-br ${stat.bgColor} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border ${stat.borderColor} ${stat.hoverBorderColor} hover:-translate-y-1`}>
                 <div className="flex items-center justify-center mb-6">

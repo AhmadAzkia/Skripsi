@@ -97,7 +97,7 @@ export default function TentangKamiPage() {
       name: "Linda Kusuma",
       position: "Marketing Director, CV. Kreatif Solusi",
       rating: 5,
-      testimonial: "Instruktur berpengalaman dan metode pembelajaran yang interaktif membuat saya mudah memahami materi. Highly recommended untuk profesional yang ingin upgrade skill!",
+      testimonial: "Pelatihan berpengalaman dan metode pembelajaran yang interaktif membuat saya mudah memahami materi. Highly recommended untuk profesional yang ingin upgrade skill!",
     },
     {
       name: "Eko Prasetyo",

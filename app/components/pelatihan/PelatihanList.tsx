@@ -10,12 +10,11 @@ type KursusData = Tables<"kursus"> & {
   // Tambahan data yang mungkin di-join dari tabel lain
   jumlah_peserta?: number;
   jumlah_materi?: number;
-  nama_instruktur?: string;
 };
 
 interface PelatihanListProps {
   kursusData: KursusData[];
-  userRole: "admin" | "instruktur" | "peserta";
+  userRole: "admin" | "peserta";
   showActions?: boolean;
   onEdit?: (kursus: KursusData) => void;
   onDelete?: (kursusId: string) => void;
@@ -179,7 +178,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
                 <option value="judul">Nama A-Z</option>
                 <option value="harga-rendah">Harga Terendah</option>
                 <option value="harga-tinggi">Harga Tertinggi</option>
-                {(userRole === "admin" || userRole === "instruktur") && <option value="peserta">Peserta Terbanyak</option>}
+                {userRole === "admin" && <option value="peserta">Peserta Terbanyak</option>}
               </select>
 
               {/* Clear Filters */}

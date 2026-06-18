@@ -13,39 +13,37 @@ type UserRole = Tables<"profil_pengguna">["peran"];
 export async function getUserWithRole() {
   const supabase = await createSupabaseServerClient();
 
-  // 1. Ambil sesi autentikasi pengguna
+  // 1. Ambil data user yang terotentikasi (bukan session dari cookie)
   const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (sessionError) {
-    console.error("Error getting session:", sessionError.message);
+  if (userError) {
+    console.error("Error getting user:", userError.message);
     return { user: null, role: null, profile: null };
   }
 
-  if (!session) {
-    // Tidak ada pengguna yang login
+  if (!user) {
     return { user: null, role: null, profile: null };
   }
 
-  // 2. Jika ada sesi, ambil profil lengkap dari tabel profil
+  // 2. Ambil profil lengkap dari tabel profil
   const { data: profile, error: profileError } = await supabase
     .from("profil_pengguna")
-    .select("*") // Ambil semua field profil, termasuk nama_lengkap
-    .eq("user_id", session.user.id) // Gunakan 'user_id' untuk mencocokkan
+    .select("*")
+    .eq("user_id", user.id)
     .single();
 
   if (profileError) {
     console.error("Error getting user profile:", profileError.message);
-    // Kembalikan data user, tapi peran dan profil null karena gagal diambil
-    return { user: session.user, role: null, profile: null };
+    return { user, role: null, profile: null };
   }
 
   // 3. Kembalikan data lengkap dengan profil
   return {
-    user: { ...session.user, profile }, // Gabungkan user dengan data profil
-    role: profile.peran as UserRole, // Kembalikan peran dari tabel profil
-    profile: profile, // Juga kembalikan profil terpisah untuk kemudahan akses
+    user: { ...user, profile },
+    role: profile.peran as UserRole,
+    profile: profile,
   };
 }

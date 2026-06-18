@@ -13,13 +13,13 @@ interface UserProfile {
   nomor_hp: string | null;
   bio: string | null;
   foto_profil_url: string | null;
-  peran: "admin" | "instruktur" | "peserta";
+  peran: "admin" | "peserta";
   is_aktif: boolean;
   dibuat_pada: string;
   diperbarui_pada: string | null;
 }
 
-type UserRole = "admin" | "pemateri" | "peserta";
+type UserRole = "admin" | "peserta";
 
 interface ProfilViewProps {
   user: {
@@ -39,8 +39,6 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
     switch (role) {
       case "admin":
         return "Administrator";
-      case "pemateri":
-        return "Pemateri";
       case "peserta":
         return "Peserta";
       default:
@@ -52,8 +50,6 @@ export default function ProfilView({ user, profile, role, onEdit, showEditButton
     switch (role) {
       case "admin":
         return "bg-red-100 text-red-800 border-red-200";
-      case "pemateri":
-        return "bg-navy/10 text-navy border-navy/20";
       case "peserta":
         return "bg-green-100 text-green-800 border-green-200";
       default:

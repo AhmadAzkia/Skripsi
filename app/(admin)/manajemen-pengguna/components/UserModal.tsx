@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { PenggunaData } from "../page";
 
+type PeranType = "admin" | "peserta";
+
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (userData: Partial<PenggunaData>) => Promise<void>;
+  onSave: (userData: Partial<PenggunaData> & { password?: string }) => Promise<void>;
   user?: PenggunaData | null;
   mode: "create" | "edit";
 }
@@ -15,10 +17,11 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
   const [formData, setFormData] = useState({
     nama_lengkap: "",
     email: "",
-    peran: "peserta",
+    peran: "peserta" as PeranType,
     nomor_hp: "",
     bio: "",
     is_aktif: true,
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +35,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
         nomor_hp: user.nomor_hp || "",
         bio: user.bio || "",
         is_aktif: user.is_aktif ?? true,
+        password: "",
       });
     } else {
       setFormData({
@@ -41,6 +45,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
         nomor_hp: "",
         bio: "",
         is_aktif: true,
+        password: "",
       });
     }
     setErrors({});
@@ -63,6 +68,14 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
       newErrors.peran = "Peran wajib dipilih";
     }
 
+    if (mode === "create") {
+      if (!formData.password.trim()) {
+        newErrors.password = "Password wajib diisi";
+      } else if (formData.password.length < 8) {
+        newErrors.password = "Password minimal 8 karakter";
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -80,6 +93,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
       onClose();
     } catch (error) {
       console.error("Error saving user:", error);
+      // Jangan tutup modal jika terjadi error
     } finally {
       setLoading(false);
     }
@@ -87,9 +101,11 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
+    const newValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: name === "peran" ? (newValue as PeranType) : newValue,
     }));
 
     // Clear error when user starts typing
@@ -101,7 +117,7 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-navy">{mode === "create" ? "Tambah Pengguna Baru" : "Edit Pengguna"}</h2>
@@ -147,6 +163,25 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
+          {/* Password (only for create mode) */}
+          {mode === "create" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors ${errors.password ? "border-red-500" : "border-gray-300"}`}
+                placeholder="Masukkan password (minimal 8 karakter)"
+                disabled={loading}
+              />
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            </div>
+          )}
+
           {/* Peran */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -160,7 +195,6 @@ export default function UserModal({ isOpen, onClose, onSave, user, mode }: UserM
               disabled={loading}
             >
               <option value="peserta">Peserta</option>
-              <option value="instruktur">Instruktur</option>
               <option value="admin">Admin</option>
             </select>
             {errors.peran && <p className="text-red-500 text-sm mt-1">{errors.peran}</p>}

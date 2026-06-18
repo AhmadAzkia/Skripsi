@@ -136,9 +136,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // Refresh auth state saat tab kembali aktif
+    // (onAuthStateChange tidak selalu fire INITIAL_SESSION saat tab switch)
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible") {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const profile = await getProfile(session.user);
+          setUser({ ...session.user, profile });
+        } else {
+          setUser(null);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     // Hentikan pemantauan saat komponen di-unmount
     return () => {
       authListener.subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 

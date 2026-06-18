@@ -18,7 +18,6 @@ type KursusDetail = {
   id: string;
   judul: string;
   deskripsi: string;
-  instruktur_nama: string;
   tipe_kursus: string;
 };
 

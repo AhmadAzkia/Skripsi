@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Footer from "@/components/Footer";
 import AdminNavbar from "@/components/navbars/AdminNavbar";
 
-export default async function PemateriLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // 1. Ambil peran pengguna di server
   const { role } = await getUserWithRole();
 

@@ -1,34 +1,29 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getUserWithRole } from "@/lib/user";
 import ManajemenPenggunaContainer from "./components/ManajemenPenggunaContainer";
 import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
+import type { Tables } from "@/../types/database";
 
-export type PenggunaData = {
-  id: string;
-  nama_lengkap: string;
-  email: string;
-  peran: string;
-  is_aktif: boolean;
-  nomor_hp: string | null;
-  foto_profil_url: string | null;
-  dibuat_pada: string;
-  diperbarui_pada: string | null;
-  user_id: string;
-  bio: string | null;
-};
+// Tipe data pengguna — dari tabel profil_pengguna di DB
+export type PenggunaData = Tables<"profil_pengguna">;
 
 export type PenggunaStats = {
   totalPengguna: number;
   totalAdmin: number;
-  totalInstruktur: number;
   totalPeserta: number;
   penggunaAktif: number;
   penggunaTidakAktif: number;
 };
 
 async function getPenggunaStats(): Promise<PenggunaStats> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    console.error("Admin client not available");
+    return { totalPengguna: 0, totalAdmin: 0, totalPeserta: 0, penggunaAktif: 0, penggunaTidakAktif: 0 };
+  }
 
   // Get all users count
   const { count: totalCount, error: totalError } = await supabase.from("profil_pengguna").select("*", { count: "exact", head: true });
@@ -41,7 +36,6 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
     return {
       totalPengguna: 0,
       totalAdmin: 0,
-      totalInstruktur: 0,
       totalPeserta: 0,
       penggunaAktif: 0,
       penggunaTidakAktif: 0,
@@ -50,7 +44,6 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
 
   const totalPengguna = totalCount || 0;
   const totalAdmin = roleData?.filter((user) => user.peran === "admin").length || 0;
-  const totalInstruktur = roleData?.filter((user) => user.peran === "instruktur").length || 0;
   const totalPeserta = roleData?.filter((user) => user.peran === "peserta").length || 0;
   const penggunaAktif = roleData?.filter((user) => user.is_aktif === true).length || 0;
   const penggunaTidakAktif = roleData?.filter((user) => user.is_aktif === false).length || 0;
@@ -58,7 +51,6 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
   return {
     totalPengguna,
     totalAdmin,
-    totalInstruktur,
     totalPeserta,
     penggunaAktif,
     penggunaTidakAktif,
@@ -66,7 +58,12 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
 }
 
 async function getPenggunaList(): Promise<PenggunaData[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    console.error("Admin client not available");
+    return [];
+  }
 
   const { data, error } = await supabase.from("profil_pengguna").select("*").order("dibuat_pada", { ascending: false });
 

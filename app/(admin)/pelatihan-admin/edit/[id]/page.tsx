@@ -20,7 +20,7 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
   const supabase = await createSupabaseServerClient();
   const { data: kursus, error } = await supabase
     .from("kursus")
-    .select("judul, deskripsi, kategori, tipe_kursus, harga, maksimal_peserta, tanggal_mulai, tanggal_selesai, thumbnail_url, status, instruktur_id")
+    .select("judul, deskripsi, kategori, tipe_kursus, harga, maksimal_peserta, tanggal_mulai, tanggal_selesai, thumbnail_url, status")
     .eq("id", id)
     .single();
 
@@ -70,7 +70,6 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
             tanggal_selesai: kursus.tanggal_selesai || "",
             thumbnail_url: kursus.thumbnail_url || "",
             status: kursus.status === "archived" ? "draft" : kursus.status,
-            instruktur_id: kursus.instruktur_id,
           }}
         />
       </div>

@@ -12,7 +12,6 @@ type JadwalPelatihan = {
   tanggal_selesai: string;
   status: string;
   tipe_kursus: string;
-  instruktur: string;
 };
 
 interface JadwalWithFiltersProps {

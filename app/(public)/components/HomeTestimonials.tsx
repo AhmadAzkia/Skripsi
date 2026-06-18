@@ -14,7 +14,7 @@ const testimonials = [
     name: "Ahmad Rizki",
     position: "Project Coordinator",
     rating: 5,
-    testimonial: "Instruktur sangat berpengalaman dan materi yang diberikan sangat relevan dengan kebutuhan industri saat ini. Highly recommended!",
+    testimonial: "Pelatihan sangat berpengalaman dan materi yang diberikan sangat relevan dengan kebutuhan industri saat ini. Highly recommended!",
   },
 ];
 
