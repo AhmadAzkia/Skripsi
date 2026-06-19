@@ -3,6 +3,7 @@
 import { useTransition, useState } from "react";
 import { generateCertificateByAdmin, deleteTemplate } from "./actions";
 import TemplateUploadForm from "./components/TemplateUploadForm";
+import ToastContainer, { useToast } from "@/components/ui/Toast";
 
 type Template = {
   id: string;
@@ -13,9 +14,12 @@ type Template = {
 export function CertificateAdminTabs({ templates: initialTemplates }: { templates: Template[] }) {
   const [activeTab, setActiveTab] = useState<"templates" | "certificates">("templates");
   const [templates, setTemplates] = useState(initialTemplates);
+  const { toasts, toast, removeToast } = useToast();
 
   return (
     <div className="space-y-6">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
       <div className="flex border-b border-gray-200">
         <button
           onClick={() => setActiveTab("templates")}
@@ -37,10 +41,11 @@ export function CertificateAdminTabs({ templates: initialTemplates }: { template
 
       {activeTab === "templates" && (
         <div className="space-y-6">
-          <TemplateUploadForm />
+          <TemplateUploadForm toast={toast} />
           <TemplateList
             templates={templates}
             onDelete={(id) => setTemplates((prev) => prev.filter((t) => t.id !== id))}
+            toast={toast}
           />
         </div>
       )}
@@ -48,7 +53,7 @@ export function CertificateAdminTabs({ templates: initialTemplates }: { template
   );
 }
 
-function TemplateList({ templates, onDelete }: { templates: Template[]; onDelete: (id: string) => void }) {
+function TemplateList({ templates, onDelete, toast }: { templates: Template[]; onDelete: (id: string) => void; toast: ReturnType<typeof useToast>["toast"] }) {
   const [pending, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -57,8 +62,9 @@ function TemplateList({ templates, onDelete }: { templates: Template[]; onDelete
       const result = await deleteTemplate(id);
       if (result.success) {
         onDelete(id);
+        toast.success("Template dihapus", "Template berhasil dihapus dari sistem.");
       } else {
-        alert(result.error || "Gagal menghapus template.");
+        toast.error("Gagal menghapus", result.error || "Terjadi kesalahan saat menghapus template.");
       }
     });
   };
@@ -100,34 +106,42 @@ function TemplateList({ templates, onDelete }: { templates: Template[]; onDelete
 export function GenerateCertificateButton({ certificateId, templates }: { certificateId: string; templates: Template[] }) {
   const [pending, startTransition] = useTransition();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const { toasts, toast, removeToast } = useToast();
 
   return (
-    <div className="flex items-center gap-2">
-      <select
-        value={selectedTemplate}
-        onChange={(e) => setSelectedTemplate(e.target.value)}
-        className="text-xs border border-gray-300 rounded-lg px-2 py-1.5"
-      >
-        <option value="">Tanpa template</option>
-        {templates.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.nama}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        disabled={pending}
-        onClick={() => {
-          startTransition(async () => {
-            const result = await generateCertificateByAdmin(certificateId, selectedTemplate || undefined);
-            alert(result.success ? "File sertifikat berhasil dibuat." : result.error || "Gagal membuat sertifikat.");
-          });
-        }}
-        className="px-3 py-2 text-sm font-semibold rounded-lg bg-gold text-navy hover:bg-gold/90 disabled:opacity-60"
-      >
-        {pending ? "Generate..." : "Generate"}
-      </button>
-    </div>
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <div className="flex items-center gap-2">
+        <select
+          value={selectedTemplate}
+          onChange={(e) => setSelectedTemplate(e.target.value)}
+          className="text-xs border border-gray-300 rounded-lg px-2 py-1.5"
+        >
+          <option value="">Tanpa template</option>
+          {templates.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.nama}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => {
+            startTransition(async () => {
+              const result = await generateCertificateByAdmin(certificateId, selectedTemplate || undefined);
+              if (result.success) {
+                toast.success("Sertifikat dibuat", "File sertifikat berhasil digenerate.");
+              } else {
+                toast.error("Gagal generate", result.error || "Terjadi kesalahan saat membuat sertifikat.");
+              }
+            });
+          }}
+          className="px-3 py-2 text-sm font-semibold rounded-lg bg-gold text-navy hover:bg-gold/90 disabled:opacity-60"
+        >
+          {pending ? "Generate..." : "Generate"}
+        </button>
+      </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import { useTransition, useState } from "react";
 import { uploadTemplate } from "../actions";
 import PdfPreview from "./PdfPreview";
+import type { useToast } from "@/components/ui/Toast";
 
 type KoordinatField = {
   x: number;
@@ -27,7 +28,7 @@ const defaultKoordinat: TemplateKoordinat = {
   qr_code: { x: 710, y: 108, size: 82 },
 };
 
-export default function TemplateUploadForm() {
+export default function TemplateUploadForm({ toast }: { toast: ReturnType<typeof useToast>["toast"] }) {
   const [pending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const [koordinat, setKoordinat] = useState<TemplateKoordinat>(defaultKoordinat);
@@ -43,7 +44,11 @@ export default function TemplateUploadForm() {
     formData.set("koordinat", JSON.stringify(koordinat));
     startTransition(async () => {
       const result = await uploadTemplate(formData);
-      alert(result.success ? result.message || "Template tersimpan." : result.error || "Gagal upload template.");
+      if (result.success) {
+        toast.success("Template tersimpan", result.message || "Template berhasil diunggah ke sistem.");
+      } else {
+        toast.error("Gagal upload", result.error || "Terjadi kesalahan saat mengunggah template.");
+      }
       if (result.success) {
         setFile(null);
         setKoordinat(defaultKoordinat);
