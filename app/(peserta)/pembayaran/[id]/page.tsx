@@ -130,7 +130,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
               </div>
             )}
 
-            <PaymentStatusActions kursusId={kursus?.id || ""} status={payment.status_pembayaran} />
+            <PaymentStatusActions kursusId={kursus?.id || ""} paymentId={payment.id} status={payment.status_pembayaran} />
           </div>
         </div>
       </div>

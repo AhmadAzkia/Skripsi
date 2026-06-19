@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { createPelatihan, updatePelatihan } from "../actions";
+import { createPelatihan, updatePelatihan, uploadThumbnail } from "../actions";
+import ToastContainer, { useToast } from "@/components/ui/Toast";
 
 interface FormData {
   judul: string;
@@ -41,7 +42,53 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
   const [formData, setFormData] = useState<FormData>(initialData || initialFormData);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialData?.thumbnail_url || null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const router = useRouter();
+  const { toasts, toast, removeToast } = useToast();
+
+  // Sync form data saat initialData berubah (untuk mode edit)
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+      setThumbnailPreview(initialData.thumbnail_url || null);
+    }
+  }, [initialData]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validasi tipe file
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, thumbnail: "Format file harus JPEG, PNG, atau WebP" }));
+      return;
+    }
+
+    // Validasi ukuran file (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, thumbnail: "Ukuran file maksimal 5MB" }));
+      return;
+    }
+
+    setThumbnailFile(file);
+    setErrors((prev) => ({ ...prev, thumbnail: "" }));
+
+    // Preview gambar
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setThumbnailPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    setFormData((prev) => ({ ...prev, thumbnail_url: "" }));
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -84,18 +131,43 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
 
     setLoading(true);
     try {
-      const result = mode === "edit" && courseId ? await updatePelatihan(courseId, formData) : await createPelatihan(formData);
+      let thumbnailUrl = formData.thumbnail_url;
+
+      // Upload thumbnail jika ada file baru
+      if (thumbnailFile) {
+        setUploadingThumbnail(true);
+        const { url, error: uploadError } = await uploadThumbnail(thumbnailFile);
+        setUploadingThumbnail(false);
+
+        if (uploadError) {
+          setErrors({ submit: uploadError });
+          setLoading(false);
+          return;
+        }
+
+        thumbnailUrl = url || "";
+      }
+
+      const submitData = { ...formData, thumbnail_url: thumbnailUrl };
+      const result = mode === "edit" && courseId ? await updatePelatihan(courseId, submitData) : await createPelatihan(submitData);
 
       if (result.success) {
-        router.push("/pelatihan-admin");
-        router.refresh();
+        toast.success(
+          mode === "edit" ? "Pelatihan diperbarui" : "Pelatihan ditambahkan",
+          result.message || (mode === "edit" ? "Data pelatihan berhasil diperbarui." : "Pelatihan baru berhasil dibuat.")
+        );
+        setTimeout(() => {
+          router.push("/pelatihan-admin");
+          router.refresh();
+        }, 1500);
       } else {
-        setErrors({ submit: result.error || "Terjadi kesalahan saat menyimpan data" });
+        toast.error("Gagal menyimpan", result.error || "Terjadi kesalahan saat menyimpan data");
       }
     } catch (error) {
       setErrors({ submit: "Terjadi kesalahan yang tidak terduga" });
     } finally {
       setLoading(false);
+      setUploadingThumbnail(false);
     }
   };
 
@@ -105,19 +177,9 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
 
   return (
     <ScrollReveal>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="bg-white rounded-xl shadow-lg border border-navy/10 overflow-hidden">
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          {/* Error Message */}
-          {errors.submit && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-red-700">{errors.submit}</span>
-              </div>
-            </div>
-          )}
 
           {/* Basic Information */}
           <div className="space-y-6">
@@ -173,17 +235,43 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
               {errors.deskripsi && <p className="text-red-500 text-sm mt-1">{errors.deskripsi}</p>}
             </div>
 
-            {/* Thumbnail URL */}
+            {/* Thumbnail Upload */}
             <div>
-              <label className="block text-sm font-medium text-navy mb-2">URL Gambar Thumbnail</label>
-              <input
-                type="url"
-                name="thumbnail_url"
-                value={formData.thumbnail_url}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-silver/30 rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
-                placeholder="https://example.com/image.jpg"
-              />
+              <label className="block text-sm font-medium text-navy mb-2">Gambar Thumbnail</label>
+
+              {thumbnailPreview ? (
+                <div className="relative">
+                  <img src={thumbnailPreview} alt="Preview thumbnail" className="w-full h-48 object-cover rounded-lg border border-silver/30" />
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-silver/30 rounded-lg cursor-pointer hover:border-gold/50 hover:bg-gold/5 transition-all duration-200">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-10 h-10 text-silver mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-sm text-silver mb-1">Klik untuk upload gambar</p>
+                    <p className="text-xs text-silver/70">PNG, JPG, WebP (Maks. 5MB)</p>
+                  </div>
+                  <input type="file" className="hidden" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} />
+                </label>
+              )}
+
+              {errors.thumbnail && <p className="text-red-500 text-sm mt-1">{errors.thumbnail}</p>}
+              {uploadingThumbnail && (
+                <div className="flex items-center mt-2 text-sm text-gold">
+                  <div className="w-4 h-4 border-2 border-gold/30 border-t-gold rounded-full animate-spin mr-2"></div>
+                  Mengupload gambar...
+                </div>
+              )}
             </div>
 
           </div>

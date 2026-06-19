@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createMidtransSignature, mapMidtransStatus, type MidtransTransactionStatus } from "@/lib/midtrans";
 import { createCertificateNumber } from "@/lib/certificates";
-import { generateAndUploadCertificate } from "@/lib/certificate-generator";
+import { generateAndUploadCertificate, ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export const runtime = "nodejs";
 
@@ -49,14 +49,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Pembayaran tidak ditemukan: ${paymentError?.message || payload.order_id}` }, { status: 404 });
     }
 
-    await supabase
-      .from("transaksi")
-      .update({
-        status_transaksi: mappedStatus.transactionStatus,
-        diperbarui_pada: new Date().toISOString(),
-      })
-      .eq("pembayaran_id", payment.id);
-
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "klaim_sertifikat") {
       const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("kursus_id", payment.kursus_id).eq("peserta_id", payment.pengguna_id).maybeSingle();
       let certificateId = existingCertificate?.id || null;
@@ -83,6 +75,15 @@ export async function POST(request: NextRequest) {
 
       if (certificateId && !existingCertificate?.sertifikat_url) {
         await generateAndUploadCertificate(certificateId);
+      }
+    }
+
+    // Auto-generate certificate for paid course registration
+    if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_kursus") {
+      try {
+        await ensureCertificateForCourse(payment.pengguna_id, payment.kursus_id, supabase);
+      } catch (certError: any) {
+        console.error("Gagal auto-generate sertifikat untuk pelatihan berbayar:", certError.message);
       }
     }
 

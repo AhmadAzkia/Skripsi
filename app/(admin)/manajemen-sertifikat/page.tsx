@@ -17,7 +17,7 @@ export default async function ManajemenSertifikatPage() {
 
   const supabase = await createSupabaseServerClient();
 
-  const [certificatesResult, templatesResult] = await Promise.all([
+  const [certificatesResult, templatesResult, coursesResult] = await Promise.all([
     supabase
       .from("sertifikat")
       .select(
@@ -40,13 +40,19 @@ export default async function ManajemenSertifikatPage() {
       .order("tanggal_terbit", { ascending: false }),
     supabase
       .from("template_sertifikat")
-      .select("id, nama, file_path")
+      .select("id, nama, file_path, kursus_id, kursus:kursus_id ( judul )")
       .order("dibuat_pada", { ascending: false }),
+    supabase
+      .from("kursus")
+      .select("id, judul")
+      .eq("status", "published")
+      .order("judul"),
   ]);
 
   const certificates = certificatesResult.data;
   const error = certificatesResult.error;
   const templates = templatesResult.data || [];
+  const courses = coursesResult.data || [];
 
   const total = certificates?.length || 0;
   const terbit = certificates?.filter((certificate) => certificate.status === "terbit").length || 0;
@@ -79,7 +85,7 @@ export default async function ManajemenSertifikatPage() {
           </div>
         </div>
 
-        <CertificateAdminTabs templates={templates} />
+        <CertificateAdminTabs templates={templates} courses={courses} />
 
         <div className="bg-white border border-navy/10 rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">

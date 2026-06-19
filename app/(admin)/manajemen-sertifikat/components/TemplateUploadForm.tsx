@@ -28,10 +28,16 @@ const defaultKoordinat: TemplateKoordinat = {
   qr_code: { x: 710, y: 108, size: 82 },
 };
 
-export default function TemplateUploadForm({ toast }: { toast: ReturnType<typeof useToast>["toast"] }) {
+type Course = {
+  id: string;
+  judul: string;
+};
+
+export default function TemplateUploadForm({ toast, courses }: { toast: ReturnType<typeof useToast>["toast"]; courses: Course[] }) {
   const [pending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const [koordinat, setKoordinat] = useState<TemplateKoordinat>(defaultKoordinat);
+  const [selectedKursusId, setSelectedKursusId] = useState<string>("");
 
   const updateKoordinat = (field: keyof TemplateKoordinat, key: keyof KoordinatField, value: number) => {
     setKoordinat((prev) => ({
@@ -42,6 +48,9 @@ export default function TemplateUploadForm({ toast }: { toast: ReturnType<typeof
 
   const handleSubmit = (formData: FormData) => {
     formData.set("koordinat", JSON.stringify(koordinat));
+    if (selectedKursusId) {
+      formData.set("kursus_id", selectedKursusId);
+    }
     startTransition(async () => {
       const result = await uploadTemplate(formData);
       if (result.success) {
@@ -52,6 +61,7 @@ export default function TemplateUploadForm({ toast }: { toast: ReturnType<typeof
       if (result.success) {
         setFile(null);
         setKoordinat(defaultKoordinat);
+        setSelectedKursusId("");
       }
     });
   };
@@ -68,6 +78,23 @@ export default function TemplateUploadForm({ toast }: { toast: ReturnType<typeof
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Template</label>
             <input name="nama" type="text" required placeholder="Contoh: Template Formal" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-navy focus:border-navy" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Untuk Pelatihan</label>
+            <select
+              value={selectedKursusId}
+              onChange={(e) => setSelectedKursusId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-navy focus:border-navy"
+            >
+              <option value="">-- Pilih Pelatihan (Opsional) --</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.judul}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Pilih pelatihan jika template ini khusus untuk pelatihan tertentu.</p>
           </div>
 
           <div>

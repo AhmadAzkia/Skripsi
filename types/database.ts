@@ -381,6 +381,7 @@ export type Database = {
             judul_pelatihan: { x: number; y: number; fontSize: number }
             qr_code: { x: number; y: number; size: number }
           }
+          kursus_id: string | null
           nama: string
         }
         Insert: {
@@ -395,6 +396,7 @@ export type Database = {
             judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
             qr_code?: { x?: number; y?: number; size?: number }
           }
+          kursus_id?: string | null
           nama: string
         }
         Update: {
@@ -409,9 +411,18 @@ export type Database = {
             judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
             qr_code?: { x?: number; y?: number; size?: number }
           }
+          kursus_id?: string | null
           nama?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "template_sertifikat_kursus_id_fkey"
+            columns: ["kursus_id"]
+            isOneToOne: false
+            referencedRelation: "kursus"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

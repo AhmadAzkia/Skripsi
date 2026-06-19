@@ -1,5 +1,3 @@
-import fs from "fs/promises";
-import path from "path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -59,60 +57,12 @@ function splitText(text: string, maxLength: number) {
 }
 
 async function createCertificatePdf(data: CertificatePdfData) {
-  let pdfDoc: PDFDocument;
-
-  if (data.templateBytes) {
-    pdfDoc = await PDFDocument.load(data.templateBytes);
-  } else {
-    pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([842, 595]);
-    const { width, height } = page.getSize();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    const navy = rgb(0, 18 / 255, 51 / 255);
-    const gold = rgb(214 / 255, 163 / 255, 59 / 255);
-    const gray = rgb(90 / 255, 90 / 255, 90 / 255);
-
-    page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(0.98, 0.96, 0.9) });
-    page.drawRectangle({ x: 32, y: 32, width: width - 64, height: height - 64, borderColor: gold, borderWidth: 4 });
-    page.drawRectangle({ x: 46, y: 46, width: width - 92, height: height - 92, borderColor: navy, borderWidth: 1 });
-
-    try {
-      const logoPath = path.join(process.cwd(), "public", "CertiGuardia.png");
-      const logoBytes = await fs.readFile(logoPath);
-      const logo = await pdfDoc.embedPng(logoBytes);
-      const logoWidth = 82;
-      const logoHeight = (logo.height / logo.width) * logoWidth;
-      page.drawImage(logo, { x: width / 2 - logoWidth / 2, y: height - 118, width: logoWidth, height: logoHeight });
-    } catch {
-      page.drawText("CertiGuardia", { x: width / 2 - 62, y: height - 95, size: 18, font: boldFont, color: navy });
-    }
-
-    page.drawText("SERTIFIKAT", { x: width / 2 - boldFont.widthOfTextAtSize("SERTIFIKAT", 34) / 2, y: height - 165, size: 34, font: boldFont, color: navy });
-    page.drawText("Diberikan kepada", { x: width / 2 - 64, y: height - 205, size: 14, font, color: gray });
-
-    const participantName = data.participantName.toUpperCase();
-    page.drawText(participantName, { x: width / 2 - boldFont.widthOfTextAtSize(participantName, 30) / 2, y: height - 255, size: 30, font: boldFont, color: navy });
-    page.drawLine({ start: { x: 200, y: height - 270 }, end: { x: width - 200, y: height - 270 }, thickness: 1, color: gold });
-
-    page.drawText("Atas keberhasilannya menyelesaikan pelatihan", { x: width / 2 - 147, y: height - 310, size: 14, font, color: gray });
-
-    const courseLines = splitText(data.courseTitle, 58).slice(0, 2);
-    courseLines.forEach((line, index) => {
-      page.drawText(line, { x: width / 2 - boldFont.widthOfTextAtSize(line, 21) / 2, y: height - 345 - index * 28, size: 21, font: boldFont, color: navy });
-    });
-
-    page.drawText(`Kategori: ${data.category}`, { x: width / 2 - 80, y: 165, size: 12, font, color: gray });
-    page.drawText(`Tanggal Terbit: ${formatDate(data.issuedAt)}`, { x: 90, y: 95, size: 11, font, color: gray });
-    page.drawText(`Nomor: ${data.certificateNumber}`, { x: 90, y: 75, size: 11, font, color: gray });
-
-    const qrDataUrl = await QRCode.toDataURL(data.verificationUrl, { margin: 1, width: 110 });
-    const qrImage = await pdfDoc.embedPng(qrDataUrl);
-    page.drawImage(qrImage, { x: width - 180, y: 67, width: 82, height: 82 });
-    page.drawText("Verifikasi", { x: width - 166, y: 52, size: 10, font, color: gray });
-
-    return pdfDoc.save();
+  if (!data.templateBytes) {
+    throw new Error("Template sertifikat belum diunggah oleh admin.");
   }
+
+  let pdfDoc: PDFDocument;
+  pdfDoc = await PDFDocument.load(data.templateBytes);
 
   // Template-based generation
   const pages = pdfDoc.getPages();
@@ -277,8 +227,8 @@ export async function generateAndUploadCertificate(certificateId: string) {
   return certificateUrl;
 }
 
-export async function ensureCertificateForCourse(profileId: string, kursusId: string) {
-  const supabase = createSupabaseAdminClient();
+export async function ensureCertificateForCourse(profileId: string, kursusId: string, supabaseClient?: ReturnType<typeof createSupabaseAdminClient>) {
+  const supabase = supabaseClient || createSupabaseAdminClient();
 
   if (!supabase) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY belum diisi. Generator sertifikat membutuhkan akses server-side.");
@@ -298,6 +248,13 @@ export async function ensureCertificateForCourse(profileId: string, kursusId: st
     return existingCertificate.id;
   }
 
+  // Find template linked to this course
+  const { data: template } = await supabase
+    .from("template_sertifikat")
+    .select("id")
+    .eq("kursus_id", kursusId)
+    .maybeSingle();
+
   const { data: certificate, error } = await supabase
     .from("sertifikat")
     .insert({
@@ -306,6 +263,7 @@ export async function ensureCertificateForCourse(profileId: string, kursusId: st
       nomor_sertifikat: createCertificateNumber(kursusId, profileId),
       status: "terbit",
       tanggal_terbit: new Date().toISOString(),
+      template_id: template?.id || null,
     })
     .select("id")
     .single();

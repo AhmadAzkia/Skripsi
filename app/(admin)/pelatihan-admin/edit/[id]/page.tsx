@@ -28,6 +28,12 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
     notFound();
   }
 
+  // Helper: convert ISO date string to YYYY-MM-DD for HTML date input
+  const toDateString = (val: string | null): string => {
+    if (!val) return "";
+    return val.split("T")[0];
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">
       <ScrollReveal>
@@ -66,8 +72,8 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
             tipe_kursus: kursus.tipe_kursus,
             harga: kursus.harga,
             maksimal_peserta: kursus.maksimal_peserta || 1,
-            tanggal_mulai: kursus.tanggal_mulai || "",
-            tanggal_selesai: kursus.tanggal_selesai || "",
+            tanggal_mulai: toDateString(kursus.tanggal_mulai),
+            tanggal_selesai: toDateString(kursus.tanggal_selesai),
             thumbnail_url: kursus.thumbnail_url || "",
             status: kursus.status === "archived" ? "draft" : kursus.status,
           }}

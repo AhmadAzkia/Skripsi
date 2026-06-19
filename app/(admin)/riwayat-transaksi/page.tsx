@@ -1,6 +1,6 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getUserWithRole } from "@/lib/user";
 import { redirect } from "next/navigation";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const statusClass = {
   menunggu: "bg-amber-50 text-amber-700 border-amber-200",
@@ -32,8 +32,19 @@ export default async function RiwayatTransaksiAdminPage() {
     redirect("/login");
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data: payments, error } = await supabase
+  const admin = createSupabaseAdminClient();
+  if (!admin) {
+    redirect("/login");
+  }
+
+  // Auto-cleanup: hapus pembayaran menunggu yang lebih dari 24 jam
+  await admin
+    .from("pembayaran")
+    .delete()
+    .eq("status_pembayaran", "menunggu")
+    .lt("dibuat_pada", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+  const { data: payments, error } = await admin
     .from("pembayaran")
     .select(
       `

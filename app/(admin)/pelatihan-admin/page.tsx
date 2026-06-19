@@ -1,32 +1,29 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import AdminPelatihanClient from "./components/AdminPelatihanClient";
 import { getUserWithRole } from "@/lib/user";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-// Fungsi untuk ambil data kursus (bisa juga ditaruh di lib/database.ts)
-async function getSemuaKursus(supabase: any) {
-  const { data, error } = await supabase.from("kursus").select("*");
+// Fungsi untuk ambil data kursus (pakai admin client untuk bypass RLS)
+async function getSemuaKursus() {
+  const admin = createSupabaseAdminClient();
+  if (!admin) return [];
+  const { data, error } = await admin.from("kursus").select("*").order("dibuat_pada", { ascending: false });
   if (error) return [];
   return data;
 }
 
 export default async function AdminKursusPage() {
-  const supabase = await createSupabaseServerClient();
-
   // 1. Keamanan: Cek User & Role
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const userData = await getUserWithRole();
 
-  if (userError || !user) {
+  if (!userData?.user || userData.role !== "admin") {
     redirect("/login");
   }
 
   // 2. Ambil Data
-  const kursus = await getSemuaKursus(supabase);
+  const kursus = await getSemuaKursus();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">

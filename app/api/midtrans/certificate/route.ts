@@ -99,13 +99,6 @@ export async function POST(request: NextRequest) {
         })
         .in("id", oldPendingPaymentIds);
 
-      await supabase
-        .from("transaksi")
-        .update({
-          status_transaksi: "gagal",
-          diperbarui_pada: now,
-        })
-        .in("pembayaran_id", oldPendingPaymentIds);
     }
 
     const { data: payment, error: paymentError } = await supabase
@@ -138,16 +131,6 @@ export async function POST(request: NextRequest) {
     if (updatePaymentError) {
       return NextResponse.json({ error: `Gagal menyimpan order ID sertifikat: ${updatePaymentError.message}` }, { status: 500 });
     }
-
-    await supabase.from("transaksi").insert({
-      pengguna_id: profile.id,
-      kursus_id: kursus.id,
-      pembayaran_id: payment.id,
-      jumlah: certificatePrice,
-      status_transaksi: "menunggu",
-      tipe_transaksi: "klaim_sertifikat",
-      deskripsi: `Klaim sertifikat pelatihan ${kursus.judul}`,
-    });
 
     const snap = await createSnapTransaction({
       transaction_details: {

@@ -1,7 +1,60 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+
+// Upload thumbnail ke Supabase Storage (pakai admin client untuk bypass RLS)
+export async function uploadThumbnail(file: File): Promise<{ url: string | null; error: string | null }> {
+  try {
+    // Validasi tipe file
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      return { url: null, error: "Format file harus JPEG, PNG, atau WebP" };
+    }
+
+    // Validasi ukuran file (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return { url: null, error: "Ukuran file maksimal 5MB" };
+    }
+
+    const admin = createSupabaseAdminClient();
+    if (!admin) {
+      return { url: null, error: "Admin client tidak tersedia" };
+    }
+
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
+    const fileName = `thumbnail-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await admin.storage.from("pelatihan-thumbnails").upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+    if (uploadError) {
+      console.error("Thumbnail upload error:", uploadError);
+      return { url: null, error: "Gagal mengupload gambar: " + uploadError.message };
+    }
+
+    const { data: urlData } = admin.storage.from("pelatihan-thumbnails").getPublicUrl(fileName);
+
+    return { url: urlData.publicUrl, error: null };
+  } catch (error) {
+    console.error("Unexpected error in uploadThumbnail:", error);
+    return { url: null, error: "Terjadi kesalahan saat mengupload gambar" };
+  }
+}
+
+// Delete thumbnail dari Supabase Storage (pakai admin client untuk bypass RLS)
+export async function deleteThumbnail(fileName: string): Promise<void> {
+  try {
+    const admin = createSupabaseAdminClient();
+    if (!admin) return;
+    await admin.storage.from("pelatihan-thumbnails").remove([fileName]);
+  } catch (error) {
+    console.warn("Failed to delete thumbnail:", error);
+  }
+}
 
 interface CreatePelatihanData {
   judul: string;

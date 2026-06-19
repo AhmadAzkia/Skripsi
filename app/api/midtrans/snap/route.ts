@@ -71,6 +71,78 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingRegistration) {
+      // Check if there's an existing pending payment - reuse it
+      const { data: existingPayment } = await supabase
+        .from("pembayaran")
+        .select("id, id_pembayaran_eksternal, status_pembayaran, jumlah")
+        .eq("kursus_id", kursus.id)
+        .eq("pengguna_id", profile.id)
+        .eq("tipe_pembayaran", "pendaftaran_kursus")
+        .eq("status_pembayaran", "menunggu")
+        .maybeSingle();
+
+      if (existingPayment && existingPayment.id_pembayaran_eksternal) {
+        // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
+        const newOrderId = `CG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        const finishUrl = `${getSiteUrl()}/pembayaran/${existingPayment.id}`;
+
+        // Update payment with new order_id
+        await supabase
+          .from("pembayaran")
+          .update({
+            id_pembayaran_eksternal: newOrderId,
+            diperbarui_pada: new Date().toISOString(),
+          })
+          .eq("id", existingPayment.id);
+
+        const snap = await createSnapTransaction({
+          transaction_details: {
+            order_id: newOrderId,
+            gross_amount: existingPayment.jumlah,
+          },
+          item_details: [
+            {
+              id: kursus.id,
+              price: existingPayment.jumlah,
+              quantity: 1,
+              name: kursus.judul.slice(0, 50),
+            },
+          ],
+          customer_details: {
+            first_name: profile.nama_lengkap,
+            email: profile.email,
+            phone: profile.nomor_hp || undefined,
+          },
+          callbacks: {
+            finish: finishUrl,
+          },
+        });
+
+        return NextResponse.json({
+          success: true,
+          isFree: false,
+          paymentId: existingPayment.id,
+          orderId: newOrderId,
+          token: snap.token,
+          redirectUrl: snap.redirect_url,
+          finishUrl,
+        });
+      }
+
+      // Check if payment already completed
+      const { data: completedPayment } = await supabase
+        .from("pembayaran")
+        .select("id, status_pembayaran")
+        .eq("kursus_id", kursus.id)
+        .eq("pengguna_id", profile.id)
+        .eq("tipe_pembayaran", "pendaftaran_kursus")
+        .eq("status_pembayaran", "berhasil")
+        .maybeSingle();
+
+      if (completedPayment) {
+        return NextResponse.json({ error: "Pembayaran untuk pelatihan ini sudah berhasil." }, { status: 409 });
+      }
+
       return NextResponse.json({ error: "Anda sudah terdaftar di pelatihan ini." }, { status: 409 });
     }
 
@@ -135,16 +207,6 @@ export async function POST(request: NextRequest) {
     if (paymentUpdateError) {
       return NextResponse.json({ error: `Gagal menyimpan order ID: ${paymentUpdateError.message}` }, { status: 500 });
     }
-
-    await supabase.from("transaksi").insert({
-      pengguna_id: profile.id,
-      kursus_id: kursus.id,
-      pembayaran_id: payment.id,
-      jumlah: kursus.harga,
-      status_transaksi: "menunggu",
-      tipe_transaksi: "pendaftaran_kursus",
-      deskripsi: `Pendaftaran pelatihan ${kursus.judul}`,
-    });
 
     const snap = await createSnapTransaction({
       transaction_details: {

@@ -37,10 +37,10 @@ export default function ResetPasswordForm() {
 
     if (result?.error) {
       setError(result.error);
+      setLoading(false);
     }
     // Jika sukses, Server Action akan me-redirect,
     // jadi kita tidak perlu menangani 'success' di sini.
-    setLoading(false);
   };
 
   return (

@@ -9,9 +9,16 @@ type Template = {
   id: string;
   nama: string;
   file_path: string;
+  kursus_id: string | null;
+  kursus?: { judul: string } | null;
 };
 
-export function CertificateAdminTabs({ templates: initialTemplates }: { templates: Template[] }) {
+type Course = {
+  id: string;
+  judul: string;
+};
+
+export function CertificateAdminTabs({ templates: initialTemplates, courses }: { templates: Template[]; courses: Course[] }) {
   const [activeTab, setActiveTab] = useState<"templates" | "certificates">("templates");
   const [templates, setTemplates] = useState(initialTemplates);
   const { toasts, toast, removeToast } = useToast();
@@ -41,7 +48,7 @@ export function CertificateAdminTabs({ templates: initialTemplates }: { template
 
       {activeTab === "templates" && (
         <div className="space-y-6">
-          <TemplateUploadForm toast={toast} />
+          <TemplateUploadForm toast={toast} courses={courses} />
           <TemplateList
             templates={templates}
             onDelete={(id) => setTemplates((prev) => prev.filter((t) => t.id !== id))}
@@ -88,6 +95,9 @@ function TemplateList({ templates, onDelete, toast }: { templates: Template[]; o
             <div>
               <p className="font-semibold text-navy">{template.nama}</p>
               <p className="text-xs text-gray-500">{template.file_path}</p>
+              {template.kursus?.judul && (
+                <p className="text-xs text-gold font-medium mt-1">Untuk: {template.kursus.judul}</p>
+              )}
             </div>
             <button
               onClick={() => handleDelete(template.id)}
@@ -117,19 +127,19 @@ export function GenerateCertificateButton({ certificateId, templates }: { certif
           onChange={(e) => setSelectedTemplate(e.target.value)}
           className="text-xs border border-gray-300 rounded-lg px-2 py-1.5"
         >
-          <option value="">Tanpa template</option>
+          <option value="">Pilih template</option>
           {templates.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.nama}
+              {t.nama}{t.kursus?.judul ? ` (${t.kursus.judul})` : ""}
             </option>
           ))}
         </select>
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || !selectedTemplate}
           onClick={() => {
             startTransition(async () => {
-              const result = await generateCertificateByAdmin(certificateId, selectedTemplate || undefined);
+              const result = await generateCertificateByAdmin(certificateId, selectedTemplate);
               if (result.success) {
                 toast.success("Sertifikat dibuat", "File sertifikat berhasil digenerate.");
               } else {

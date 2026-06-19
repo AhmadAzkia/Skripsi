@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { CertificateWithCourse } from "../page";
-import GenerateCertificateButton from "./GenerateCertificateButton";
 
 interface SertifikatListProps {
   certificates: CertificateWithCourse[];
@@ -148,7 +147,9 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                       Unduh Sertifikat
                     </a>
                   ) : (
-                    <GenerateCertificateButton certificateId={cert.id} />
+                    <div className="w-full text-center px-4 py-3 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium">
+                      Sertifikat sedang disiapkan oleh admin
+                    </div>
                   )}
                 </div>
               </div>
