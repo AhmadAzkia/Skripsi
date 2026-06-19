@@ -1,7 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getUserWithRole } from "@/lib/user";
 import { redirect } from "next/navigation";
-import { GenerateCertificateButton, TemplateUploadForm } from "./CertificateAdminActions";
+import { CertificateAdminTabs, GenerateCertificateButton } from "./CertificateAdminActions";
 
 function formatDate(value: string | null) {
   if (!value) return "-";
@@ -16,26 +16,37 @@ export default async function ManajemenSertifikatPage() {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: certificates, error } = await supabase
-    .from("sertifikat")
-    .select(
-      `
-      id,
-      nomor_sertifikat,
-      status,
-      tanggal_terbit,
-      sertifikat_url,
-      peserta:peserta_id (
-        nama_lengkap,
-        email
-      ),
-      kursus:kursus_id (
-        judul,
-        kategori
+
+  const [certificatesResult, templatesResult] = await Promise.all([
+    supabase
+      .from("sertifikat")
+      .select(
+        `
+        id,
+        nomor_sertifikat,
+        status,
+        tanggal_terbit,
+        sertifikat_url,
+        peserta:peserta_id (
+          nama_lengkap,
+          email
+        ),
+        kursus:kursus_id (
+          judul,
+          kategori
+        )
+      `,
       )
-    `,
-    )
-    .order("tanggal_terbit", { ascending: false });
+      .order("tanggal_terbit", { ascending: false }),
+    supabase
+      .from("template_sertifikat")
+      .select("id, nama, file_path")
+      .order("dibuat_pada", { ascending: false }),
+  ]);
+
+  const certificates = certificatesResult.data;
+  const error = certificatesResult.error;
+  const templates = templatesResult.data || [];
 
   const total = certificates?.length || 0;
   const terbit = certificates?.filter((certificate) => certificate.status === "terbit").length || 0;
@@ -68,7 +79,7 @@ export default async function ManajemenSertifikatPage() {
           </div>
         </div>
 
-        <TemplateUploadForm />
+        <CertificateAdminTabs templates={templates} />
 
         <div className="bg-white border border-navy/10 rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
@@ -120,7 +131,7 @@ export default async function ManajemenSertifikatPage() {
                                 Buka
                               </a>
                             )}
-                            <GenerateCertificateButton certificateId={certificate.id} />
+                            <GenerateCertificateButton certificateId={certificate.id} templates={templates} />
                           </div>
                         </td>
                       </tr>
