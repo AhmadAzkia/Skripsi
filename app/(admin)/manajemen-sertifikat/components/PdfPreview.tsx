@@ -51,7 +51,7 @@ export default function PdfPreview({ file, koordinat }: PdfPreviewProps) {
 
         setPdfDimensions({ width: viewport.width, height: viewport.height });
 
-        await page.render({ canvasContext: context, viewport }).promise;
+        await page.render({ canvasContext: context, viewport, canvas }).promise;
       } catch (err) {
         setError("Gagal render preview PDF.");
         console.error(err);
