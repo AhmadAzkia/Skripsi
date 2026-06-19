@@ -318,6 +318,7 @@ export type Database = {
           sertifikat_url: string | null
           status: Database["public"]["Enums"]["status_sertifikat"]
           tanggal_terbit: string
+          template_id: string | null
         }
         Insert: {
           dibuat_pada?: string
@@ -329,6 +330,7 @@ export type Database = {
           sertifikat_url?: string | null
           status?: Database["public"]["Enums"]["status_sertifikat"]
           tanggal_terbit?: string
+          template_id?: string | null
         }
         Update: {
           dibuat_pada?: string
@@ -340,6 +342,7 @@ export type Database = {
           sertifikat_url?: string | null
           status?: Database["public"]["Enums"]["status_sertifikat"]
           tanggal_terbit?: string
+          template_id?: string | null
         }
         Relationships: [
           {
@@ -356,68 +359,59 @@ export type Database = {
             referencedRelation: "profil_pengguna"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sertifikat_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "template_sertifikat"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      transaksi: {
+      template_sertifikat: {
         Row: {
-          deskripsi: string | null
           dibuat_pada: string
           diperbarui_pada: string | null
+          file_path: string
           id: string
-          jumlah: number
-          kursus_id: string | null
-          pembayaran_id: string | null
-          pengguna_id: string
-          status_transaksi: Database["public"]["Enums"]["status_transaksi"]
-          tipe_transaksi: string
+          koordinat: {
+            nama: { x: number; y: number; fontSize: number }
+            nomor_sertifikat: { x: number; y: number; fontSize: number }
+            tanggal: { x: number; y: number; fontSize: number }
+            judul_pelatihan: { x: number; y: number; fontSize: number }
+            qr_code: { x: number; y: number; size: number }
+          }
+          nama: string
         }
         Insert: {
-          deskripsi?: string | null
           dibuat_pada?: string
           diperbarui_pada?: string | null
+          file_path: string
           id?: string
-          jumlah: number
-          kursus_id?: string | null
-          pembayaran_id?: string | null
-          pengguna_id: string
-          status_transaksi?: Database["public"]["Enums"]["status_transaksi"]
-          tipe_transaksi: string
+          koordinat?: {
+            nama?: { x?: number; y?: number; fontSize?: number }
+            nomor_sertifikat?: { x?: number; y?: number; fontSize?: number }
+            tanggal?: { x?: number; y?: number; fontSize?: number }
+            judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
+            qr_code?: { x?: number; y?: number; size?: number }
+          }
+          nama: string
         }
         Update: {
-          deskripsi?: string | null
           dibuat_pada?: string
           diperbarui_pada?: string | null
+          file_path?: string
           id?: string
-          jumlah?: number
-          kursus_id?: string | null
-          pembayaran_id?: string | null
-          pengguna_id?: string
-          status_transaksi?: Database["public"]["Enums"]["status_transaksi"]
-          tipe_transaksi?: string
+          koordinat?: {
+            nama?: { x?: number; y?: number; fontSize?: number }
+            nomor_sertifikat?: { x?: number; y?: number; fontSize?: number }
+            tanggal?: { x?: number; y?: number; fontSize?: number }
+            judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
+            qr_code?: { x?: number; y?: number; size?: number }
+          }
+          nama?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "transaksi_kursus_id_fkey"
-            columns: ["kursus_id"]
-            isOneToOne: false
-            referencedRelation: "kursus"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transaksi_pembayaran_id_fkey"
-            columns: ["pembayaran_id"]
-            isOneToOne: false
-            referencedRelation: "pembayaran"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transaksi_pengguna_id_fkey"
-            columns: ["pengguna_id"]
-            isOneToOne: false
-            referencedRelation: "profil_pengguna"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -450,7 +444,6 @@ export type Database = {
         | "selesai"
         | "dibatalkan"
       status_sertifikat: "draft" | "terbit" | "dibatalkan"
-      status_transaksi: "menunggu" | "berhasil" | "gagal" | "dibatalkan"
       tipe_kursus: "online" | "offline" | "hybrid"
       tipe_materi: "pdf" | "ppt"
       tipe_pelatihan: "online" | "offline"
@@ -592,7 +585,6 @@ export const Constants = {
         "dibatalkan",
       ],
       status_sertifikat: ["draft", "terbit", "dibatalkan"],
-      status_transaksi: ["menunggu", "berhasil", "gagal", "dibatalkan"],
       tipe_kursus: ["online", "offline", "hybrid"],
       tipe_materi: ["pdf", "ppt"],
       tipe_pelatihan: ["online", "offline"],
