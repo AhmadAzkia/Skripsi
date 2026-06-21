@@ -38,10 +38,10 @@ export async function changeUserPassword(formData: FormData) {
       };
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
       return {
         success: false,
-        error: "Password baru minimal 6 karakter",
+        error: "Password baru minimal 8 karakter",
         message: "Gagal mengubah password",
       };
     }

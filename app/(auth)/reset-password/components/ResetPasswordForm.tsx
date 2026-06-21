@@ -27,8 +27,8 @@ export default function ResetPasswordForm() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password minimal harus 6 karakter.");
+    if (password.length < 8) {
+      setError("Password minimal harus 8 karakter.");
       setLoading(false);
       return;
     }
@@ -144,9 +144,9 @@ export default function ResetPasswordForm() {
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <div className="flex-1 bg-white/10 rounded-full h-2">
-                <div className={`h-2 rounded-full transition-all duration-300 ${password.length >= 8 ? "bg-green-500 w-full" : password.length >= 6 ? "bg-yellow-500 w-2/3" : "bg-red-500 w-1/3"}`}></div>
+                <div className={`h-2 rounded-full transition-all duration-300 ${password.length >= 12 ? "bg-green-500 w-full" : password.length >= 8 ? "bg-yellow-500 w-2/3" : "bg-red-500 w-1/3"}`}></div>
               </div>
-              <span className={`text-xs font-medium ${password.length >= 8 ? "text-green-400" : password.length >= 6 ? "text-yellow-400" : "text-red-400"}`}>{password.length >= 8 ? "Kuat" : password.length >= 6 ? "Sedang" : "Lemah"}</span>
+              <span className={`text-xs font-medium ${password.length >= 12 ? "text-green-400" : password.length >= 8 ? "text-yellow-400" : "text-red-400"}`}>{password.length >= 12 ? "Kuat" : password.length >= 8 ? "Sedang" : "Lemah"}</span>
             </div>
             <div className="space-y-1 text-xs">
               <div className={`flex items-center space-x-2 ${password.length >= 6 ? "text-green-400" : "text-silver/70"}`}>
@@ -161,7 +161,7 @@ export default function ResetPasswordForm() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Minimal 6 karakter</span>
+                <span>Minimal 8 karakter</span>
               </div>
               <div className={`flex items-center space-x-2 ${/[0-9]/.test(password) ? "text-green-400" : "text-silver/70"}`}>
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -184,7 +184,7 @@ export default function ResetPasswordForm() {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading || password !== confirmPassword || password.length < 6}
+          disabled={loading || password !== confirmPassword || password.length < 8}
           className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-semibold text-navy bg-gold hover:bg-gold/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold transition-all duration-300 btn-interactive disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (

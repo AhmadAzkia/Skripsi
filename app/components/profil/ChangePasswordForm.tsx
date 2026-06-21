@@ -54,8 +54,8 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
       return;
     }
 
-    if (formData.newPassword.length < 6) {
-      setMessage({ type: "error", text: "Password baru minimal 6 karakter" });
+    if (formData.newPassword.length < 8) {
+      setMessage({ type: "error", text: "Password baru minimal 8 karakter" });
       return;
     }
 
@@ -167,7 +167,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
           onChange={handleInputChange}
           required
           disabled={isSubmitting}
-          placeholder="Masukkan password baru (min. 6 karakter)"
+          placeholder="Masukkan password baru (min. 8 karakter)"
           rightIcon={
             <button type="button" onClick={() => togglePasswordVisibility("new")} className="text-gray-400 hover:text-gray-600" disabled={isSubmitting}>
               {showPasswords.new ? (
@@ -227,7 +227,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               <svg className="w-4 h-4 mr-2 text-navy/60" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Minimal 6 karakter
+              Minimal 8 karakter
             </li>
             <li className="flex items-center">
               <svg className="w-4 h-4 mr-2 text-navy/60" fill="currentColor" viewBox="0 0 20 20">

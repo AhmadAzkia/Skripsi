@@ -52,8 +52,8 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password minimal 6 karakter");
+    if (formData.password.length < 8) {
+      setError("Password minimal 8 karakter");
       setLoading(false);
       return;
     }
@@ -200,7 +200,7 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
               onChange={handleChange}
               disabled={loading}
               className="block w-full pl-10 pr-3 py-3 border border-white/30 rounded-lg bg-white/5 text-white-text placeholder-silver/70 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition-all duration-300 disabled:opacity-50"
-              placeholder="Masukkan password (min. 6 karakter)"
+              placeholder="Masukkan password (min. 8 karakter)"
             />
           </div>
         </div>

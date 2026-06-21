@@ -25,7 +25,7 @@ export default function ResetPasswordHero() {
           </svg>
           <span className="text-gold text-sm font-medium">Keamanan Password</span>
         </div>
-        <p className="text-silver/90 text-xs leading-relaxed">Gunakan minimal 6 karakter dengan kombinasi huruf, angka, dan simbol untuk keamanan optimal</p>
+        <p className="text-silver/90 text-xs leading-relaxed">Gunakan minimal 8 karakter dengan kombinasi huruf, angka, dan simbol untuk keamanan optimal</p>
       </div>
     </div>
   );
