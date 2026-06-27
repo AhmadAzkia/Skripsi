@@ -60,7 +60,7 @@ interface CreatePelatihanData {
   judul: string;
   deskripsi: string;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   harga: number;
   maksimal_peserta: number;
   tanggal_mulai: string;
@@ -155,7 +155,7 @@ export async function createPelatihan(data: CreatePelatihanData) {
       judul: data.judul.trim(),
       deskripsi: data.deskripsi.trim(),
       kategori: data.kategori.trim(),
-      tipe_kursus: data.tipe_kursus,
+      tipe_pelatihan: data.tipe_pelatihan,
       harga: data.harga,
       maksimal_peserta: data.maksimal_peserta,
       tanggal_mulai: data.tanggal_mulai,
@@ -167,7 +167,7 @@ export async function createPelatihan(data: CreatePelatihanData) {
     };
 
     // Insert pelatihan data
-    const { data: insertedPelatihan, error: insertError } = await supabase.from("kursus").insert([pelatihanData]).select().single();
+    const { data: insertedPelatihan, error: insertError } = await supabase.from("pelatihan").insert([pelatihanData]).select().single();
 
     if (insertError) {
       console.error("Database insert error:", insertError);
@@ -238,7 +238,7 @@ export async function updatePelatihan(id: string, data: Partial<CreatePelatihanD
     });
 
     // Update pelatihan data
-    const { data: updatedPelatihan, error: updateError } = await supabase.from("kursus").update(updateData).eq("id", id).select().single();
+    const { data: updatedPelatihan, error: updateError } = await supabase.from("pelatihan").update(updateData).eq("id", id).select().single();
 
     if (updateError) {
       console.error("Database update error:", updateError);
@@ -295,7 +295,7 @@ export async function deletePelatihan(id: string) {
     }
 
     // Delete pelatihan
-    const { error: deleteError } = await supabase.from("kursus").delete().eq("id", id);
+    const { error: deleteError } = await supabase.from("pelatihan").delete().eq("id", id);
 
     if (deleteError) {
       console.error("Database delete error:", deleteError);

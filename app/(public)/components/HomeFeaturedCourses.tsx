@@ -5,10 +5,10 @@ import InteractiveCard from "@/components/cards/InteractiveCard";
 import Link from "next/link";
 import { Tables } from "@/../types/database";
 
-type KursusFeatured = Tables<"kursus">;
+type PelatihanFeatured = Tables<"pelatihan">;
 
 interface HomeFeaturedCoursesProps {
-  featuredCourses: KursusFeatured[];
+  featuredCourses: PelatihanFeatured[];
 }
 
 export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCoursesProps) {
@@ -40,9 +40,9 @@ export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCou
                     id={course.id}
                     title={course.judul}
                     participants={`Maks. ${course.maksimal_peserta || "N/A"} Peserta`}
-                    isOnline={course.tipe_kursus === "online" || course.tipe_kursus === "hybrid"}
+                    isOnline={course.tipe_pelatihan === "online"}
                     price={course.harga}
-                    href={`/kursus/${course.id}`}
+                    href={`/pelatihan/${course.id}`}
                   />
                 </ScrollReveal>
               ))}

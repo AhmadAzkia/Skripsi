@@ -18,13 +18,13 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: kursus, error } = await supabase
-    .from("kursus")
-    .select("judul, deskripsi, kategori, tipe_kursus, harga, maksimal_peserta, tanggal_mulai, tanggal_selesai, thumbnail_url, status")
+  const { data: pelatihan, error } = await supabase
+    .from("pelatihan")
+    .select("judul, deskripsi, kategori, tipe_pelatihan, harga, maksimal_peserta, tanggal_mulai, tanggal_selesai, thumbnail_url, status")
     .eq("id", id)
     .single();
 
-  if (error || !kursus) {
+  if (error || !pelatihan) {
     notFound();
   }
 
@@ -66,16 +66,16 @@ export default async function EditPelatihanPage({ params }: EditPelatihanPagePro
           mode="edit"
           courseId={id}
           initialData={{
-            judul: kursus.judul,
-            deskripsi: kursus.deskripsi || "",
-            kategori: kursus.kategori,
-            tipe_kursus: kursus.tipe_kursus,
-            harga: kursus.harga,
-            maksimal_peserta: kursus.maksimal_peserta || 1,
-            tanggal_mulai: toDateString(kursus.tanggal_mulai),
-            tanggal_selesai: toDateString(kursus.tanggal_selesai),
-            thumbnail_url: kursus.thumbnail_url || "",
-            status: kursus.status === "archived" ? "draft" : kursus.status,
+            judul: pelatihan.judul,
+            deskripsi: pelatihan.deskripsi || "",
+            kategori: pelatihan.kategori,
+            tipe_pelatihan: pelatihan.tipe_pelatihan,
+            harga: pelatihan.harga,
+            maksimal_peserta: pelatihan.maksimal_peserta || 1,
+            tanggal_mulai: toDateString(pelatihan.tanggal_mulai),
+            tanggal_selesai: toDateString(pelatihan.tanggal_selesai),
+            thumbnail_url: pelatihan.thumbnail_url || "",
+            status: pelatihan.status === "archived" ? "draft" : pelatihan.status,
           }}
         />
       </div>

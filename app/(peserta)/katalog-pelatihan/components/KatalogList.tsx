@@ -3,13 +3,13 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   deskripsi: string | null;
   harga: number;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   status: "draft" | "published" | "archived";
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
@@ -17,10 +17,10 @@ type Kursus = {
 };
 
 interface KatalogListProps {
-  kursusList: Kursus[];
+  pelatihanList: Pelatihan[];
 }
 
-export default function KatalogList({ kursusList }: KatalogListProps) {
+export default function KatalogList({ pelatihanList }: KatalogListProps) {
   const formatHarga = (harga: number) => {
     if (harga === 0) return "Gratis";
     return new Intl.NumberFormat("id-ID", {
@@ -45,14 +45,12 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
         return "bg-blue-100 text-blue-800";
       case "offline":
         return "bg-green-100 text-green-800";
-      case "hybrid":
-        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  if (kursusList.length === 0) {
+  if (pelatihanList.length === 0) {
     return (
       <section className="py-16 bg-linear-to-br from-white to-gray-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,18 +89,18 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
             <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
               Daftar <span className="text-gold">Pelatihan</span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Temukan {kursusList.length} pelatihan berkualitas yang sesuai dengan kebutuhan Anda</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">Temukan {pelatihanList.length} pelatihan berkualitas yang sesuai dengan kebutuhan Anda</p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={200}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {kursusList.map((kursus, index) => (
-              <div key={kursus.id} className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gold/30 hover:-translate-y-1 overflow-hidden">
+            {pelatihanList.map((pelatihan, index) => (
+              <div key={pelatihan.id} className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-gold/30 hover:-translate-y-1 overflow-hidden">
                 {/* Thumbnail */}
                 <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10 overflow-hidden">
-                  {kursus.thumbnail_url ? (
-                    <img src={kursus.thumbnail_url} alt={kursus.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {pelatihan.thumbnail_url ? (
+                    <img src={pelatihan.thumbnail_url} alt={pelatihan.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-navy/20 to-gold/20">
                       <svg className="w-16 h-16 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,10 +115,10 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
                   )}
                   {/* Badges */}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipeBadgeColor(kursus.tipe_kursus)}`}>{kursus.tipe_kursus.charAt(0).toUpperCase() + kursus.tipe_kursus.slice(1)}</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipeBadgeColor(pelatihan.tipe_pelatihan)}`}>{pelatihan.tipe_pelatihan.charAt(0).toUpperCase() + pelatihan.tipe_pelatihan.slice(1)}</span>
                   </div>
                   <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${kursus.harga === 0 ? "bg-green-100 text-green-800" : "bg-gold/20 text-gold font-bold"}`}>{formatHarga(kursus.harga)}</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${pelatihan.harga === 0 ? "bg-green-100 text-green-800" : "bg-gold/20 text-gold font-bold"}`}>{formatHarga(pelatihan.harga)}</span>
                   </div>
                 </div>
 
@@ -128,14 +126,14 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
                 <div className="p-6">
                   {/* Category */}
                   <div className="mb-3">
-                    <span className="inline-block px-3 py-1 bg-navy/10 text-navy text-xs font-medium rounded-full">{kursus.kategori}</span>
+                    <span className="inline-block px-3 py-1 bg-navy/10 text-navy text-xs font-medium rounded-full">{pelatihan.kategori}</span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-navy mb-3 group-hover:text-gold transition-colors duration-300">{kursus.judul}</h3>
+                  <h3 className="text-xl font-bold text-navy mb-3 group-hover:text-gold transition-colors duration-300">{pelatihan.judul}</h3>
 
                   {/* Description */}
-                  {kursus.deskripsi && (
+                  {pelatihan.deskripsi && (
                     <p
                       className="text-gray-600 text-sm mb-4 overflow-hidden"
                       style={{
@@ -144,25 +142,25 @@ export default function KatalogList({ kursusList }: KatalogListProps) {
                         WebkitBoxOrient: "vertical",
                       }}
                     >
-                      {kursus.deskripsi}
+                      {pelatihan.deskripsi}
                     </p>
                   )}
 
                   {/* Meta Info */}
                   <div className="space-y-2 mb-6">
-                    {kursus.tanggal_mulai && (
+                    {pelatihan.tanggal_mulai && (
                       <div className="flex items-center text-gray-500 text-sm">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        {formatTanggal(kursus.tanggal_mulai)}
+                        {formatTanggal(pelatihan.tanggal_mulai)}
                       </div>
                     )}
                   </div>
 
                   {/* CTA Button */}
                   <Link
-                    href={`/katalog-pelatihan/${kursus.id}`}
+                    href={`/katalog-pelatihan/${pelatihan.id}`}
                     className="w-full bg-linear-to-r from-navy to-blue-700 hover:from-gold hover:to-gold/90 text-white py-3 px-4 rounded-lg font-medium text-center block transition-all duration-300 group-hover:shadow-lg"
                   >
                     Lihat Detail

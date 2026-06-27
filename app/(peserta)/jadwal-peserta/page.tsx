@@ -6,12 +6,12 @@ import type { SessionUser } from "@/contexts/AuthContext";
 
 export type JadwalPelatihan = {
   id: string;
-  kursus_id: string;
+  pelatihan_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
   status: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
 export type JadwalStats = {
@@ -25,13 +25,13 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
   const supabase = await createSupabaseServerClient();
   const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
 
-  // Ambil semua data pendaftaran kursus dengan detail kursus
+  // Ambil semua data pendaftaran pelatihan dengan detail pelatihan
   const { data: allJadwal, error: errorFetch } = await supabase
-    .from("pendaftaran_kursus")
+    .from("pendaftaran_pelatihan")
     .select(
       `
       *,
-      kursus!inner(
+      pelatihan!inner(
         tanggal_mulai,
         tanggal_selesai
       )
@@ -57,9 +57,9 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
 
   // Kategorikan berdasarkan tanggal, bukan status database
   allJadwal?.forEach((item) => {
-    const kursus = item.kursus as any;
-    const tanggalMulai = kursus?.tanggal_mulai;
-    const tanggalSelesai = kursus?.tanggal_selesai;
+    const pelatihanData = item.pelatihan as any;
+    const tanggalMulai = pelatihanData?.tanggal_mulai;
+    const tanggalSelesai = pelatihanData?.tanggal_selesai;
 
     if (tanggalSelesai && today > tanggalSelesai) {
       // Jika hari ini sudah melewati tanggal selesai -> Selesai
@@ -110,19 +110,19 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
 
   try {
     const { data: jadwalData, error } = await supabase
-      .from("pendaftaran_kursus")
+      .from("pendaftaran_pelatihan")
       .select(
         `
         id,
         status,
         tanggal_daftar,
         tanggal_selesai,
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           id,
           judul,
           tanggal_mulai,
           tanggal_selesai,
-          tipe_kursus
+          tipe_pelatihan
         )
       `
       )
@@ -135,21 +135,21 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
     }
 
     const jadwalList: JadwalPelatihan[] = jadwalData.map((item) => {
-      const kursusData = item.kursus as any;
+      const pelatihanData = item.pelatihan as any;
 
-      // Tentukan status berdasarkan tanggal kursus
-      const tanggalMulai = kursusData?.tanggal_mulai || item.tanggal_daftar;
-      const tanggalSelesai = kursusData?.tanggal_selesai || item.tanggal_selesai || "";
+      // Tentukan status berdasarkan tanggal pelatihan
+      const tanggalMulai = pelatihanData?.tanggal_mulai || item.tanggal_daftar;
+      const tanggalSelesai = pelatihanData?.tanggal_selesai || item.tanggal_selesai || "";
       const statusAktual = getStatusByDate(tanggalMulai, tanggalSelesai, item.status);
 
       return {
         id: item.id,
-        kursus_id: kursusData?.id || "",
-        judul: kursusData?.judul || "Kursus Tidak Diketahui",
+        pelatihan_id: pelatihanData?.id || "",
+        judul: pelatihanData?.judul || "Pelatihan Tidak Diketahui",
         tanggal_mulai: tanggalMulai,
         tanggal_selesai: tanggalSelesai,
         status: statusAktual, // Gunakan status yang sudah dihitung berdasarkan tanggal
-        tipe_kursus: kursusData?.tipe_kursus || "online",
+        tipe_pelatihan: pelatihanData?.tipe_pelatihan || "online",
       };
     });
 

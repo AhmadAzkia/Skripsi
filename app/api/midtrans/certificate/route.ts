@@ -6,7 +6,7 @@ import { getCertificatePrice } from "@/lib/certificates";
 export const runtime = "nodejs";
 
 type CertificateCheckoutRequest = {
-  kursusId: string;
+  pelatihanId: string;
 };
 
 function isCompleted(tanggalSelesai: string | null) {
@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CertificateCheckoutRequest;
 
-    if (!body.kursusId) {
-      return NextResponse.json({ error: "ID kursus wajib dikirim." }, { status: 400 });
+    if (!body.pelatihanId) {
+      return NextResponse.json({ error: "ID pelatihan wajib dikirim." }, { status: 400 });
     }
 
     const supabase = await createSupabaseServerClient();
@@ -40,12 +40,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { data: registration, error: registrationError } = await supabase
-      .from("pendaftaran_kursus")
+      .from("pendaftaran_pelatihan")
       .select(
         `
         id,
         status,
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           id,
           judul,
           harga,
@@ -53,25 +53,25 @@ export async function POST(request: NextRequest) {
         )
       `
       )
-      .eq("kursus_id", body.kursusId)
+      .eq("pelatihan_id", body.pelatihanId)
       .eq("pengguna_id", profile.id)
       .single();
 
-    const kursus = Array.isArray(registration?.kursus) ? registration?.kursus[0] : registration?.kursus;
+    const pelatihan = Array.isArray(registration?.pelatihan) ? registration?.pelatihan[0] : registration?.pelatihan;
 
-    if (registrationError || !registration || !kursus) {
+    if (registrationError || !registration || !pelatihan) {
       return NextResponse.json({ error: "Data pelatihan peserta tidak ditemukan." }, { status: 404 });
     }
 
-    if (!isCompleted(kursus.tanggal_selesai) && registration.status !== "selesai") {
+    if (!isCompleted(pelatihan.tanggal_selesai) && registration.status !== "selesai") {
       return NextResponse.json({ error: "Sertifikat hanya dapat diklaim setelah pelatihan selesai." }, { status: 400 });
     }
 
-    if (kursus.harga > 0) {
+    if (pelatihan.harga > 0) {
       return NextResponse.json({ error: "Sertifikat pelatihan berbayar sudah termasuk dalam pembayaran pelatihan." }, { status: 400 });
     }
 
-    const { data: existingCertificate } = await supabase.from("sertifikat").select("id").eq("kursus_id", kursus.id).eq("peserta_id", profile.id).maybeSingle();
+    const { data: existingCertificate } = await supabase.from("sertifikat").select("id").eq("pelatihan_id", pelatihan.id).eq("peserta_id", profile.id).maybeSingle();
 
     if (existingCertificate) {
       return NextResponse.json({ error: "Sertifikat untuk pelatihan ini sudah tersedia." }, { status: 409 });
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     const { data: oldPendingPayments } = await supabase
       .from("pembayaran")
       .select("id")
-      .eq("kursus_id", kursus.id)
+      .eq("pelatihan_id", pelatihan.id)
       .eq("pengguna_id", profile.id)
       .eq("tipe_pembayaran", "klaim_sertifikat")
       .eq("status_pembayaran", "menunggu");
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       .from("pembayaran")
       .insert({
         pengguna_id: profile.id,
-        kursus_id: kursus.id,
+        pelatihan_id: pelatihan.id,
         jumlah: certificatePrice,
         status_pembayaran: "menunggu",
         tipe_pembayaran: "klaim_sertifikat",
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     const orderId = `CG-CERT-${payment.id}`;
-    const finishUrl = `${getSiteUrl()}/sertifikat?kursusId=${kursus.id}`;
+    const finishUrl = `${getSiteUrl()}/sertifikat?pelatihanId=${pelatihan.id}`;
 
     const { error: updatePaymentError } = await supabase
       .from("pembayaran")
@@ -139,10 +139,10 @@ export async function POST(request: NextRequest) {
       },
       item_details: [
         {
-          id: `CERT-${kursus.id}`,
+          id: `CERT-${pelatihan.id}`,
           price: certificatePrice,
           quantity: 1,
-          name: `Sertifikat ${kursus.judul}`.slice(0, 50),
+          name: `Sertifikat ${pelatihan.judul}`.slice(0, 50),
         },
       ],
       customer_details: {

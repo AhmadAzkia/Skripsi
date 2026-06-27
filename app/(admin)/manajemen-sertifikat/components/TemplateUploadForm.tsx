@@ -37,7 +37,7 @@ export default function TemplateUploadForm({ toast, courses }: { toast: ReturnTy
   const [pending, startTransition] = useTransition();
   const [file, setFile] = useState<File | null>(null);
   const [koordinat, setKoordinat] = useState<TemplateKoordinat>(defaultKoordinat);
-  const [selectedKursusId, setSelectedKursusId] = useState<string>("");
+  const [selectedPelatihanId, setSelectedKursusId] = useState<string>("");
 
   const updateKoordinat = (field: keyof TemplateKoordinat, key: keyof KoordinatField, value: number) => {
     setKoordinat((prev) => ({
@@ -48,8 +48,8 @@ export default function TemplateUploadForm({ toast, courses }: { toast: ReturnTy
 
   const handleSubmit = (formData: FormData) => {
     formData.set("koordinat", JSON.stringify(koordinat));
-    if (selectedKursusId) {
-      formData.set("kursus_id", selectedKursusId);
+    if (selectedPelatihanId) {
+      formData.set("pelatihan_id", selectedPelatihanId);
     }
     startTransition(async () => {
       const result = await uploadTemplate(formData);
@@ -83,7 +83,7 @@ export default function TemplateUploadForm({ toast, courses }: { toast: ReturnTy
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Untuk Pelatihan</label>
             <select
-              value={selectedKursusId}
+              value={selectedPelatihanId}
               onChange={(e) => setSelectedKursusId(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-navy focus:border-navy"
             >

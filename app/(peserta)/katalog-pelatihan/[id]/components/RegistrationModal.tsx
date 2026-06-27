@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Script from "next/script";
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   harga: number;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
 };
 
 type Profile = {
@@ -18,12 +18,12 @@ type Profile = {
 };
 
 interface RegistrationModalProps {
-  kursus: Kursus;
+  pelatihan: Pelatihan;
   profile: Profile;
   isOpen: boolean;
 }
 
-export default function RegistrationModal({ kursus, profile, isOpen }: RegistrationModalProps) {
+export default function RegistrationModal({ pelatihan, profile, isOpen }: RegistrationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -102,7 +102,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
     setIsSubmitting(true);
 
     try {
-      setSubmitMessage(kursus.harga > 0 ? "Membuat checkout Midtrans..." : "Memproses pendaftaran...");
+      setSubmitMessage(pelatihan.harga > 0 ? "Membuat checkout Midtrans..." : "Memproses pendaftaran...");
 
       const response = await fetch("/api/midtrans/snap", {
         method: "POST",
@@ -110,7 +110,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          kursusId: kursus.id,
+          pelatihanId: pelatihan.id,
           nama_lengkap: formData.nama_lengkap,
           email: formData.email,
           nomor_hp: formData.nomor_hp,
@@ -187,7 +187,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2">Daftar Pelatihan</h2>
-              <p className="text-blue-100 text-lg">{kursus.judul}</p>
+              <p className="text-blue-100 text-lg">{pelatihan.judul}</p>
             </div>
             <button onClick={handleClose} className="text-white hover:text-gray-300 transition-colors p-1 ml-4" disabled={isSubmitting}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +230,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
                       </svg>
                       <span className="text-gray-600 font-medium">Tipe Pelatihan</span>
                     </div>
-                    <span className="font-bold capitalize text-[#001233] bg-blue-100 px-3 py-1 rounded-full text-sm">{kursus.tipe_kursus}</span>
+                    <span className="font-bold capitalize text-[#001233] bg-blue-100 px-3 py-1 rounded-full text-sm">{pelatihan.tipe_pelatihan}</span>
                   </div>
                 </div>
 
@@ -243,8 +243,8 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
                       <span className="text-gray-600 font-medium">Biaya Pelatihan</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-bold text-[#001233] text-xl">{formatHarga(kursus.harga)}</span>
-                      {kursus.harga === 0 && <div className="text-xs text-green-600 font-medium">100% Gratis</div>}
+                      <span className="font-bold text-[#001233] text-xl">{formatHarga(pelatihan.harga)}</span>
+                      {pelatihan.harga === 0 && <div className="text-xs text-green-600 font-medium">100% Gratis</div>}
                     </div>
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
             </div>
 
             {/* Info Pembayaran */}
-            {kursus.harga > 0 && (
+            {pelatihan.harga > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
                 <div className="flex items-start space-x-3">
                   <svg className="w-6 h-6 text-amber-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +345,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
                   <div className="flex-1">
                     <h4 className="font-semibold text-amber-800 mb-2 text-lg">Informasi Pembayaran</h4>
                     <p className="text-sm text-amber-700 leading-relaxed">
-                      Setelah mendaftar, Anda akan diarahkan untuk melakukan pembayaran sebesar <span className="font-bold text-amber-900">{formatHarga(kursus.harga)}</span>. Akses pelatihan akan aktif setelah pembayaran dikonfirmasi.
+                      Setelah mendaftar, Anda akan diarahkan untuk melakukan pembayaran sebesar <span className="font-bold text-amber-900">{formatHarga(pelatihan.harga)}</span>. Akses pelatihan akan aktif setelah pembayaran dikonfirmasi.
                     </p>
                   </div>
                 </div>
@@ -376,7 +376,7 @@ export default function RegistrationModal({ kursus, profile, isOpen }: Registrat
                     Mendaftar...
                   </div>
                 ) : (
-                  kursus.harga > 0 ? "Lanjut ke Pembayaran" : "Daftar Sekarang"
+                  pelatihan.harga > 0 ? "Lanjut ke Pembayaran" : "Daftar Sekarang"
                 )}
               </button>
             </div>

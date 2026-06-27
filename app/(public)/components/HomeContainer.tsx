@@ -7,10 +7,10 @@ import HomeFeaturedCourses from "./HomeFeaturedCourses";
 import HomeTestimonials from "./HomeTestimonials";
 import { Tables } from "@/../types/database";
 
-type KursusFeatured = Tables<"kursus">;
+type PelatihanFeatured = Tables<"pelatihan">;
 
 interface HomeContainerProps {
-  featuredCourses: KursusFeatured[];
+  featuredCourses: PelatihanFeatured[];
 }
 
 export default function HomeContainer({ featuredCourses }: HomeContainerProps) {

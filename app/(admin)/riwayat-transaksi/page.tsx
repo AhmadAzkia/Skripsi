@@ -60,7 +60,7 @@ export default async function RiwayatTransaksiAdminPage() {
         nama_lengkap,
         email
       ),
-      kursus:kursus_id (
+      pelatihan:pelatihan_id (
         judul,
         kategori
       )
@@ -129,7 +129,7 @@ export default async function RiwayatTransaksiAdminPage() {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {payments.map((payment) => {
                     const pengguna = Array.isArray(payment.pengguna) ? payment.pengguna[0] : payment.pengguna;
-                    const kursus = Array.isArray(payment.kursus) ? payment.kursus[0] : payment.kursus;
+                    const pelatihan = Array.isArray(payment.pelatihan) ? payment.pelatihan[0] : payment.pelatihan;
 
                     return (
                       <tr key={payment.id} className="hover:bg-gray-50">
@@ -138,8 +138,8 @@ export default async function RiwayatTransaksiAdminPage() {
                           <p className="text-sm text-gray-500">{pengguna?.email || "-"}</p>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="font-medium text-gray-900">{kursus?.judul || "-"}</p>
-                          <p className="text-sm text-gray-500">{kursus?.kategori || "-"}</p>
+                          <p className="font-medium text-gray-900">{pelatihan?.judul || "-"}</p>
+                          <p className="text-sm text-gray-500">{pelatihan?.kategori || "-"}</p>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">{payment.id_pembayaran_eksternal || "-"}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{payment.tipe_pembayaran.replaceAll("_", " ")}</td>

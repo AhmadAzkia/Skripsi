@@ -139,7 +139,7 @@ export async function generateAndUploadCertificate(certificateId: string) {
       `
       id,
       peserta_id,
-      kursus_id,
+      pelatihan_id,
       template_id,
       nomor_sertifikat,
       tanggal_terbit,
@@ -147,7 +147,7 @@ export async function generateAndUploadCertificate(certificateId: string) {
         nama_lengkap,
         email
       ),
-      kursus:kursus_id (
+      pelatihan:pelatihan_id (
         judul,
         kategori
       )
@@ -161,10 +161,10 @@ export async function generateAndUploadCertificate(certificateId: string) {
   }
 
   const peserta = Array.isArray(certificate.peserta) ? certificate.peserta[0] : certificate.peserta;
-  const kursus = Array.isArray(certificate.kursus) ? certificate.kursus[0] : certificate.kursus;
+  const pelatihan = Array.isArray(certificate.pelatihan) ? certificate.pelatihan[0] : certificate.pelatihan;
 
-  if (!peserta || !kursus) {
-    throw new Error("Data peserta atau kursus untuk sertifikat tidak lengkap.");
+  if (!peserta || !pelatihan) {
+    throw new Error("Data peserta atau pelatihan untuk sertifikat tidak lengkap.");
   }
 
   let templateBytes: Uint8Array | undefined;
@@ -191,8 +191,8 @@ export async function generateAndUploadCertificate(certificateId: string) {
   const pdfBytes = await createCertificatePdf({
     certificateNumber: certificate.nomor_sertifikat,
     participantName: peserta.nama_lengkap || peserta.email,
-    courseTitle: kursus.judul,
-    category: kursus.kategori,
+    courseTitle: pelatihan.judul,
+    category: pelatihan.kategori,
     issuedAt: certificate.tanggal_terbit,
     verificationUrl: `${siteUrl}/sertifikat/validasi/${certificate.id}`,
     templateBytes,
@@ -200,7 +200,7 @@ export async function generateAndUploadCertificate(certificateId: string) {
   });
 
   const bucket = process.env.SUPABASE_CERTIFICATE_BUCKET || "certificates";
-  const filePath = `${certificate.peserta_id}/${certificate.kursus_id}/${certificate.id}.pdf`;
+  const filePath = `${certificate.peserta_id}/${certificate.pelatihan_id}/${certificate.id}.pdf`;
   const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, pdfBytes, {
     contentType: "application/pdf",
     upsert: true,
@@ -227,14 +227,14 @@ export async function generateAndUploadCertificate(certificateId: string) {
   return certificateUrl;
 }
 
-export async function ensureCertificateForCourse(profileId: string, kursusId: string, supabaseClient?: ReturnType<typeof createSupabaseAdminClient>) {
+export async function ensureCertificateForCourse(profileId: string, pelatihanId: string, supabaseClient?: ReturnType<typeof createSupabaseAdminClient>) {
   const supabase = supabaseClient || createSupabaseAdminClient();
 
   if (!supabase) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY belum diisi. Generator sertifikat membutuhkan akses server-side.");
   }
 
-  const { data: existingCertificate, error: existingCertificateError } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("kursus_id", kursusId).maybeSingle();
+  const { data: existingCertificate, error: existingCertificateError } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("pelatihan_id", pelatihanId).maybeSingle();
 
   if (existingCertificateError) {
     throw new Error(`Gagal memeriksa sertifikat yang sudah ada: ${existingCertificateError.message}`);
@@ -252,15 +252,15 @@ export async function ensureCertificateForCourse(profileId: string, kursusId: st
   const { data: template } = await supabase
     .from("template_sertifikat")
     .select("id")
-    .eq("kursus_id", kursusId)
+    .eq("pelatihan_id", pelatihanId)
     .maybeSingle();
 
   const { data: certificate, error } = await supabase
     .from("sertifikat")
     .insert({
-      kursus_id: kursusId,
+      pelatihan_id: pelatihanId,
       peserta_id: profileId,
-      nomor_sertifikat: createCertificateNumber(kursusId, profileId),
+      nomor_sertifikat: createCertificateNumber(pelatihanId, profileId),
       status: "terbit",
       tanggal_terbit: new Date().toISOString(),
       template_id: template?.id || null,

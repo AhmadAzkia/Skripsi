@@ -4,13 +4,13 @@ import { useState, useMemo } from "react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import KatalogList from "./KatalogList";
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   deskripsi: string | null;
   harga: number;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   status: "draft" | "published" | "archived";
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
@@ -18,24 +18,24 @@ type Kursus = {
 };
 
 interface KatalogWithFiltersProps {
-  kursusList: Kursus[];
+  pelatihanList: Pelatihan[];
   kategoriList: string[];
 }
 
-export default function KatalogWithFilters({ kursusList, kategoriList }: KatalogWithFiltersProps) {
+export default function KatalogWithFilters({ pelatihanList, kategoriList }: KatalogWithFiltersProps) {
   const [selectedKategori, setSelectedKategori] = useState("semua");
   const [selectedTipe, setSelectedTipe] = useState("semua");
 
-  const tipeKursusList = ["semua", "online", "offline", "hybrid"];
+  const tipePelatihanList = ["semua", "online", "offline"];
 
-  // Filter kursus berdasarkan kategori dan tipe yang dipilih
-  const filteredKursus = useMemo(() => {
-    return kursusList.filter((kursus) => {
-      const matchKategori = selectedKategori === "semua" || kursus.kategori === selectedKategori;
-      const matchTipe = selectedTipe === "semua" || kursus.tipe_kursus === selectedTipe;
+  // Filter pelatihan berdasarkan kategori dan tipe yang dipilih
+  const filteredPelatihan = useMemo(() => {
+    return pelatihanList.filter((pelatihan) => {
+      const matchKategori = selectedKategori === "semua" || pelatihan.kategori === selectedKategori;
+      const matchTipe = selectedTipe === "semua" || pelatihan.tipe_pelatihan === selectedTipe;
       return matchKategori && matchTipe;
     });
-  }, [kursusList, selectedKategori, selectedTipe]);
+  }, [pelatihanList, selectedKategori, selectedTipe]);
 
   const handleReset = () => {
     setSelectedKategori("semua");
@@ -75,7 +75,7 @@ export default function KatalogWithFilters({ kursusList, kategoriList }: Katalog
                     onChange={(e) => setSelectedTipe(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all duration-200 bg-white text-gray-700"
                   >
-                    {tipeKursusList.map((tipe) => (
+                    {tipePelatihanList.map((tipe) => (
                       <option key={tipe} value={tipe}>
                         {tipe === "semua" ? "Semua Tipe" : tipe.charAt(0).toUpperCase() + tipe.slice(1)}
                       </option>
@@ -121,15 +121,15 @@ export default function KatalogWithFilters({ kursusList, kategoriList }: Katalog
 
               {/* Results Count */}
               <div className="mt-4 text-sm text-gray-600">
-                Menampilkan {filteredKursus.length} dari {kursusList.length} kursus
+                Menampilkan {filteredPelatihan.length} dari {pelatihanList.length} pelatihan
               </div>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Kursus List Section */}
-      <KatalogList kursusList={filteredKursus} />
+      {/* Pelatihan List Section */}
+      <KatalogList pelatihanList={filteredPelatihan} />
     </>
   );
 }

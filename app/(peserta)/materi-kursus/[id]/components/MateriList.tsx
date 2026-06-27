@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
-type MateriKursus = {
+type MateriPelatihan = {
   id: string;
   judul: string;
   deskripsi: string;
@@ -16,12 +16,12 @@ type MateriKursus = {
 };
 
 interface MateriListProps {
-  materiList: MateriKursus[];
-  kursusId: string;
+  materiList: MateriPelatihan[];
+  pelatihanId: string;
 }
 
-export default function MateriList({ materiList, kursusId }: MateriListProps) {
-  const [selectedMateri, setSelectedMateri] = useState<MateriKursus | null>(null);
+export default function MateriList({ materiList, pelatihanId }: MateriListProps) {
+  const [selectedMateri, setSelectedMateri] = useState<MateriPelatihan | null>(null);
 
   const getTipeIcon = (tipe: string) => {
     switch (tipe) {
@@ -66,7 +66,7 @@ export default function MateriList({ materiList, kursusId }: MateriListProps) {
     }
   };
 
-  const handleMateriClick = (materi: MateriKursus) => {
+  const handleMateriClick = (materi: MateriPelatihan) => {
     setSelectedMateri(materi);
   };
 
@@ -82,7 +82,7 @@ export default function MateriList({ materiList, kursusId }: MateriListProps) {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-navy mb-2">Belum Ada Materi</h3>
-              <p className="text-navy/70">Materi untuk kursus ini sedang dalam persiapan.</p>
+              <p className="text-navy/70">Materi untuk pelatihan ini sedang dalam persiapan.</p>
             </div>
           </ScrollReveal>
         </div>

@@ -9,8 +9,8 @@ type Template = {
   id: string;
   nama: string;
   file_path: string;
-  kursus_id: string | null;
-  kursus?: { judul: string } | null;
+  pelatihan_id: string | null;
+  pelatihan?: { judul: string } | null;
 };
 
 type Course = {
@@ -95,8 +95,8 @@ function TemplateList({ templates, onDelete, toast }: { templates: Template[]; o
             <div>
               <p className="font-semibold text-navy">{template.nama}</p>
               <p className="text-xs text-gray-500">{template.file_path}</p>
-              {template.kursus?.judul && (
-                <p className="text-xs text-gold font-medium mt-1">Untuk: {template.kursus.judul}</p>
+              {template.pelatihan?.judul && (
+                <p className="text-xs text-gold font-medium mt-1">Untuk: {template.pelatihan.judul}</p>
               )}
             </div>
             <button
@@ -130,7 +130,7 @@ export function GenerateCertificateButton({ certificateId, templates }: { certif
           <option value="">Pilih template</option>
           {templates.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.nama}{t.kursus?.judul ? ` (${t.kursus.judul})` : ""}
+              {t.nama}{t.pelatihan?.judul ? ` (${t.pelatihan.judul})` : ""}
             </option>
           ))}
         </select>

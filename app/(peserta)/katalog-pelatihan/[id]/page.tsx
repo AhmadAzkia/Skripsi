@@ -4,13 +4,13 @@ import { redirect, notFound } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 import DetailPelatihanContainer from "./components/DetailPelatihanContainer";
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   deskripsi: string | null;
   harga: number;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   status: "draft" | "published" | "archived";
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
@@ -27,7 +27,7 @@ type RegistrationStatus = {
   };
 };
 
-function isKursusAktif(tanggalSelesai: string | null) {
+function isPelatihanAktif(tanggalSelesai: string | null) {
   if (!tanggalSelesai) {
     return true;
   }
@@ -40,12 +40,12 @@ function isKursusAktif(tanggalSelesai: string | null) {
   return endDate >= today;
 }
 
-async function getKursusDetail(id: string): Promise<Kursus | null> {
+async function getPelatihanDetail(id: string): Promise<Pelatihan | null> {
   const supabase = await createSupabaseServerClient();
 
   try {
     const { data, error } = await supabase
-      .from("kursus")
+      .from("pelatihan")
       .select(
         `
         id,
@@ -53,7 +53,7 @@ async function getKursusDetail(id: string): Promise<Kursus | null> {
         deskripsi,
         harga,
         kategori,
-        tipe_kursus,
+        tipe_pelatihan,
         status,
         tanggal_mulai,
         tanggal_selesai,
@@ -69,23 +69,23 @@ async function getKursusDetail(id: string): Promise<Kursus | null> {
       return null;
     }
 
-    if (!isKursusAktif(data.tanggal_selesai)) {
+    if (!isPelatihanAktif(data.tanggal_selesai)) {
       return null;
     }
 
-    return data as Kursus;
+    return data as Pelatihan;
   } catch (error) {
     console.error("Error fetching course detail:", error);
     return null;
   }
 }
 
-async function getRegistrationStatus(kursusId: string, pesertaId: string): Promise<RegistrationStatus> {
+async function getRegistrationStatus(pelatihanId: string, pesertaId: string): Promise<RegistrationStatus> {
   const supabase = await createSupabaseServerClient();
 
   try {
     const { data, error } = await supabase
-      .from("pendaftaran_kursus")
+      .from("pendaftaran_pelatihan")
       .select(
         `
         id,
@@ -93,7 +93,7 @@ async function getRegistrationStatus(kursusId: string, pesertaId: string): Promi
         tanggal_daftar
       `,
       )
-      .eq("kursus_id", kursusId)
+      .eq("pelatihan_id", pelatihanId)
       .eq("pengguna_id", pesertaId)
       .single();
 
@@ -111,11 +111,11 @@ async function getRegistrationStatus(kursusId: string, pesertaId: string): Promi
   }
 }
 
-async function getJumlahPeserta(kursusId: string): Promise<number> {
+async function getJumlahPeserta(pelatihanId: string): Promise<number> {
   const supabase = await createSupabaseServerClient();
 
   try {
-    const { count, error } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("kursus_id", kursusId).in("status", ["terdaftar", "sedang_belajar", "selesai"]);
+    const { count, error } = await supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).eq("pelatihan_id", pelatihanId).in("status", ["terdaftar", "sedang_belajar", "selesai"]);
 
     if (error) {
       console.error("Error fetching participant count:", error);
@@ -141,15 +141,15 @@ export default async function DetailPelatihanPage({ params }: { params: Promise<
     redirect("/login");
   }
 
-  // Ambil detail kursus
-  const kursus = await getKursusDetail(id);
+  // Ambil detail pelatihan
+  const pelatihan = await getPelatihanDetail(id);
 
-  if (!kursus) {
+  if (!pelatihan) {
     notFound();
   }
 
   // Ambil data pendukung secara paralel
   const [registrationStatus, jumlahPeserta] = await Promise.all([getRegistrationStatus(id, userData.profile.id), getJumlahPeserta(id)]);
 
-  return <DetailPelatihanContainer user={userData.user as SessionUser} profile={userData.profile} kursus={kursus} registrationStatus={registrationStatus} jumlahPeserta={jumlahPeserta} />;
+  return <DetailPelatihanContainer user={userData.user as SessionUser} profile={userData.profile} pelatihan={pelatihan} registrationStatus={registrationStatus} jumlahPeserta={jumlahPeserta} />;
 }

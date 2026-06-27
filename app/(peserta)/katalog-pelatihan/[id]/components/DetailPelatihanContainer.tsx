@@ -6,13 +6,13 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import type { SessionUser } from "@/contexts/AuthContext";
 import RegistrationModal from "./RegistrationModal";
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   deskripsi: string | null;
   harga: number;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   status: "draft" | "published" | "archived";
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
@@ -39,19 +39,19 @@ type Profile = {
 interface DetailPelatihanContainerProps {
   user: SessionUser;
   profile: Profile;
-  kursus: Kursus;
+  pelatihan: Pelatihan;
   registrationStatus: RegistrationStatus;
   jumlahPeserta: number;
 }
 
-export default function DetailPelatihanContainer({ user, profile, kursus, registrationStatus, jumlahPeserta }: DetailPelatihanContainerProps) {
+export default function DetailPelatihanContainer({ user, profile, pelatihan, registrationStatus, jumlahPeserta }: DetailPelatihanContainerProps) {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const isPendaftaranDitutup = (() => {
-    if (!kursus.tanggal_mulai) {
+    if (!pelatihan.tanggal_mulai) {
       return false;
     }
 
-    const startDate = new Date(kursus.tanggal_mulai);
+    const startDate = new Date(pelatihan.tanggal_mulai);
     const today = new Date();
     startDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
@@ -111,8 +111,6 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
         return "bg-blue-100 text-blue-800";
       case "offline":
         return "bg-green-100 text-green-800";
-      case "hybrid":
-        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -133,7 +131,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
     }
   };
 
-  const isKursusPenuh = kursus.maksimal_peserta && jumlahPeserta >= kursus.maksimal_peserta;
+  const isPelatihanPenuh = pelatihan.maksimal_peserta && jumlahPeserta >= pelatihan.maksimal_peserta;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-white to-gray-50">
@@ -147,7 +145,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-navy font-medium">{kursus.judul}</span>
+            <span className="text-navy font-medium">{pelatihan.judul}</span>
           </nav>
         </div>
       </div>
@@ -157,19 +155,19 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
           {/* Konten Utama */}
           <div className="lg:col-span-2">
             <ScrollReveal>
-              {/* Header Kursus */}
+              {/* Header Pelatihan */}
               <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
                 {/* Badges */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipeBadgeColor(kursus.tipe_kursus)}`}>{kursus.tipe_kursus.charAt(0).toUpperCase() + kursus.tipe_kursus.slice(1)}</span>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-navy/10 text-navy">{kursus.kategori}</span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipeBadgeColor(pelatihan.tipe_pelatihan)}`}>{pelatihan.tipe_pelatihan.charAt(0).toUpperCase() + pelatihan.tipe_pelatihan.slice(1)}</span>
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-navy/10 text-navy">{pelatihan.kategori}</span>
                   {registrationStatus.isRegistered && (
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(registrationStatus.registrationData!.status)}`}>{registrationStatus.registrationData!.status.replace("_", " ").toUpperCase()}</span>
                   )}
                 </div>
 
                 {/* Judul */}
-                <h1 className="text-3xl font-bold text-navy mb-4">{kursus.judul}</h1>
+                <h1 className="text-3xl font-bold text-navy mb-4">{pelatihan.judul}</h1>
 
                 {/* Meta Info */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -182,29 +180,29 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    <span className={`text-sm ${isKursusPenuh ? "text-red-600 font-medium" : "text-green-600 font-medium"}`}>{isKursusPenuh ? "Penuh" : "Tersedia"}</span>
+                    <span className={`text-sm ${isPelatihanPenuh ? "text-red-600 font-medium" : "text-green-600 font-medium"}`}>{isPelatihanPenuh ? "Penuh" : "Tersedia"}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span className="text-sm">{formatTanggal(kursus.tanggal_mulai)}</span>
+                    <span className="text-sm">{formatTanggal(pelatihan.tanggal_mulai)}</span>
                   </div>
                 </div>
 
                 {/* Thumbnail */}
-                {kursus.thumbnail_url && (
+                {pelatihan.thumbnail_url && (
                   <div className="mb-6">
-                    <img src={kursus.thumbnail_url} alt={kursus.judul} className="w-full h-64 object-cover rounded-lg" />
+                    <img src={pelatihan.thumbnail_url} alt={pelatihan.judul} className="w-full h-64 object-cover rounded-lg" />
                   </div>
                 )}
 
                 {/* Deskripsi */}
-                {kursus.deskripsi && (
+                {pelatihan.deskripsi && (
                   <div className="mb-6">
                     <h3 className="text-xl font-semibold text-navy mb-3">Deskripsi Pelatihan</h3>
                     <div className="prose prose-blue max-w-none text-gray-700">
-                      {kursus.deskripsi.split("\n").map((paragraph, index) => (
+                      {pelatihan.deskripsi.split("\n").map((paragraph, index) => (
                         <p key={index} className="mb-3">
                           {paragraph}
                         </p>
@@ -223,8 +221,8 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
               <div className="bg-white rounded-xl shadow-lg p-6 sticky top-6">
                 {/* Harga */}
                 <div className="text-center mb-6">
-                  <div className="text-3xl font-bold text-navy mb-2">{formatHarga(kursus.harga)}</div>
-                  {kursus.harga > 0 && <p className="text-sm text-gray-600">Harga pendaftaran pelatihan</p>}
+                  <div className="text-3xl font-bold text-navy mb-2">{formatHarga(pelatihan.harga)}</div>
+                  {pelatihan.harga > 0 && <p className="text-sm text-gray-600">Harga pendaftaran pelatihan</p>}
                 </div>
 
                 {/* Status Pendaftaran */}
@@ -240,7 +238,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
 
                     {registrationStatus.registrationData!.status === "sedang_belajar" && (
                       <Link
-                        href={`/my-learning/${kursus.id}`}
+                        href={`/my-learning/${pelatihan.id}`}
                         className="w-full bg-linear-to-r from-navy to-blue-700 hover:from-gold hover:to-gold/90 text-white py-3 px-4 rounded-lg font-medium text-center block transition-all duration-300 mt-4"
                       >
                         Lanjutkan Belajar
@@ -259,7 +257,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                   </div>
                 ) : (
                   <div className="mb-6">
-                    {isKursusPenuh ? (
+                    {isPelatihanPenuh ? (
                       <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center mb-4">
                         <svg className="w-12 h-12 text-red-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15c-.77.833.192 2.5 1.732 2.5z" />
@@ -279,11 +277,11 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                 )}
 
                 {/* Info Kuota */}
-                {kursus.maksimal_peserta && (
+                {pelatihan.maksimal_peserta && (
                   <div className="mb-6">
                     <div className="flex justify-between text-sm text-gray-600 mb-2">
                       <span>Status Kuota</span>
-                      <span className={`font-medium ${isKursusPenuh ? "text-red-600" : "text-green-600"}`}>{isKursusPenuh ? "Penuh" : "Tersedia"}</span>
+                      <span className={`font-medium ${isPelatihanPenuh ? "text-red-600" : "text-green-600"}`}>{isPelatihanPenuh ? "Penuh" : "Tersedia"}</span>
                     </div>
                   </div>
                 )}
@@ -292,16 +290,16 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tipe</span>
-                    <span className="font-medium capitalize">{kursus.tipe_kursus}</span>
+                    <span className="font-medium capitalize">{pelatihan.tipe_pelatihan}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tanggal Mulai</span>
-                    <span className="font-medium">{formatTanggal(kursus.tanggal_mulai)}</span>
+                    <span className="font-medium">{formatTanggal(pelatihan.tanggal_mulai)}</span>
                   </div>
-                  {kursus.tanggal_selesai && (
+                  {pelatihan.tanggal_selesai && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tanggal Selesai</span>
-                      <span className="font-medium">{formatTanggal(kursus.tanggal_selesai)}</span>
+                      <span className="font-medium">{formatTanggal(pelatihan.tanggal_selesai)}</span>
                     </div>
                   )}
                 </div>
@@ -312,7 +310,7 @@ export default function DetailPelatihanContainer({ user, profile, kursus, regist
       </div>
 
       {/* Modal Pendaftaran */}
-      <RegistrationModal kursus={kursus} profile={profile} isOpen={showRegistrationModal} />
+      <RegistrationModal pelatihan={pelatihan} profile={profile} isOpen={showRegistrationModal} />
     </div>
   );
 }

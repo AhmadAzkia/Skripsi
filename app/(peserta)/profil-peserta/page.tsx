@@ -26,13 +26,13 @@ async function ProfilPesertaContent() {
   async function getStats(profileId: string) {
     try {
       // Count enrolled courses
-      const { count: enrolledCourses, error: enrolledError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId);
+      const { count: enrolledCourses, error: enrolledError } = await supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId);
 
       // Count completed courses
-      const { count: completedCourses, error: completedError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
+      const { count: completedCourses, error: completedError } = await supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
 
       // Count certificates (assuming completed courses have certificates)
-      const { count: certificates, error: certificatesError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
+      const { count: certificates, error: certificatesError } = await supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).eq("pengguna_id", profileId).eq("status", "selesai");
 
       if (enrolledError || completedError || certificatesError) {
         console.error("Error fetching stats:", { enrolledError, completedError, certificatesError });

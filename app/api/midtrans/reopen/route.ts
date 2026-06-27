@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     const { data: payment, error: paymentError } = await supabase
       .from("pembayaran")
-      .select("id, jumlah, status_pembayaran, id_pembayaran_eksternal, kursus:kursus_id ( id, judul )")
+      .select("id, jumlah, status_pembayaran, id_pembayaran_eksternal, pelatihan:pelatihan_id ( id, judul )")
       .eq("id", paymentId)
       .eq("pengguna_id", profile.id)
       .single();
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Pembayaran sudah diproses." }, { status: 400 });
     }
 
-    const kursus = Array.isArray(payment.kursus) ? payment.kursus[0] : payment.kursus;
+    const pelatihan = Array.isArray(payment.pelatihan) ? payment.pelatihan[0] : payment.pelatihan;
 
     // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
     const newOrderId = `CG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -73,10 +73,10 @@ export async function POST(request: NextRequest) {
       },
       item_details: [
         {
-          id: kursus?.id || "unknown",
+          id: pelatihan?.id || "unknown",
           price: payment.jumlah,
           quantity: 1,
-          name: (kursus?.judul || "Pelatihan").slice(0, 50),
+          name: (pelatihan?.judul || "Pelatihan").slice(0, 50),
         },
       ],
       callbacks: {

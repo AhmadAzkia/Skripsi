@@ -3,19 +3,19 @@
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { SessionUser } from "@/contexts/AuthContext";
 
-type KursusDetail = {
+type PelatihanDetail = {
   id: string;
   judul: string;
   deskripsi: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
 interface MateriHeroProps {
   user: SessionUser;
-  kursusDetail: KursusDetail;
+  pelatihanDetail: PelatihanDetail;
 }
 
-export default function MateriHero({ user, kursusDetail }: MateriHeroProps) {
+export default function MateriHero({ user, pelatihanDetail }: MateriHeroProps) {
   const userName = user.profile?.nama_lengkap || user.email?.split("@")[0] || "Peserta";
 
   const getTipeColor = (tipe: string) => {
@@ -23,8 +23,6 @@ export default function MateriHero({ user, kursusDetail }: MateriHeroProps) {
       case "online":
         return "bg-navy/10 text-gold border-gold";
       case "offline":
-        return "bg-navy/10 text-gold border-gold";
-      case "hybrid":
         return "bg-navy/10 text-gold border-gold";
       default:
         return "bg-navy/10 text-gold border-gold";
@@ -53,19 +51,19 @@ export default function MateriHero({ user, kursusDetail }: MateriHeroProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span className="text-gold">Materi Kursus</span>
+                <span className="text-gold">Materi Pelatihan</span>
               </nav>
 
               {/* Course Title */}
               <div className="mb-6">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{kursusDetail.judul}</h1>
-                <p className="text-silver text-lg leading-relaxed max-w-3xl">{kursusDetail.deskripsi}</p>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{pelatihanDetail.judul}</h1>
+                <p className="text-silver text-lg leading-relaxed max-w-3xl">{pelatihanDetail.deskripsi}</p>
               </div>
 
               {/* Course Meta */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-6">
                 <div className="flex items-center">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getTipeColor(kursusDetail.tipe_kursus)}`}>{kursusDetail.tipe_kursus.toUpperCase()}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getTipeColor(pelatihanDetail.tipe_pelatihan)}`}>{pelatihanDetail.tipe_pelatihan.toUpperCase()}</span>
                 </div>
               </div>
             </div>

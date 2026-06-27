@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Find the payment
     const { data: payment, error: paymentError } = await supabase
       .from("pembayaran")
-      .select("id, kursus_id, pengguna_id, tipe_pembayaran, status_pembayaran")
+      .select("id, pelatihan_id, pengguna_id, tipe_pembayaran, status_pembayaran")
       .eq("id", paymentId)
       .single();
 
@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
     // Generate certificate based on payment type
     let certificateGenerated = false;
 
-    if (payment.tipe_pembayaran === "pendaftaran_kursus") {
+    if (payment.tipe_pembayaran === "pendaftaran_pelatihan") {
       try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.kursus_id, supabase);
+        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
         certificateGenerated = true;
       } catch (certError: any) {
         console.error("Simulate: Gagal generate sertifikat:", certError.message);
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     if (payment.tipe_pembayaran === "klaim_sertifikat") {
       try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.kursus_id, supabase);
+        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
         certificateGenerated = true;
       } catch (certError: any) {
         console.error("Simulate: Gagal generate sertifikat klaim:", certError.message);

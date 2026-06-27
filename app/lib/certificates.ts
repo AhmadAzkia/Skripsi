@@ -3,7 +3,7 @@ export function getCertificatePrice() {
   return Number.isFinite(configuredPrice) && configuredPrice > 0 ? configuredPrice : 50000;
 }
 
-export function createCertificateNumber(kursusId: string, pesertaId: string) {
+export function createCertificateNumber(pelatihanId: string, pesertaId: string) {
   const year = new Date().getFullYear();
-  return `CERT-CG-${year}-${kursusId.slice(0, 8).toUpperCase()}-${pesertaId.slice(0, 8).toUpperCase()}`;
+  return `CERT-CG-${year}-${pelatihanId.slice(0, 8).toUpperCase()}-${pesertaId.slice(0, 8).toUpperCase()}`;
 }

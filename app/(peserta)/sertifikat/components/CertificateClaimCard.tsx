@@ -4,7 +4,7 @@ import Script from "next/script";
 import { useState } from "react";
 
 type CertificateClaimCardProps = {
-  kursusId: string;
+  pelatihanId: string;
   courseTitle: string;
   certificatePrice: number;
   paymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
@@ -18,7 +18,7 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-export default function CertificateClaimCard({ kursusId, courseTitle, certificatePrice, paymentStatus }: CertificateClaimCardProps) {
+export default function CertificateClaimCard({ pelatihanId, courseTitle, certificatePrice, paymentStatus }: CertificateClaimCardProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const snapScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true" ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -34,7 +34,7 @@ export default function CertificateClaimCard({ kursusId, courseTitle, certificat
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ kursusId }),
+        body: JSON.stringify({ pelatihanId }),
       });
 
       const result = await response.json();
@@ -43,7 +43,7 @@ export default function CertificateClaimCard({ kursusId, courseTitle, certificat
         throw new Error(result.error || "Gagal membuat checkout sertifikat.");
       }
 
-      const finishUrl = result.finishUrl || `/sertifikat?kursusId=${kursusId}`;
+      const finishUrl = result.finishUrl || `/sertifikat?pelatihanId=${pelatihanId}`;
 
       if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {

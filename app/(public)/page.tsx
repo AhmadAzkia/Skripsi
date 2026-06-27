@@ -4,19 +4,19 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Tables } from "@/../types/database";
 import { HomeContainer } from "./components";
 
-type KursusFeatured = Tables<"kursus">;
+type PelatihanFeatured = Tables<"pelatihan">;
 
-async function getFeaturedCourses(): Promise<KursusFeatured[]> {
+async function getFeaturedCourses(): Promise<PelatihanFeatured[]> {
   const supabase = await createSupabaseServerClient();
   const { data: courses, error } = await supabase
-    .from("kursus")
+    .from("pelatihan")
     .select("*")
     .eq("status", "published") // Ambil hanya yang sudah published
     .order("dibuat_pada", { ascending: false }) // Urutkan dari yg terbaru
     .limit(3); // Ambil maksimal 3
 
   if (error) {
-    console.error("Gagal mengambil kursus unggulan:", error);
+    console.error("Gagal mengambil pelatihan unggulan:", error);
     return [];
   }
   return courses;

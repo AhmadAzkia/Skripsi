@@ -6,12 +6,12 @@ import JadwalList from "./JadwalList";
 
 type JadwalPelatihan = {
   id: string;
-  kursus_id: string;
+  pelatihan_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
   status: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
 interface JadwalWithFiltersProps {

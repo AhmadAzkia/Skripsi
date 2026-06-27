@@ -37,12 +37,12 @@ export default function CertificateList({ certificates }: CertificateListProps) 
     <div className="space-y-6">
       {certificates.map((cert) => (
         <div key={cert.id} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex flex-col md:flex-row hover:shadow-lg transition-shadow duration-300">
-          {/* Bagian Kiri: Info Kursus */}
+          {/* Bagian Kiri: Info Pelatihan */}
           <div className="p-6 flex-1">
             <div className="flex items-center mb-3">
               <CheckBadgeIcon className="w-6 h-6 text-gold mr-2 shrink-0" />
-              <h2 className="text-xl font-bold text-navy truncate" title={cert.kursus?.judul || "Nama Kursus Tidak Tersedia"}>
-                {cert.kursus?.judul || "Nama Kursus Tidak Tersedia"}
+              <h2 className="text-xl font-bold text-navy truncate" title={cert.pelatihan?.judul || "Nama Pelatihan Tidak Tersedia"}>
+                {cert.pelatihan?.judul || "Nama Pelatihan Tidak Tersedia"}
               </h2>
             </div>
             <div className="flex items-center text-sm text-silver mb-2">

@@ -45,7 +45,7 @@ export async function GET(_request: Request, { params }: DownloadCertificateRout
       return NextResponse.json({ error: "Profil pengguna tidak ditemukan." }, { status: 404 });
     }
 
-    const query = supabase.from("sertifikat").select("id, peserta_id, kursus_id, sertifikat_url").eq("id", id);
+    const query = supabase.from("sertifikat").select("id, peserta_id, pelatihan_id, sertifikat_url").eq("id", id);
     const { data: certificate, error: certificateError } = profile.peran === "admin" ? await query.single() : await query.eq("peserta_id", profile.id).single();
 
     if (certificateError || !certificate) {
@@ -54,7 +54,7 @@ export async function GET(_request: Request, { params }: DownloadCertificateRout
 
     const certificateUrl = certificate.sertifikat_url || (await generateAndUploadCertificate(certificate.id));
     const bucket = process.env.SUPABASE_CERTIFICATE_BUCKET || "certificates";
-    const storagePath = getStoragePathFromUrl(certificateUrl, bucket) || `${certificate.peserta_id}/${certificate.kursus_id}/${certificate.id}.pdf`;
+    const storagePath = getStoragePathFromUrl(certificateUrl, bucket) || `${certificate.peserta_id}/${certificate.pelatihan_id}/${certificate.id}.pdf`;
     const { data: signedUrlData, error: signedUrlError } = await admin.storage.from(bucket).createSignedUrl(storagePath, 60);
 
     if (signedUrlError || !signedUrlData?.signedUrl) {

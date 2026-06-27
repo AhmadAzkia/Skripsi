@@ -31,7 +31,7 @@ export async function deletePelatihan(id: string) {
     }
 
     // Check if pelatihan exists
-    const { data: existingPelatihan, error: checkError } = await supabase.from("kursus").select("id, judul").eq("id", id).single();
+    const { data: existingPelatihan, error: checkError } = await supabase.from("pelatihan").select("id, judul").eq("id", id).single();
 
     if (checkError || !existingPelatihan) {
       return {
@@ -41,7 +41,7 @@ export async function deletePelatihan(id: string) {
     }
 
     // Delete pelatihan
-    const { error: deleteError } = await supabase.from("kursus").delete().eq("id", id);
+    const { error: deleteError } = await supabase.from("pelatihan").delete().eq("id", id);
 
     if (deleteError) {
       console.error("Database delete error:", deleteError);

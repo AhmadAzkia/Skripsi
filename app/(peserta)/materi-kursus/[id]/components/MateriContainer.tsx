@@ -2,7 +2,7 @@ import MateriHero from "./MateriHero";
 import MateriList from "./MateriList";
 import { SessionUser } from "@/contexts/AuthContext";
 
-type MateriKursus = {
+type MateriPelatihan = {
   id: string;
   judul: string;
   deskripsi: string;
@@ -14,27 +14,27 @@ type MateriKursus = {
   zoom_link?: string | null;
 };
 
-type KursusDetail = {
+type PelatihanDetail = {
   id: string;
   judul: string;
   deskripsi: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
 type MateriContainerProps = {
   user: SessionUser;
-  kursusDetail: KursusDetail;
-  materiList: MateriKursus[];
+  pelatihanDetail: PelatihanDetail;
+  materiList: MateriPelatihan[];
 };
 
-export default function MateriContainer({ user, kursusDetail, materiList }: MateriContainerProps) {
+export default function MateriContainer({ user, pelatihanDetail, materiList }: MateriContainerProps) {
   return (
     <>
       {/* Hero Section */}
-      <MateriHero user={user} kursusDetail={kursusDetail} />
+      <MateriHero user={user} pelatihanDetail={pelatihanDetail} />
 
       {/* Materi List Section */}
-      <MateriList materiList={materiList} kursusId={kursusDetail.id} />
+      <MateriList materiList={materiList} pelatihanId={pelatihanDetail.id} />
     </>
   );
 }

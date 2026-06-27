@@ -5,7 +5,7 @@ import { createSnapTransaction, getSiteUrl } from "@/lib/midtrans";
 export const runtime = "nodejs";
 
 type CheckoutRequest = {
-  kursusId: string;
+  pelatihanId: string;
   nama_lengkap?: string;
   email?: string;
   nomor_hp?: string;
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CheckoutRequest;
 
-    if (!body.kursusId) {
-      return NextResponse.json({ error: "ID kursus wajib dikirim." }, { status: 400 });
+    if (!body.pelatihanId) {
+      return NextResponse.json({ error: "ID pelatihan wajib dikirim." }, { status: 400 });
     }
 
     const supabase = await createSupabaseServerClient();
@@ -35,20 +35,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Akun peserta tidak valid." }, { status: 403 });
     }
 
-    const { data: kursus, error: kursusError } = await supabase.from("kursus").select("id, judul, harga, status, maksimal_peserta").eq("id", body.kursusId).eq("status", "published").single();
+    const { data: pelatihan, error: pelatihanError } = await supabase.from("pelatihan").select("id, judul, harga, status, maksimal_peserta").eq("id", body.pelatihanId).eq("status", "published").single();
 
-    if (kursusError || !kursus) {
+    if (pelatihanError || !pelatihan) {
       return NextResponse.json({ error: "Pelatihan tidak ditemukan atau belum dipublikasikan." }, { status: 404 });
     }
 
-    const { data: kursusJadwal, error: jadwalError } = await supabase.from("kursus").select("tanggal_mulai").eq("id", kursus.id).single();
+    const { data: pelatihanJadwal, error: jadwalError } = await supabase.from("pelatihan").select("tanggal_mulai").eq("id", pelatihan.id).single();
 
     if (jadwalError) {
       return NextResponse.json({ error: `Gagal memeriksa jadwal pelatihan: ${jadwalError.message}` }, { status: 500 });
     }
 
-    if (kursusJadwal?.tanggal_mulai) {
-      const startDate = new Date(kursusJadwal.tanggal_mulai);
+    if (pelatihanJadwal?.tanggal_mulai) {
+      const startDate = new Date(pelatihanJadwal.tanggal_mulai);
       const today = new Date();
       startDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       await supabase.from("profil_pengguna").update({ nomor_hp: phone, diperbarui_pada: new Date().toISOString() }).eq("id", profile.id);
     }
 
-    const { data: existingRegistration, error: registrationCheckError } = await supabase.from("pendaftaran_kursus").select("id").eq("kursus_id", kursus.id).eq("pengguna_id", profile.id).maybeSingle();
+    const { data: existingRegistration, error: registrationCheckError } = await supabase.from("pendaftaran_pelatihan").select("id").eq("pelatihan_id", pelatihan.id).eq("pengguna_id", profile.id).maybeSingle();
 
     if (registrationCheckError) {
       return NextResponse.json({ error: `Gagal memeriksa pendaftaran: ${registrationCheckError.message}` }, { status: 500 });
@@ -75,9 +75,9 @@ export async function POST(request: NextRequest) {
       const { data: existingPayment } = await supabase
         .from("pembayaran")
         .select("id, id_pembayaran_eksternal, status_pembayaran, jumlah")
-        .eq("kursus_id", kursus.id)
+        .eq("pelatihan_id", pelatihan.id)
         .eq("pengguna_id", profile.id)
-        .eq("tipe_pembayaran", "pendaftaran_kursus")
+        .eq("tipe_pembayaran", "pendaftaran_pelatihan")
         .eq("status_pembayaran", "menunggu")
         .maybeSingle();
 
@@ -102,10 +102,10 @@ export async function POST(request: NextRequest) {
           },
           item_details: [
             {
-              id: kursus.id,
+              id: pelatihan.id,
               price: existingPayment.jumlah,
               quantity: 1,
-              name: kursus.judul.slice(0, 50),
+              name: pelatihan.judul.slice(0, 50),
             },
           ],
           customer_details: {
@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
       const { data: completedPayment } = await supabase
         .from("pembayaran")
         .select("id, status_pembayaran")
-        .eq("kursus_id", kursus.id)
+        .eq("pelatihan_id", pelatihan.id)
         .eq("pengguna_id", profile.id)
-        .eq("tipe_pembayaran", "pendaftaran_kursus")
+        .eq("tipe_pembayaran", "pendaftaran_pelatihan")
         .eq("status_pembayaran", "berhasil")
         .maybeSingle();
 
@@ -146,20 +146,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Anda sudah terdaftar di pelatihan ini." }, { status: 409 });
     }
 
-    if (kursus.maksimal_peserta) {
-      const { count, error: countError } = await supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).eq("kursus_id", kursus.id).in("status", ["terdaftar", "sedang_belajar", "selesai"]);
+    if (pelatihan.maksimal_peserta) {
+      const { count, error: countError } = await supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).eq("pelatihan_id", pelatihan.id).in("status", ["terdaftar", "sedang_belajar", "selesai"]);
 
       if (countError) {
         return NextResponse.json({ error: `Gagal memeriksa kuota pelatihan: ${countError.message}` }, { status: 500 });
       }
 
-      if ((count || 0) >= kursus.maksimal_peserta) {
+      if ((count || 0) >= pelatihan.maksimal_peserta) {
         return NextResponse.json({ error: "Pendaftaran ditolak karena kuota pelatihan sudah penuh." }, { status: 400 });
       }
     }
 
-    const { error: registrationError } = await supabase.from("pendaftaran_kursus").insert({
-      kursus_id: kursus.id,
+    const { error: registrationError } = await supabase.from("pendaftaran_pelatihan").insert({
+      pelatihan_id: pelatihan.id,
       pengguna_id: profile.id,
       status: "terdaftar",
       tanggal_daftar: new Date().toISOString(),
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Gagal membuat pendaftaran: ${registrationError.message}` }, { status: 500 });
     }
 
-    if (kursus.harga <= 0) {
+    if (pelatihan.harga <= 0) {
       return NextResponse.json({
         success: true,
         isFree: true,
@@ -181,10 +181,10 @@ export async function POST(request: NextRequest) {
       .from("pembayaran")
       .insert({
         pengguna_id: profile.id,
-        kursus_id: kursus.id,
-        jumlah: kursus.harga,
+        pelatihan_id: pelatihan.id,
+        jumlah: pelatihan.harga,
         status_pembayaran: "menunggu",
-        tipe_pembayaran: "pendaftaran_kursus",
+        tipe_pembayaran: "pendaftaran_pelatihan",
       })
       .select("id, jumlah")
       .single();
@@ -211,14 +211,14 @@ export async function POST(request: NextRequest) {
     const snap = await createSnapTransaction({
       transaction_details: {
         order_id: orderId,
-        gross_amount: kursus.harga,
+        gross_amount: pelatihan.harga,
       },
       item_details: [
         {
-          id: kursus.id,
-          price: kursus.harga,
+          id: pelatihan.id,
+          price: pelatihan.harga,
           quantity: 1,
-          name: kursus.judul.slice(0, 50),
+          name: pelatihan.judul.slice(0, 50),
         },
       ],
       customer_details: {

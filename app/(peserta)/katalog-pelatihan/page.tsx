@@ -5,24 +5,24 @@ import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 
 type KatalogStats = {
-  totalKursusCount: number;
+  totalPelatihanCount: number;
   kategoriCount: number;
 };
 
-type Kursus = {
+type Pelatihan = {
   id: string;
   judul: string;
   deskripsi: string | null;
   harga: number;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   status: "draft" | "published" | "archived";
   tanggal_mulai: string | null;
   tanggal_selesai: string | null;
   thumbnail_url: string | null;
 };
 
-function isKursusAktif(tanggalSelesai: string | null) {
+function isPelatihanAktif(tanggalSelesai: string | null) {
   if (!tanggalSelesai) {
     return true;
   }
@@ -39,36 +39,36 @@ async function getKatalogStats(): Promise<KatalogStats> {
   const supabase = await createSupabaseServerClient();
 
   try {
-    // 1. Ambil kursus published yang belum melewati tanggal selesai
-    const { data: kursusData, error: errorKursus } = await supabase.from("kursus").select("kategori, tanggal_selesai").eq("status", "published");
+    // 1. Ambil pelatihan published yang belum melewati tanggal selesai
+    const { data: pelatihanData, error: errorPelatihan } = await supabase.from("pelatihan").select("kategori, tanggal_selesai").eq("status", "published");
 
-    const kursusAktif = kursusData ? kursusData.filter((item) => isKursusAktif(item.tanggal_selesai)) : [];
+    const pelatihanAktif = pelatihanData ? pelatihanData.filter((item) => isPelatihanAktif(item.tanggal_selesai)) : [];
 
-    // 2. Hitung Jumlah Kategori Unik dari kursus aktif
-    const kategoriUnik = [...new Set(kursusAktif.map((item) => item.kategori))];
+    // 2. Hitung Jumlah Kategori Unik dari pelatihan aktif
+    const kategoriUnik = [...new Set(pelatihanAktif.map((item) => item.kategori))];
 
-    if (errorKursus) console.error("Error fetching courses count:", errorKursus.message);
+    if (errorPelatihan) console.error("Error fetching courses count:", errorPelatihan.message);
 
     return {
-      totalKursusCount: kursusAktif.length,
+      totalPelatihanCount: pelatihanAktif.length,
       kategoriCount: kategoriUnik.length,
     };
   } catch (error) {
     console.error("Error fetching catalog stats:", error);
     return {
-      totalKursusCount: 0,
+      totalPelatihanCount: 0,
       kategoriCount: 0,
     };
   }
 }
 
-async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: string[] }> {
+async function getPelatihanList(): Promise<{ pelatihanList: Pelatihan[]; kategoriList: string[] }> {
   const supabase = await createSupabaseServerClient();
 
   try {
-    // Ambil semua kursus yang published, lalu buang yang sudah lewat tanggal selesai
-    const { data: kursusData, error: kursusError } = await supabase
-      .from("kursus")
+    // Ambil semua pelatihan yang published, lalu buang yang sudah lewat tanggal selesai
+    const { data: pelatihanData, error: pelatihanError } = await supabase
+      .from("pelatihan")
       .select(
         `
         id,
@@ -76,7 +76,7 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
         deskripsi,
         harga,
         kategori,
-        tipe_kursus,
+        tipe_pelatihan,
         status,
         tanggal_mulai,
         tanggal_selesai,
@@ -86,21 +86,21 @@ async function getKursusList(): Promise<{ kursusList: Kursus[]; kategoriList: st
       .eq("status", "published")
       .order("dibuat_pada", { ascending: false });
 
-    if (kursusError) {
-      console.error("Error fetching courses:", kursusError.message);
-      return { kursusList: [], kategoriList: [] };
+    if (pelatihanError) {
+      console.error("Error fetching courses:", pelatihanError.message);
+      return { pelatihanList: [], kategoriList: [] };
     }
 
-    const kursusList = (kursusData || []).filter((kursus) => isKursusAktif(kursus.tanggal_selesai));
-    const kategoriList = [...new Set(kursusList.map((kursus) => kursus.kategori))];
+    const pelatihanList = (pelatihanData || []).filter((pelatihan) => isPelatihanAktif(pelatihan.tanggal_selesai));
+    const kategoriList = [...new Set(pelatihanList.map((pelatihan) => pelatihan.kategori))];
 
     return {
-      kursusList: kursusList as Kursus[],
+      pelatihanList: pelatihanList as Pelatihan[],
       kategoriList,
     };
   } catch (error) {
     console.error("Error fetching courses list:", error);
-    return { kursusList: [], kategoriList: [] };
+    return { pelatihanList: [], kategoriList: [] };
   }
 }
 
@@ -113,9 +113,9 @@ export default async function KatalogPelatihanPage() {
     redirect("/login"); // Arahkan ke login jika tidak sesuai
   }
 
-  // 1. Jalankan kode BE di server untuk mendapatkan statistik dan daftar kursus
-  const [stats, { kursusList, kategoriList }] = await Promise.all([getKatalogStats(), getKursusList()]);
+  // 1. Jalankan kode BE di server untuk mendapatkan statistik dan daftar pelatihan
+  const [stats, { pelatihanList, kategoriList }] = await Promise.all([getKatalogStats(), getPelatihanList()]);
 
   // 2. Render komponen FE dan kirimkan data sebagai props
-  return <KatalogContainer user={userData.user as SessionUser} stats={stats} kursusList={kursusList} kategoriList={kategoriList} />;
+  return <KatalogContainer user={userData.user as SessionUser} stats={stats} pelatihanList={pelatihanList} kategoriList={kategoriList} />;
 }

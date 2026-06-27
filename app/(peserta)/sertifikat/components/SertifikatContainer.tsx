@@ -37,14 +37,14 @@ function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {pendingClaims.map((claim) => (
-            <div key={claim.kursusId} className="border border-gold/30 rounded-lg p-5 bg-amber-50/60">
+            <div key={claim.pelatihanId} className="border border-gold/30 rounded-lg p-5 bg-amber-50/60">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-amber-700 mb-1">{claim.status === "menunggu_pembayaran" ? "Menunggu Pembayaran" : "Belum Dibeli"}</p>
                   <h3 className="font-bold text-navy">{claim.judul}</h3>
                   <p className="text-sm text-gray-600 mt-1">{claim.kategori}</p>
                 </div>
-                <Link href={`/sertifikat?kursusId=${claim.kursusId}`} className="px-4 py-2 bg-gold text-navy rounded-lg font-semibold text-center hover:bg-gold/90">
+                <Link href={`/sertifikat?pelatihanId=${claim.pelatihanId}`} className="px-4 py-2 bg-gold text-navy rounded-lg font-semibold text-center hover:bg-gold/90">
                   {claim.status === "menunggu_pembayaran" ? "Lanjutkan" : "Beli Sertifikat"}
                 </Link>
               </div>
@@ -65,7 +65,7 @@ export default function SertifikatContainer({ user, certificates, stats, claims,
 
       {shouldOfferCertificate && (
         <CertificateClaimCard
-          kursusId={selectedClaim.kursusId}
+          pelatihanId={selectedClaim.pelatihanId}
           courseTitle={selectedClaim.judul}
           certificatePrice={certificatePrice}
           paymentStatus={selectedClaim.certificatePaymentStatus}

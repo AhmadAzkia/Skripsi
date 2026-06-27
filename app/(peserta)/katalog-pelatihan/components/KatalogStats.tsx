@@ -4,7 +4,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 type KatalogStats = {
-  totalKursusCount: number;
+  totalPelatihanCount: number;
   kategoriCount: number;
 };
 
@@ -15,7 +15,7 @@ interface KatalogStatsProps {
 export default function KatalogStats({ stats }: KatalogStatsProps) {
   const statsData = [
     {
-      end: stats.totalKursusCount,
+      end: stats.totalPelatihanCount,
       label: "Total Pelatihan",
       icon: (
         <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">

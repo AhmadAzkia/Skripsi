@@ -17,17 +17,17 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
 
   const filteredJadwal = useMemo(() => {
     if (activeFilter === "semua") return initialJadwal;
-    if (activeFilter === "online") return initialJadwal.filter((j) => j.tipe_kursus === "online");
-    if (activeFilter === "offline") return initialJadwal.filter((j) => j.tipe_kursus === "offline");
+    if (activeFilter === "online") return initialJadwal.filter((j) => j.tipe_pelatihan === "online");
+    if (activeFilter === "offline") return initialJadwal.filter((j) => j.tipe_pelatihan === "offline");
     if (activeFilter === "gratis") return initialJadwal.filter((j) => j.harga === 0);
     if (activeFilter === "berbayar") return initialJadwal.filter((j) => j.harga > 0);
     return initialJadwal;
   }, [activeFilter, initialJadwal]);
 
   // Statistik untuk AnimatedCounter
-  const totalKursus = initialJadwal.length;
-  const kursusOnline = initialJadwal.filter((j) => j.tipe_kursus === "online").length;
-  const kursusGratis = initialJadwal.filter((j) => j.harga === 0).length;
+  const totalPelatihan = initialJadwal.length;
+  const pelatihanOnline = initialJadwal.filter((j) => j.tipe_pelatihan === "online").length;
+  const pelatihanGratis = initialJadwal.filter((j) => j.harga === 0).length;
 
   const filterButtons: { label: string; filter: FilterType }[] = [
     { label: "Semua Program", filter: "semua" },
@@ -87,19 +87,19 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <ScrollReveal delay={300}>
               <div className="bg-white p-6 rounded-xl shadow-lg hover-lift hover-glow border border-gold/20">
-                <AnimatedCounter end={totalKursus} suffix="+" label="Total Program" duration={2000} />
+                <AnimatedCounter end={totalPelatihan} suffix="+" label="Total Program" duration={2000} />
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
               <div className="bg-white p-6 rounded-xl shadow-lg hover-lift hover-glow border border-gold/20">
-                <AnimatedCounter end={kursusOnline} suffix="+" label="Program Online" duration={2200} />
+                <AnimatedCounter end={pelatihanOnline} suffix="+" label="Program Online" duration={2200} />
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={500}>
               <div className="bg-white p-6 rounded-xl shadow-lg hover-lift hover-glow border border-gold/20">
-                <AnimatedCounter end={kursusGratis} suffix="+" label="Program Gratis" duration={2400} />
+                <AnimatedCounter end={pelatihanGratis} suffix="+" label="Program Gratis" duration={2400} />
               </div>
             </ScrollReveal>
 

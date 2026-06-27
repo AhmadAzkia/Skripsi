@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 import MateriContainer from "./components/MateriContainer";
 
-type MateriKursus = {
+type MateriPelatihan = {
   id: string;
   judul: string;
   deskripsi: string;
@@ -16,19 +16,19 @@ type MateriKursus = {
   zoom_link?: string | null;
 };
 
-type KursusDetail = {
+type PelatihanDetail = {
   id: string;
   judul: string;
   deskripsi: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
-async function getKursusDetail(kursusId: string, userId: string): Promise<KursusDetail | null> {
+async function getPelatihanDetail(pelatihanId: string, userId: string): Promise<PelatihanDetail | null> {
   const supabase = await createSupabaseServerClient();
 
   try {
     // First, verify user is registered for this course
-    const { data: pendaftaranData, error: pendaftaranError } = await supabase.from("pendaftaran_kursus").select("id").eq("kursus_id", kursusId).eq("pengguna_id", userId).single();
+    const { data: pendaftaranData, error: pendaftaranError } = await supabase.from("pendaftaran_pelatihan").select("id").eq("pelatihan_id", pelatihanId).eq("pengguna_id", userId).single();
 
     if (pendaftaranError || !pendaftaranData) {
       console.error("User not registered for this course:", pendaftaranError);
@@ -36,29 +36,29 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
     }
 
     // Get course details directly
-    const { data: kursusData, error: kursusError } = await supabase
-      .from("kursus")
+    const { data: pelatihanData, error: pelatihanError } = await supabase
+      .from("pelatihan")
       .select(
         `
         id,
         judul,
         deskripsi,
-        tipe_kursus
+        tipe_pelatihan
       `
       )
-      .eq("id", kursusId)
+      .eq("id", pelatihanId)
       .single();
 
-    if (kursusError || !kursusData) {
-      console.error("Error fetching course details:", kursusError);
+    if (pelatihanError || !pelatihanData) {
+      console.error("Error fetching course details:", pelatihanError);
       return null;
     }
 
     return {
-      id: kursusData.id,
-      judul: kursusData.judul,
-      deskripsi: kursusData.deskripsi ?? "",
-      tipe_kursus: kursusData.tipe_kursus,
+      id: pelatihanData.id,
+      judul: pelatihanData.judul,
+      deskripsi: pelatihanData.deskripsi ?? "",
+      tipe_pelatihan: pelatihanData.tipe_pelatihan,
     };
   } catch (error) {
     console.error("Error fetching course details:", error);
@@ -66,12 +66,12 @@ async function getKursusDetail(kursusId: string, userId: string): Promise<Kursus
   }
 }
 
-async function getMateriList(kursusId: string): Promise<MateriKursus[]> {
+async function getMateriList(pelatihanId: string): Promise<MateriPelatihan[]> {
   const supabase = await createSupabaseServerClient();
 
   try {
     const { data: materiData, error } = await supabase
-      .from("materi_kursus")
+      .from("materi_pelatihan")
       .select(
         `
         id,
@@ -83,7 +83,7 @@ async function getMateriList(kursusId: string): Promise<MateriKursus[]> {
         urutan
       `
       )
-      .eq("kursus_id", kursusId)
+      .eq("pelatihan_id", pelatihanId)
       .order("urutan", { ascending: true });
 
     if (error) {
@@ -114,8 +114,8 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function MateriKursusPage({ params }: PageProps) {
-  const { id: kursusId } = await params;
+export default async function MateriPelatihanPage({ params }: PageProps) {
+  const { id: pelatihanId } = await params;
 
   // Get user data with role
   const userData = await getUserWithRole();
@@ -134,12 +134,12 @@ export default async function MateriKursusPage({ params }: PageProps) {
   }
 
   // Fetch course details and materials
-  const kursusDetail = await getKursusDetail(kursusId, profileId);
-  const materiList = await getMateriList(kursusId);
+  const pelatihanDetail = await getPelatihanDetail(pelatihanId, profileId);
+  const materiList = await getMateriList(pelatihanId);
 
-  if (!kursusDetail) {
+  if (!pelatihanDetail) {
     redirect("/jadwal-peserta");
   }
 
-  return <MateriContainer user={userData.user as SessionUser} kursusDetail={kursusDetail} materiList={materiList} />;
+  return <MateriContainer user={userData.user as SessionUser} pelatihanDetail={pelatihanDetail} materiList={materiList} />;
 }

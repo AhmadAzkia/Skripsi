@@ -27,7 +27,7 @@ async function getDashboardStats(profileId: string): Promise<DashboardStats> {
 
   // 1. Total Pelatihan Diikuti (semua pendaftaran)
   const { count: totalPelatihanDiikuti, error: errorTotal } = await supabase
-    .from("pendaftaran_kursus")
+    .from("pendaftaran_pelatihan")
     .select("*", { count: "exact", head: true })
     .eq("pengguna_id", profileId);
 
@@ -38,17 +38,17 @@ async function getDashboardStats(profileId: string): Promise<DashboardStats> {
     .eq("peserta_id", profileId)
     .eq("status", "terbit");
 
-  // 3. Jadwal Berlangsung (kursus yang sedang dalam periode)
+  // 3. Jadwal Berlangsung (pelatihan yang sedang dalam periode)
   const { count: jadwalBerlangsung, error: errorJadwal } = await supabase
-    .from("pendaftaran_kursus")
+    .from("pendaftaran_pelatihan")
     .select(
-      `*, kursus!inner(tanggal_mulai, tanggal_selesai)`,
+      `*, pelatihan!inner(tanggal_mulai, tanggal_selesai)`,
       { count: "exact", head: true }
     )
     .eq("pengguna_id", profileId)
     .in("status", ["terdaftar", "sedang_belajar"])
-    .lte("kursus.tanggal_mulai", today)
-    .gte("kursus.tanggal_selesai", today);
+    .lte("pelatihan.tanggal_mulai", today)
+    .gte("pelatihan.tanggal_selesai", today);
 
   // 4. Total Pengeluaran (pembayaran berhasil)
   const { data: pembayaranData, error: errorPembayaran } = await supabase
@@ -111,13 +111,13 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
   try {
     // 1. Ambil Pelatihan Terbaru dengan Status yang Akurat
     const { data: pelatihanData, error: pelatihanError } = await supabase
-      .from("pendaftaran_kursus")
+      .from("pendaftaran_pelatihan")
       .select(
         `
         id,
         status,
         tanggal_daftar,
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           judul,
           tanggal_mulai,
           tanggal_selesai
@@ -131,14 +131,14 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
 
     if (pelatihanData && !pelatihanError) {
       pelatihanData.forEach((item) => {
-        const kursusData = item.kursus as any;
+        const pelatihanData = item.pelatihan as any;
 
         // Gunakan function getStatusByDate untuk konsistensi
-        const status = getStatusByDate(kursusData?.tanggal_mulai || "", kursusData?.tanggal_selesai || "", item.status);
+        const status = getStatusByDate(pelatihanData?.tanggal_mulai || "", pelatihanData?.tanggal_selesai || "", item.status);
 
         activities.push({
           id: `pelatihan-${item.id}`,
-          title: kursusData?.judul || "Pelatihan",
+          title: pelatihanData?.judul || "Pelatihan",
           type: "pelatihan",
           date: item.tanggal_daftar,
           status: status,
@@ -155,7 +155,7 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
         nomor_sertifikat,
         tanggal_terbit,
         status,
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           judul
         )
       `
@@ -169,7 +169,7 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
       sertifikatData.forEach((item) => {
         activities.push({
           id: `sertifikat-${item.id}`,
-          title: `Sertifikat: ${(item.kursus as any)?.judul || item.nomor_sertifikat}`,
+          title: `Sertifikat: ${(item.pelatihan as any)?.judul || item.nomor_sertifikat}`,
           type: "sertifikat",
           date: item.tanggal_terbit,
           status: "completed", // Sertifikat selalu completed
@@ -177,18 +177,18 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
       });
     }
 
-    // 3. Ambil Jadwal Mendatang (kursus yang akan dimulai dalam 7 hari ke depan)
+    // 3. Ambil Jadwal Mendatang (pelatihan yang akan dimulai dalam 7 hari ke depan)
     const currentDate = new Date();
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
 
     const { data: jadwalData, error: jadwalError } = await supabase
-      .from("pendaftaran_kursus")
+      .from("pendaftaran_pelatihan")
       .select(
         `
         id,
         status,
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           judul,
           tanggal_mulai
         )
@@ -201,31 +201,31 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
     if (jadwalData && !jadwalError) {
       const filteredJadwal = jadwalData
         .filter((item) => {
-          const kursusData = item.kursus as any;
-          if (!kursusData?.tanggal_mulai) return false;
+          const pelatihanData = item.pelatihan as any;
+          if (!pelatihanData?.tanggal_mulai) return false;
 
-          const tanggalMulai = new Date(kursusData.tanggal_mulai);
+          const tanggalMulai = new Date(pelatihanData.tanggal_mulai);
           // Jadwal mendatang: mulai dari besok sampai 7 hari ke depan
           return tanggalMulai > currentDate && tanggalMulai <= nextWeek;
         })
         .sort((a, b) => {
-          const dateA = new Date((a.kursus as any)?.tanggal_mulai);
-          const dateB = new Date((b.kursus as any)?.tanggal_mulai);
+          const dateA = new Date((a.pelatihan as any)?.tanggal_mulai);
+          const dateB = new Date((b.pelatihan as any)?.tanggal_mulai);
           return dateA.getTime() - dateB.getTime(); // Sort ascending (terdekat dulu)
         })
         .slice(0, 3);
 
       filteredJadwal.forEach((item) => {
-        const kursusData = item.kursus as any;
+        const pelatihanData = item.pelatihan as any;
 
         // Gunakan function getStatusByDate untuk konsistensi
-        const status = getStatusByDate(kursusData?.tanggal_mulai || "", kursusData?.tanggal_selesai || "", item.status);
+        const status = getStatusByDate(pelatihanData?.tanggal_mulai || "", pelatihanData?.tanggal_selesai || "", item.status);
 
         activities.push({
           id: `jadwal-${item.id}`,
-          title: `Jadwal: ${kursusData.judul}`,
+          title: `Jadwal: ${pelatihanData.judul}`,
           type: "jadwal",
-          date: kursusData.tanggal_mulai,
+          date: pelatihanData.tanggal_mulai,
           status: status,
         });
       });
@@ -241,7 +241,7 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
         status_pembayaran,
         dibayar_pada,
         dibuat_pada,
-        kursus:kursus_id ( judul )
+        pelatihan:pelatihan_id ( judul )
       `
       )
       .eq("pengguna_id", profileId)
@@ -250,12 +250,12 @@ async function getRecentActivities(profileId: string): Promise<RecentActivity[]>
 
     if (pembayaranData && !pembayaranError) {
       pembayaranData.forEach((item) => {
-        const judulKursus = (item.kursus as any)?.judul || "sebuah pelatihan";
+        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
         const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
         const statusText = item.status_pembayaran === "berhasil" ? "Berhasil" : item.status_pembayaran === "menunggu" ? "Menunggu" : "Gagal";
         activities.push({
           id: `pembayaran-${item.id}`,
-          title: `Pembayaran ${statusText}: ${judulKursus}`,
+          title: `Pembayaran ${statusText}: ${judulPelatihan}`,
           type: "pembayaran",
           date: item.dibayar_pada || item.dibuat_pada,
           status: item.status_pembayaran === "berhasil" ? "completed" : "upcoming",

@@ -6,7 +6,7 @@ import { Tables } from "@/../types/database";
 import PelatihanList from "@/components/pelatihan/PelatihanList";
 import { deletePelatihan } from "../actions";
 
-type KursusData = Tables<"kursus"> & {
+type PelatihanData = Tables<"pelatihan"> & {
   jumlah_peserta?: number;
   jumlah_materi?: number;
 };
@@ -14,12 +14,12 @@ type KursusData = Tables<"kursus"> & {
 type JadwalStatus = "berjalan" | "belum" | "lewat";
 
 interface AdminPelatihanClientProps {
-  kursusData: KursusData[];
+  pelatihanData: PelatihanData[];
 }
 
-function getJadwalStatus(kursus: KursusData, now: number): JadwalStatus {
-  const mulai = kursus.tanggal_mulai ? new Date(kursus.tanggal_mulai).getTime() : null;
-  const selesai = kursus.tanggal_selesai ? new Date(kursus.tanggal_selesai).getTime() : null;
+function getJadwalStatus(pelatihan: PelatihanData, now: number): JadwalStatus {
+  const mulai = pelatihan.tanggal_mulai ? new Date(pelatihan.tanggal_mulai).getTime() : null;
+  const selesai = pelatihan.tanggal_selesai ? new Date(pelatihan.tanggal_selesai).getTime() : null;
 
   // Pelatihan tanpa tanggal mulai dianggap belum dijadwalkan
   if (mulai === null) return "belum";
@@ -34,36 +34,36 @@ const TABS: { key: JadwalStatus; label: string }[] = [
   { key: "lewat", label: "Sudah Lewat" },
 ];
 
-export default function AdminPelatihanClient({ kursusData }: AdminPelatihanClientProps) {
+export default function AdminPelatihanClient({ pelatihanData }: AdminPelatihanClientProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<JadwalStatus>("berjalan");
   const router = useRouter();
 
   const grouped = useMemo(() => {
     const now = Date.now();
-    const groups: Record<JadwalStatus, KursusData[]> = { berjalan: [], belum: [], lewat: [] };
-    for (const kursus of kursusData) {
-      groups[getJadwalStatus(kursus, now)].push(kursus);
+    const groups: Record<JadwalStatus, PelatihanData[]> = { berjalan: [], belum: [], lewat: [] };
+    for (const pelatihan of pelatihanData) {
+      groups[getJadwalStatus(pelatihan, now)].push(pelatihan);
     }
     return groups;
-  }, [kursusData]);
+  }, [pelatihanData]);
 
-  const handleEdit = (kursus: KursusData) => {
-    router.push(`/pelatihan-admin/edit/${kursus.id}`);
+  const handleEdit = (pelatihan: PelatihanData) => {
+    router.push(`/pelatihan-admin/edit/${pelatihan.id}`);
   };
 
-  const handleDelete = async (kursusId: string) => {
-    const kursus = kursusData.find((k) => k.id === kursusId);
-    if (!kursus) return;
+  const handleDelete = async (pelatihanId: string) => {
+    const pelatihan = pelatihanData.find((k) => k.id === pelatihanId);
+    if (!pelatihan) return;
 
     // Confirm deletion
-    const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus pelatihan "${kursus.judul}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+    const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus pelatihan "${pelatihan.judul}"?\n\nTindakan ini tidak dapat dibatalkan.`);
 
     if (!isConfirmed) return;
 
-    setLoading(kursusId);
+    setLoading(pelatihanId);
     try {
-      const result = await deletePelatihan(kursusId);
+      const result = await deletePelatihan(pelatihanId);
 
       if (result.success) {
         // Show success message
@@ -82,8 +82,8 @@ export default function AdminPelatihanClient({ kursusData }: AdminPelatihanClien
     }
   };
 
-  const handleView = (kursusId: string) => {
-    router.push(`/pelatihan-admin/edit/${kursusId}`);
+  const handleView = (pelatihanId: string) => {
+    router.push(`/pelatihan-admin/edit/${pelatihanId}`);
   };
 
   return (
@@ -108,7 +108,7 @@ export default function AdminPelatihanClient({ kursusData }: AdminPelatihanClien
         })}
       </div>
 
-      <PelatihanList kursusData={grouped[activeTab]} userRole="admin" showActions={true} onEdit={handleEdit} onDelete={handleDelete} onView={handleView} loading={loading !== null} />
+      <PelatihanList pelatihanData={grouped[activeTab]} userRole="admin" showActions={true} onEdit={handleEdit} onDelete={handleDelete} onView={handleView} loading={loading !== null} />
     </div>
   );
 }

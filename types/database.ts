@@ -14,7 +14,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      kursus: {
+      pelatihan: {
         Row: {
           deskripsi: string | null
           dibuat_pada: string
@@ -24,11 +24,11 @@ export type Database = {
           judul: string
           kategori: string
           maksimal_peserta: number | null
-          status: Database["public"]["Enums"]["status_kursus"]
+          status: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai: string | null
           tanggal_selesai: string | null
           thumbnail_url: string | null
-          tipe_kursus: Database["public"]["Enums"]["tipe_kursus"]
+          tipe_pelatihan: Database["public"]["Enums"]["tipe_pelatihan"]
         }
         Insert: {
           deskripsi?: string | null
@@ -39,11 +39,11 @@ export type Database = {
           judul: string
           kategori: string
           maksimal_peserta?: number | null
-          status?: Database["public"]["Enums"]["status_kursus"]
+          status?: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai?: string | null
           tanggal_selesai?: string | null
           thumbnail_url?: string | null
-          tipe_kursus?: Database["public"]["Enums"]["tipe_kursus"]
+          tipe_pelatihan?: Database["public"]["Enums"]["tipe_pelatihan"]
         }
         Update: {
           deskripsi?: string | null
@@ -54,15 +54,15 @@ export type Database = {
           judul?: string
           kategori?: string
           maksimal_peserta?: number | null
-          status?: Database["public"]["Enums"]["status_kursus"]
+          status?: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai?: string | null
           tanggal_selesai?: string | null
           thumbnail_url?: string | null
-          tipe_kursus?: Database["public"]["Enums"]["tipe_kursus"]
+          tipe_pelatihan?: Database["public"]["Enums"]["tipe_pelatihan"]
         }
         Relationships: []
       }
-      materi_kursus: {
+      materi_pelatihan: {
         Row: {
           deskripsi: string | null
           dibuat_pada: string
@@ -70,7 +70,7 @@ export type Database = {
           file_url: string | null
           id: string
           judul: string
-          kursus_id: string
+          pelatihan_id: string
           tipe_materi: Database["public"]["Enums"]["tipe_materi"]
           urutan: number | null
           zoom_link: string | null
@@ -82,7 +82,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           judul: string
-          kursus_id: string
+          pelatihan_id: string
           tipe_materi: Database["public"]["Enums"]["tipe_materi"]
           urutan?: number | null
           zoom_link?: string | null
@@ -94,17 +94,17 @@ export type Database = {
           file_url?: string | null
           id?: string
           judul?: string
-          kursus_id?: string
+          pelatihan_id?: string
           tipe_materi?: Database["public"]["Enums"]["tipe_materi"]
           urutan?: number | null
           zoom_link?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "materi_kursus_kursus_id_fkey"
-            columns: ["kursus_id"]
+            foreignKeyName: "materi_pelatihan_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
             isOneToOne: false
-            referencedRelation: "kursus"
+            referencedRelation: "pelatihan"
             referencedColumns: ["id"]
           },
         ]
@@ -158,7 +158,7 @@ export type Database = {
           id: string
           id_pembayaran_eksternal: string | null
           jumlah: number
-          kursus_id: string
+          pelatihan_id: string
           metode_pembayaran: string | null
           pengguna_id: string
           status_pembayaran: Database["public"]["Enums"]["status_pembayaran"]
@@ -171,7 +171,7 @@ export type Database = {
           id?: string
           id_pembayaran_eksternal?: string | null
           jumlah: number
-          kursus_id: string
+          pelatihan_id: string
           metode_pembayaran?: string | null
           pengguna_id: string
           status_pembayaran?: Database["public"]["Enums"]["status_pembayaran"]
@@ -184,7 +184,7 @@ export type Database = {
           id?: string
           id_pembayaran_eksternal?: string | null
           jumlah?: number
-          kursus_id?: string
+          pelatihan_id?: string
           metode_pembayaran?: string | null
           pengguna_id?: string
           status_pembayaran?: Database["public"]["Enums"]["status_pembayaran"]
@@ -192,10 +192,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pembayaran_kursus_id_fkey"
-            columns: ["kursus_id"]
+            foreignKeyName: "pembayaran_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
             isOneToOne: false
-            referencedRelation: "kursus"
+            referencedRelation: "pelatihan"
             referencedColumns: ["id"]
           },
           {
@@ -207,12 +207,12 @@ export type Database = {
           },
         ]
       }
-      pendaftaran_kursus: {
+      pendaftaran_pelatihan: {
         Row: {
           dibuat_pada: string
           diperbarui_pada: string | null
           id: string
-          kursus_id: string
+          pelatihan_id: string
           pengguna_id: string
           sertifikat_id: string | null
           status: Database["public"]["Enums"]["status_pendaftaran"]
@@ -223,7 +223,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string
-          kursus_id: string
+          pelatihan_id: string
           pengguna_id: string
           sertifikat_id?: string | null
           status?: Database["public"]["Enums"]["status_pendaftaran"]
@@ -234,7 +234,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string
-          kursus_id?: string
+          pelatihan_id?: string
           pengguna_id?: string
           sertifikat_id?: string | null
           status?: Database["public"]["Enums"]["status_pendaftaran"]
@@ -243,21 +243,21 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "pendaftaran_kursus_kursus_id_fkey"
-            columns: ["kursus_id"]
+            foreignKeyName: "pendaftaran_pelatihan_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
             isOneToOne: false
-            referencedRelation: "kursus"
+            referencedRelation: "pelatihan"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pendaftaran_kursus_pengguna_id_fkey"
+            foreignKeyName: "pendaftaran_pelatihan_pengguna_id_fkey"
             columns: ["pengguna_id"]
             isOneToOne: false
             referencedRelation: "profil_pengguna"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pendaftaran_kursus_sertifikat_id_fkey"
+            foreignKeyName: "pendaftaran_pelatihan_sertifikat_id_fkey"
             columns: ["sertifikat_id"]
             isOneToOne: false
             referencedRelation: "sertifikat"
@@ -312,7 +312,7 @@ export type Database = {
           dibuat_pada: string
           diperbarui_pada: string | null
           id: string
-          kursus_id: string
+          pelatihan_id: string
           nomor_sertifikat: string
           peserta_id: string
           sertifikat_url: string | null
@@ -324,7 +324,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string
-          kursus_id: string
+          pelatihan_id: string
           nomor_sertifikat: string
           peserta_id: string
           sertifikat_url?: string | null
@@ -336,7 +336,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string
-          kursus_id?: string
+          pelatihan_id?: string
           nomor_sertifikat?: string
           peserta_id?: string
           sertifikat_url?: string | null
@@ -346,10 +346,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sertifikat_kursus_id_fkey"
-            columns: ["kursus_id"]
+            foreignKeyName: "sertifikat_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
             isOneToOne: false
-            referencedRelation: "kursus"
+            referencedRelation: "pelatihan"
             referencedColumns: ["id"]
           },
           {
@@ -381,7 +381,7 @@ export type Database = {
             judul_pelatihan: { x: number; y: number; fontSize: number }
             qr_code: { x: number; y: number; size: number }
           }
-          kursus_id: string | null
+          pelatihan_id: string | null
           nama: string
         }
         Insert: {
@@ -396,7 +396,7 @@ export type Database = {
             judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
             qr_code?: { x?: number; y?: number; size?: number }
           }
-          kursus_id?: string | null
+          pelatihan_id?: string | null
           nama: string
         }
         Update: {
@@ -411,15 +411,15 @@ export type Database = {
             judul_pelatihan?: { x?: number; y?: number; fontSize?: number }
             qr_code?: { x?: number; y?: number; size?: number }
           }
-          kursus_id?: string | null
+          pelatihan_id?: string | null
           nama?: string
         }
         Relationships: [
           {
-            foreignKeyName: "template_sertifikat_kursus_id_fkey"
-            columns: ["kursus_id"]
+            foreignKeyName: "template_sertifikat_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
             isOneToOne: false
-            referencedRelation: "kursus"
+            referencedRelation: "pelatihan"
             referencedColumns: ["id"]
           },
         ]
@@ -447,7 +447,7 @@ export type Database = {
     }
     Enums: {
       peran_pengguna: "admin" | "peserta"
-      status_kursus: "draft" | "published" | "archived"
+      status_pelatihan: "draft" | "published" | "archived"
       status_pembayaran: "menunggu" | "berhasil" | "gagal" | "dikembalikan"
       status_pendaftaran:
         | "terdaftar"
@@ -455,10 +455,9 @@ export type Database = {
         | "selesai"
         | "dibatalkan"
       status_sertifikat: "draft" | "terbit" | "dibatalkan"
-      tipe_kursus: "online" | "offline" | "hybrid"
-      tipe_materi: "pdf" | "ppt"
       tipe_pelatihan: "online" | "offline"
-      tipe_pembayaran: "pendaftaran_kursus" | "klaim_sertifikat"
+      tipe_materi: "pdf" | "ppt"
+      tipe_pembayaran: "pendaftaran_pelatihan" | "klaim_sertifikat"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -587,7 +586,7 @@ export const Constants = {
   public: {
     Enums: {
       peran_pengguna: ["admin", "peserta"],
-      status_kursus: ["draft", "published", "archived"],
+      status_pelatihan: ["draft", "published", "archived"],
       status_pembayaran: ["menunggu", "berhasil", "gagal", "dikembalikan"],
       status_pendaftaran: [
         "terdaftar",
@@ -596,10 +595,9 @@ export const Constants = {
         "dibatalkan",
       ],
       status_sertifikat: ["draft", "terbit", "dibatalkan"],
-      tipe_kursus: ["online", "offline", "hybrid"],
-      tipe_materi: ["pdf", "ppt"],
       tipe_pelatihan: ["online", "offline"],
-      tipe_pembayaran: ["pendaftaran_kursus", "klaim_sertifikat"],
+      tipe_materi: ["pdf", "ppt"],
+      tipe_pembayaran: ["pendaftaran_pelatihan", "klaim_sertifikat"],
     },
   },
 } as const

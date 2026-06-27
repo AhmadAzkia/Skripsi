@@ -5,23 +5,23 @@ import { useState } from "react";
 import { Tables } from "@/../types/database";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
-// Tipe data kursus berdasarkan database schema
-type KursusData = Tables<"kursus"> & {
+// Tipe data pelatihan berdasarkan database schema
+type PelatihanData = Tables<"pelatihan"> & {
   // Tambahan data yang mungkin di-join dari tabel lain
   jumlah_peserta?: number;
   jumlah_materi?: number;
 };
 
 interface PelatihanCardsProps {
-  kursusData: KursusData[];
+  pelatihanData: PelatihanData[];
   userRole: "admin" | "peserta";
   showActions?: boolean;
-  onEdit?: (kursus: KursusData) => void;
-  onDelete?: (kursusId: string) => void;
-  onView?: (kursusId: string) => void;
+  onEdit?: (pelatihan: PelatihanData) => void;
+  onDelete?: (pelatihanId: string) => void;
+  onView?: (pelatihanId: string) => void;
 }
 
-export default function PelatihanCards({ kursusData, userRole, showActions = true, onEdit, onDelete, onView }: PelatihanCardsProps) {
+export default function PelatihanCards({ pelatihanData, userRole, showActions = true, onEdit, onDelete, onView }: PelatihanCardsProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
@@ -56,8 +56,6 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
         return "bg-navy text-white";
       case "offline":
         return "bg-gold text-navy";
-      case "hybrid":
-        return "bg-silver text-white";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -81,8 +79,8 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
     });
   };
 
-  const handleAction = async (action: () => void, kursusId: string) => {
-    setLoading(kursusId);
+  const handleAction = async (action: () => void, pelatihanId: string) => {
+    setLoading(pelatihanId);
     try {
       await action();
     } catch (error) {
@@ -92,18 +90,18 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
     }
   };
 
-  const getViewLink = (kursusId: string) => {
+  const getViewLink = (pelatihanId: string) => {
     switch (userRole) {
       case "admin":
-        return `/pelatihan-admin/edit/${kursusId}`;
+        return `/pelatihan-admin/edit/${pelatihanId}`;
       case "peserta":
-        return `/kursus/${kursusId}`;
+        return `/pelatihan/${pelatihanId}`;
       default:
-        return `/kursus/${kursusId}`;
+        return `/pelatihan/${pelatihanId}`;
     }
   };
 
-  if (kursusData.length === 0) {
+  if (pelatihanData.length === 0) {
     return (
       <ScrollReveal>
         <div className="text-center py-16 bg-white rounded-xl shadow-lg border border-navy/10 hover-lift">
@@ -121,13 +119,13 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {kursusData.map((kursus, index) => (
-        <ScrollReveal key={kursus.id} delay={index * 100}>
+      {pelatihanData.map((pelatihan, index) => (
+        <ScrollReveal key={pelatihan.id} delay={index * 100}>
           <div className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-navy/10 hover:border-navy/20 overflow-hidden hover-lift">
             {/* Thumbnail */}
             <div className="relative h-48 bg-linear-to-br from-navy/10 to-gold/10">
-              {kursus.thumbnail_url ? (
-                <img src={kursus.thumbnail_url} alt={kursus.judul} className="w-full h-full object-cover" />
+              {pelatihan.thumbnail_url ? (
+                <img src={pelatihan.thumbnail_url} alt={pelatihan.judul} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <svg className="w-16 h-16 text-gold/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,13 +141,13 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
 
               {/* Status & Type Badges */}
               <div className="absolute top-4 right-4 flex flex-col gap-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(kursus.status)}`}>{getStatusText(kursus.status)}</span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTipeColor(kursus.tipe_kursus)}`}>{kursus.tipe_kursus.toUpperCase()}</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(pelatihan.status)}`}>{getStatusText(pelatihan.status)}</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTipeColor(pelatihan.tipe_pelatihan)}`}>{pelatihan.tipe_pelatihan.toUpperCase()}</span>
               </div>
 
               {/* Price Badge */}
               <div className="absolute bottom-4 left-4">
-                <span className={`px-3 py-1 backdrop-blur-sm text-sm font-bold rounded-full ${kursus.harga === 0 ? "bg-green-100/90 text-green-800" : "bg-white/90 text-navy"}`}>{formatCurrency(kursus.harga)}</span>
+                <span className={`px-3 py-1 backdrop-blur-sm text-sm font-bold rounded-full ${pelatihan.harga === 0 ? "bg-green-100/90 text-green-800" : "bg-white/90 text-navy"}`}>{formatCurrency(pelatihan.harga)}</span>
               </div>
             </div>
 
@@ -158,26 +156,26 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
               {/* Header */}
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 bg-navy/10 text-navy text-xs font-medium rounded">{kursus.kategori}</span>
+                  <span className="px-2 py-1 bg-navy/10 text-navy text-xs font-medium rounded">{pelatihan.kategori}</span>
                 </div>
 
-                <h3 className="text-xl font-semibold text-navy mb-2 group-hover:text-gold transition-colors duration-300 line-clamp-2">{kursus.judul}</h3>
+                <h3 className="text-xl font-semibold text-navy mb-2 group-hover:text-gold transition-colors duration-300 line-clamp-2">{pelatihan.judul}</h3>
 
-                {kursus.deskripsi && <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">{kursus.deskripsi}</p>}
+                {pelatihan.deskripsi && <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">{pelatihan.deskripsi}</p>}
               </div>
 
               {/* Stats */}
-              {(kursus.jumlah_peserta !== undefined || kursus.jumlah_materi !== undefined) && (
+              {(pelatihan.jumlah_peserta !== undefined || pelatihan.jumlah_materi !== undefined) && (
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                  {kursus.jumlah_materi !== undefined && (
+                  {pelatihan.jumlah_materi !== undefined && (
                     <div className="bg-navy/5 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-navy">{kursus.jumlah_materi}</div>
+                      <div className="text-lg font-bold text-navy">{pelatihan.jumlah_materi}</div>
                       <div className="text-gray-600 text-xs">Materi</div>
                     </div>
                   )}
-                  {kursus.jumlah_peserta !== undefined && (
+                  {pelatihan.jumlah_peserta !== undefined && (
                     <div className="bg-gold/5 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-navy">{kursus.jumlah_peserta}</div>
+                      <div className="text-lg font-bold text-navy">{pelatihan.jumlah_peserta}</div>
                       <div className="text-gray-600 text-xs">Peserta</div>
                     </div>
                   )}
@@ -185,41 +183,41 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
               )}
 
               {/* Dates */}
-              {(kursus.tanggal_mulai || kursus.tanggal_selesai) && (
+              {(pelatihan.tanggal_mulai || pelatihan.tanggal_selesai) && (
                 <div className="mb-4 space-y-1 text-xs text-gray-500">
-                  {kursus.tanggal_mulai && (
+                  {pelatihan.tanggal_mulai && (
                     <div className="flex items-center gap-1">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      Mulai: {formatDate(kursus.tanggal_mulai)}
+                      Mulai: {formatDate(pelatihan.tanggal_mulai)}
                     </div>
                   )}
-                  {kursus.tanggal_selesai && (
+                  {pelatihan.tanggal_selesai && (
                     <div className="flex items-center gap-1">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                      Selesai: {formatDate(kursus.tanggal_selesai)}
+                      Selesai: {formatDate(pelatihan.tanggal_selesai)}
                     </div>
                   )}
                 </div>
               )}
 
               {/* Capacity Info */}
-              {kursus.maksimal_peserta && (
+              {pelatihan.maksimal_peserta && (
                 <div className="mb-4 text-xs text-gray-500">
                   <div className="flex items-center justify-between">
                     <span>Kapasitas:</span>
                     <span className="font-medium">
-                      {kursus.jumlah_peserta || 0} / {kursus.maksimal_peserta} peserta
+                      {pelatihan.jumlah_peserta || 0} / {pelatihan.maksimal_peserta} peserta
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
                     <div
                       className="bg-linear-to-r from-navy to-gold h-1.5 rounded-full transition-all duration-300"
                       style={{
-                        width: `${Math.min(((kursus.jumlah_peserta || 0) / kursus.maksimal_peserta) * 100, 100)}%`,
+                        width: `${Math.min(((pelatihan.jumlah_peserta || 0) / pelatihan.maksimal_peserta) * 100, 100)}%`,
                       }}
                     ></div>
                   </div>
@@ -230,8 +228,8 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
               {showActions && (
                 <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200">
                   {/* View/Access Button */}
-                  <Link href={getViewLink(kursus.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
-                    {userRole === "admin" ? "Kelola Kursus" : "Lihat Detail"}
+                  <Link href={getViewLink(pelatihan.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
+                    {userRole === "admin" ? "Kelola Pelatihan" : "Lihat Detail"}
                   </Link>
 
                   {/* Additional Actions for Admin */}
@@ -239,8 +237,8 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
                     <div className="flex items-center gap-2">
                       {onEdit && (
                         <button
-                          onClick={() => handleAction(() => onEdit(kursus), kursus.id)}
-                          disabled={loading === kursus.id}
+                          onClick={() => handleAction(() => onEdit(pelatihan), pelatihan.id)}
+                          disabled={loading === pelatihan.id}
                           className="p-2 text-navy hover:text-gold border border-navy/20 hover:border-gold/30 rounded-lg hover:bg-gold/5 transition-all duration-300 disabled:opacity-50"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -251,11 +249,11 @@ export default function PelatihanCards({ kursusData, userRole, showActions = tru
 
                       {onDelete && userRole === "admin" && (
                         <button
-                          onClick={() => handleAction(() => onDelete(kursus.id), kursus.id)}
-                          disabled={loading === kursus.id}
+                          onClick={() => handleAction(() => onDelete(pelatihan.id), pelatihan.id)}
+                          disabled={loading === pelatihan.id}
                           className="p-2 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg hover:bg-red-50 transition-all duration-300 disabled:opacity-50"
                         >
-                          {loading === kursus.id ? (
+                          {loading === pelatihan.id ? (
                             <div className="w-4 h-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></div>
                           ) : (
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -90,7 +90,7 @@ export async function uploadTemplate(formData: FormData) {
   const nama = formData.get("nama") as string;
   const file = formData.get("template") as File;
   const koordinatStr = formData.get("koordinat") as string;
-  const kursusId = formData.get("kursus_id") as string | null;
+  const pelatihanId = formData.get("pelatihan_id") as string | null;
 
   if (!nama || nama.trim().length === 0) {
     return { success: false, error: "Nama template wajib diisi." };
@@ -134,7 +134,7 @@ export async function uploadTemplate(formData: FormData) {
     nama: nama.trim(),
     file_path: filePath,
     koordinat,
-    kursus_id: kursusId || null,
+    pelatihan_id: pelatihanId || null,
   });
 
   if (dbError) {

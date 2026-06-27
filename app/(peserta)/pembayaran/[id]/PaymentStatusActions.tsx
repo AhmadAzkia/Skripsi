@@ -4,12 +4,12 @@ import { useState } from "react";
 import Script from "next/script";
 
 type PaymentStatusActionsProps = {
-  kursusId: string;
+  pelatihanId: string;
   paymentId: string;
   status: "menunggu" | "berhasil" | "gagal" | "dikembalikan";
 };
 
-export default function PaymentStatusActions({ kursusId, paymentId, status }: PaymentStatusActionsProps) {
+export default function PaymentStatusActions({ pelatihanId, paymentId, status }: PaymentStatusActionsProps) {
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [error, setError] = useState("");

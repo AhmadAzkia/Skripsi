@@ -51,7 +51,7 @@ export default async function RiwayatPesertaPage() {
       metode_pembayaran,
       id_pembayaran_eksternal,
       dibuat_pada,
-      kursus:kursus_id (
+      pelatihan:pelatihan_id (
         judul,
         kategori
       )
@@ -90,16 +90,16 @@ export default async function RiwayatPesertaPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {payments.map((payment) => {
-                const kursus = Array.isArray(payment.kursus) ? payment.kursus[0] : payment.kursus;
+                const pelatihan = Array.isArray(payment.pelatihan) ? payment.pelatihan[0] : payment.pelatihan;
 
                 return (
                   <div key={payment.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className={`px-3 py-1 rounded-full border text-xs font-semibold ${statusClass[payment.status_pembayaran]}`}>{statusLabel[payment.status_pembayaran]}</span>
-                        {kursus?.kategori && <span className="px-3 py-1 rounded-full bg-navy/10 text-navy text-xs font-semibold">{kursus.kategori}</span>}
+                        {pelatihan?.kategori && <span className="px-3 py-1 rounded-full bg-navy/10 text-navy text-xs font-semibold">{pelatihan.kategori}</span>}
                       </div>
-                      <h3 className="font-bold text-navy text-lg">{kursus?.judul || "Pelatihan CertiGuardia"}</h3>
+                      <h3 className="font-bold text-navy text-lg">{pelatihan?.judul || "Pelatihan CertiGuardia"}</h3>
                       <p className="text-sm text-gray-500 mt-1">
                         {payment.id_pembayaran_eksternal || "Order belum tersedia"} • {formatDate(payment.dibuat_pada)}
                       </p>

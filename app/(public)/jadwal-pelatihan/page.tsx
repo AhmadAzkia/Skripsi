@@ -4,13 +4,13 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import JadwalContainer from "./components/JadwalContainer";
 import { Tables } from "@/../types/database";
 
-export type JadwalWithInstructor = Tables<"kursus">;
+export type JadwalWithInstructor = Tables<"pelatihan">;
 
 async function getJadwalPelatihan(): Promise<JadwalWithInstructor[]> {
   const supabase = await createSupabaseServerClient();
 
   const { data: jadwal, error } = await supabase
-    .from("kursus")
+    .from("pelatihan")
     .select("*")
     .eq("status", "published")
     .order("tanggal_mulai", { ascending: true });

@@ -6,8 +6,8 @@ export type UserProfile = Tables<"profil_pengguna">;
 // Type untuk role/peran pengguna — sesuai enum DB: "admin" | "peserta"
 export type UserRole = Enums<"peran_pengguna">;
 
-// Type untuk kursus
-export type Course = Tables<"kursus">;
+// Type untuk pelatihan
+export type Course = Tables<"pelatihan">;
 
 // Type untuk form profil — menggunakan nama kolom DB
 export interface ProfileFormData {

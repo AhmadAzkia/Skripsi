@@ -11,7 +11,7 @@ export default function KatalogFilters({ kategoriList }: KatalogFiltersProps) {
   const [selectedKategori, setSelectedKategori] = useState("semua");
   const [selectedTipe, setSelectedTipe] = useState("semua");
 
-  const tipeKursusList = ["semua", "online", "offline", "hybrid"];
+  const tipeKursusList = ["semua", "online", "offline"];
 
   const handleReset = () => {
     setSelectedKategori("semua");

@@ -10,7 +10,7 @@ interface FormData {
   judul: string;
   deskripsi: string;
   kategori: string;
-  tipe_kursus: "online" | "offline" | "hybrid";
+  tipe_pelatihan: "online" | "offline";
   harga: number;
   maksimal_peserta: number;
   tanggal_mulai: string;
@@ -23,7 +23,7 @@ const initialFormData: FormData = {
   judul: "",
   deskripsi: "",
   kategori: "",
-  tipe_kursus: "online",
+  tipe_pelatihan: "online",
   harga: 0,
   maksimal_peserta: 0,
   tanggal_mulai: "",
@@ -281,20 +281,19 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
             <h3 className="text-xl font-semibold text-navy border-b border-navy/10 pb-3">Konfigurasi Pelatihan</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Tipe Kursus */}
+              {/* Tipe Pelatihan */}
               <div>
                 <label className="block text-sm font-medium text-navy mb-2">
                   Tipe Pelatihan <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="tipe_kursus"
-                  value={formData.tipe_kursus}
+                  name="tipe_pelatihan"
+                  value={formData.tipe_pelatihan}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-silver/30 rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
                 >
                   <option value="online">Online</option>
                   <option value="offline">Offline</option>
-                  <option value="hybrid">Hybrid</option>
                 </select>
               </div>
 

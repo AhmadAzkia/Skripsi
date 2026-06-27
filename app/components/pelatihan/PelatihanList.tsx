@@ -5,24 +5,24 @@ import { Tables } from "@/../types/database";
 import PelatihanCards from "./PelatihanCards";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
-// Tipe data kursus berdasarkan database schema
-type KursusData = Tables<"kursus"> & {
+// Tipe data pelatihan berdasarkan database schema
+type PelatihanData = Tables<"pelatihan"> & {
   // Tambahan data yang mungkin di-join dari tabel lain
   jumlah_peserta?: number;
   jumlah_materi?: number;
 };
 
 interface PelatihanListProps {
-  kursusData: KursusData[];
+  pelatihanData: PelatihanData[];
   userRole: "admin" | "peserta";
   showActions?: boolean;
-  onEdit?: (kursus: KursusData) => void;
-  onDelete?: (kursusId: string) => void;
-  onView?: (kursusId: string) => void;
+  onEdit?: (pelatihan: PelatihanData) => void;
+  onDelete?: (pelatihanId: string) => void;
+  onView?: (pelatihanId: string) => void;
   loading?: boolean;
 }
 
-export default function PelatihanList({ kursusData, userRole, showActions = true, onEdit, onDelete, onView, loading = false }: PelatihanListProps) {
+export default function PelatihanList({ pelatihanData, userRole, showActions = true, onEdit, onDelete, onView, loading = false }: PelatihanListProps) {
   // State untuk filter dan pencarian
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -32,21 +32,21 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
 
   // Dapatkan kategori unik untuk filter
   const uniqueKategori = useMemo(() => {
-    const kategoris = kursusData.map((kursus) => kursus.kategori).filter(Boolean);
+    const kategoris = pelatihanData.map((pelatihan) => pelatihan.kategori).filter(Boolean);
     return [...new Set(kategoris)];
-  }, [kursusData]);
+  }, [pelatihanData]);
 
   // Filter dan sort data
   const filteredAndSortedData = useMemo(() => {
-    let filtered = kursusData.filter((kursus) => {
+    let filtered = pelatihanData.filter((pelatihan) => {
       const matchesSearch =
-        kursus.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (kursus.deskripsi && kursus.deskripsi.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (kursus.kategori && kursus.kategori.toLowerCase().includes(searchQuery.toLowerCase()));
+        pelatihan.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (pelatihan.deskripsi && pelatihan.deskripsi.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (pelatihan.kategori && pelatihan.kategori.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const matchesStatus = statusFilter === "all" || kursus.status === statusFilter;
-      const matchesTipe = tipeFilter === "all" || kursus.tipe_kursus === tipeFilter;
-      const matchesKategori = kategoriFilter === "all" || kursus.kategori === kategoriFilter;
+      const matchesStatus = statusFilter === "all" || pelatihan.status === statusFilter;
+      const matchesTipe = tipeFilter === "all" || pelatihan.tipe_pelatihan === tipeFilter;
+      const matchesKategori = kategoriFilter === "all" || pelatihan.kategori === kategoriFilter;
 
       return matchesSearch && matchesStatus && matchesTipe && matchesKategori;
     });
@@ -72,7 +72,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
     });
 
     return filtered;
-  }, [kursusData, searchQuery, statusFilter, tipeFilter, kategoriFilter, sortBy]);
+  }, [pelatihanData, searchQuery, statusFilter, tipeFilter, kategoriFilter, sortBy]);
 
   // Loading state
   if (loading) {
@@ -158,7 +158,6 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
                 <option value="all">Semua Tipe</option>
                 <option value="online">Online</option>
                 <option value="offline">Offline</option>
-                <option value="hybrid">Hybrid</option>
               </select>
 
               {/* Kategori Filter */}
@@ -200,7 +199,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
           {/* Results Summary */}
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
             <div>
-              Menampilkan {filteredAndSortedData.length} dari {kursusData.length} pelatihan
+              Menampilkan {filteredAndSortedData.length} dari {pelatihanData.length} pelatihan
             </div>
             {(searchQuery || statusFilter !== "all" || tipeFilter !== "all" || kategoriFilter !== "all") && (
               <div className="flex items-center gap-2">
@@ -249,7 +248,7 @@ export default function PelatihanList({ kursusData, userRole, showActions = true
           </div>
         </ScrollReveal>
       ) : (
-        <PelatihanCards kursusData={filteredAndSortedData} userRole={userRole} showActions={showActions} onEdit={onEdit} onDelete={onDelete} onView={onView} />
+        <PelatihanCards pelatihanData={filteredAndSortedData} userRole={userRole} showActions={showActions} onEdit={onEdit} onDelete={onDelete} onView={onView} />
       )}
     </div>
   );

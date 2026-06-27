@@ -67,11 +67,11 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
       id_pembayaran_eksternal,
       dibuat_pada,
       dibayar_pada,
-      kursus:kursus_id (
+      pelatihan:pelatihan_id (
         id,
         judul,
         kategori,
-        tipe_kursus
+        tipe_pelatihan
       )
     `
     )
@@ -83,7 +83,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
     notFound();
   }
 
-  const kursus = Array.isArray(payment.kursus) ? payment.kursus[0] : payment.kursus;
+  const pelatihan = Array.isArray(payment.pelatihan) ? payment.pelatihan[0] : payment.pelatihan;
   const copy = statusCopy[payment.status_pembayaran];
 
   return (
@@ -92,7 +92,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
         <div className="bg-white border border-navy/10 rounded-xl shadow-lg overflow-hidden">
           <div className="bg-navy text-white p-6">
             <p className="text-sm text-gold font-semibold mb-2">Status Pembayaran</p>
-            <h1 className="text-2xl md:text-3xl font-bold">{kursus?.judul || "Pelatihan CertiGuardia"}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">{pelatihan?.judul || "Pelatihan CertiGuardia"}</h1>
           </div>
 
           <div className="p-6 md:p-8 space-y-6">
@@ -120,17 +120,17 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
               </div>
             </div>
 
-            {kursus && (
+            {pelatihan && (
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="font-bold text-navy mb-3">Ringkasan Pelatihan</h3>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full text-sm bg-navy/10 text-navy">{kursus.kategori}</span>
-                  <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 capitalize">{kursus.tipe_kursus}</span>
+                  <span className="px-3 py-1 rounded-full text-sm bg-navy/10 text-navy">{pelatihan.kategori}</span>
+                  <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 capitalize">{pelatihan.tipe_pelatihan}</span>
                 </div>
               </div>
             )}
 
-            <PaymentStatusActions kursusId={kursus?.id || ""} paymentId={payment.id} status={payment.status_pembayaran} />
+            <PaymentStatusActions pelatihanId={pelatihan?.id || ""} paymentId={payment.id} status={payment.status_pembayaran} />
           </div>
         </div>
       </div>

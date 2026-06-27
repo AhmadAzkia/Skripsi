@@ -4,12 +4,12 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type JadwalPelatihan = {
   id: string;
-  kursus_id: string;
+  pelatihan_id: string;
   judul: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
   status: string;
-  tipe_kursus: string;
+  tipe_pelatihan: string;
 };
 
 interface JadwalListProps {
@@ -53,8 +53,6 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
         return "bg-navy/5 text-navy border-navy/20";
       case "offline":
         return "bg-gold/5 text-amber-700 border-gold/20";
-      case "hybrid":
-        return "bg-gradient-to-r from-navy/5 to-gold/5 text-amber-800 border-gold/30";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
     }
@@ -108,7 +106,7 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                         <h3 className="text-xl font-bold text-navy mb-2 flex-1">{jadwal.judul}</h3>
                         <div className="flex gap-2 ml-4">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(jadwal.status)}`}>{getStatusText(jadwal.status)}</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getTipeColor(jadwal.tipe_kursus)}`}>{jadwal.tipe_kursus.toUpperCase()}</span>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getTipeColor(jadwal.tipe_pelatihan)}`}>{jadwal.tipe_pelatihan.toUpperCase()}</span>
                         </div>
                       </div>
 
@@ -127,13 +125,13 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                     {/* Action Section */}
                     <div className="flex flex-col sm:flex-row gap-3 lg:ml-6">
                       {jadwal.status === "sedang_belajar" && (
-                        <a href={`/materi-kursus/${jadwal.kursus_id}`} className="px-4 py-2 bg-gold text-navy font-medium rounded-lg hover:bg-gold/90 transition-colors duration-300 text-center">
-                          Lanjutkan Kursus
+                        <a href={`/materi-kursus/${jadwal.pelatihan_id}`} className="px-4 py-2 bg-gold text-navy font-medium rounded-lg hover:bg-gold/90 transition-colors duration-300 text-center">
+                          Lanjutkan Pelatihan
                         </a>
                       )}
                       {jadwal.status === "terdaftar" && <span className="px-4 py-2 bg-navy/10 text-navy font-medium rounded-lg text-center border border-navy/20">Menunggu Dimulai</span>}
                       {jadwal.status === "selesai" && (
-                        <a href={`/sertifikat?kursusId=${jadwal.kursus_id}`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
+                        <a href={`/sertifikat?pelatihanId=${jadwal.pelatihan_id}`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
                           Lihat Sertifikat
                         </a>
                       )}

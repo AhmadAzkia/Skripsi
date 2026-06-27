@@ -110,7 +110,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                         WebkitBoxOrient: "vertical",
                       }}
                     >
-                      {cert.kursus?.judul || "Nama Kursus Tidak Tersedia"}
+                      {cert.pelatihan?.judul || "Nama Pelatihan Tidak Tersedia"}
                     </h3>
                   </div>
                 </div>

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         diperbarui_pada: new Date().toISOString(),
       })
       .eq("id_pembayaran_eksternal", payload.order_id)
-      .select("id, kursus_id, pengguna_id, tipe_pembayaran")
+      .select("id, pelatihan_id, pengguna_id, tipe_pembayaran")
       .single();
 
     if (paymentError || !payment) {
@@ -50,16 +50,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "klaim_sertifikat") {
-      const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("kursus_id", payment.kursus_id).eq("peserta_id", payment.pengguna_id).maybeSingle();
+      const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("pelatihan_id", payment.pelatihan_id).eq("peserta_id", payment.pengguna_id).maybeSingle();
       let certificateId = existingCertificate?.id || null;
 
       if (!certificateId) {
         const { data: certificate, error: certificateError } = await supabase
           .from("sertifikat")
           .insert({
-            kursus_id: payment.kursus_id,
+            pelatihan_id: payment.pelatihan_id,
             peserta_id: payment.pengguna_id,
-            nomor_sertifikat: createCertificateNumber(payment.kursus_id, payment.pengguna_id),
+            nomor_sertifikat: createCertificateNumber(payment.pelatihan_id, payment.pengguna_id),
             status: "terbit",
             tanggal_terbit: new Date().toISOString(),
           })
@@ -79,9 +79,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Auto-generate certificate for paid course registration
-    if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_kursus") {
+    if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_pelatihan") {
       try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.kursus_id, supabase);
+        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
       } catch (certError: any) {
         console.error("Gagal auto-generate sertifikat untuk pelatihan berbayar:", certError.message);
       }

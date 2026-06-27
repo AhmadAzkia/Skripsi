@@ -27,7 +27,7 @@ export default async function CertificateValidationPage({ params }: ValidationPa
       peserta:peserta_id (
         nama_lengkap
       ),
-      kursus:kursus_id (
+      pelatihan:pelatihan_id (
         judul,
         kategori
       )
@@ -41,7 +41,7 @@ export default async function CertificateValidationPage({ params }: ValidationPa
   }
 
   const peserta = Array.isArray(certificate.peserta) ? certificate.peserta[0] : certificate.peserta;
-  const kursus = Array.isArray(certificate.kursus) ? certificate.kursus[0] : certificate.kursus;
+  const pelatihan = Array.isArray(certificate.pelatihan) ? certificate.pelatihan[0] : certificate.pelatihan;
 
   return (
     <main className="min-h-screen bg-linear-to-br from-amber-50 via-white to-gray-50 flex items-center justify-center px-4 py-12">
@@ -58,7 +58,7 @@ export default async function CertificateValidationPage({ params }: ValidationPa
           </div>
           <div>
             <p className="text-sm text-gray-500">Pelatihan</p>
-            <p className="text-lg font-semibold text-navy">{kursus?.judul || "-"}</p>
+            <p className="text-lg font-semibold text-navy">{pelatihan?.judul || "-"}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

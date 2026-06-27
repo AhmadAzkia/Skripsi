@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1000" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- Title -->
+    <mxCell id="d-title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1;align=left;" value="3.6 Analisis Kebutuhan Data" vertex="1">
+      <mxGeometry height="25" width="400" x="40" y="10" as="geometry"/>
+    </mxCell>
+
+    <!-- Description -->
+    <mxCell id="d-desc" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;align=left;verticalAlign=top;whiteSpace=wrap;" value="Analisis kebutuhan data dilakukan untuk mengidentifikasi struktur data yang diperlukan dalam sistem. Berikut adalah identifikasi dokumen/entitas data beserta field-field yang tersimpan pada setiap entitasnya:" vertex="1">
+      <mxGeometry height="40" width="1000" x="40" y="40" as="geometry"/>
+    </mxCell>
+
+    <!-- Table Title -->
+    <mxCell id="d-tbltitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;align=center;" value="Tabel 3.22 Analisis Struktur Dokumen" vertex="1">
+      <mxGeometry height="20" width="1000" x="40" y="85" as="geometry"/>
+    </mxCell>
+
+    <!-- ====== HEADER ====== -->
+    <mxCell id="h1" parent="1" style="rounded=0;fillColor=#D9D9D9;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1">
+      <mxGeometry x="40" y="110" width="200" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="h1t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;" value="Nama Dokumen" vertex="1">
+      <mxGeometry x="40" y="110" width="200" height="30" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="h2" parent="1" style="rounded=0;fillColor=#D9D9D9;strokeColor=#000000;strokeWidth=1;fontStyle=1;fontSize=11;align=center;verticalAlign=middle;" vertex="1">
+      <mxGeometry x="240" y="110" width="800" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="h2t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;" value="Field" vertex="1">
+      <mxGeometry x="240" y="110" width="800" height="30" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 1: Profil Pengguna ===== -->
+    <mxCell id="r1a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="140" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r1b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="140" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r1at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Profil Pengguna" vertex="1">
+      <mxGeometry x="40" y="140" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r1bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, user_id, email, nama_lengkap, nomor_hp, bio, foto_profil_url, peran, is_aktif, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="140" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 2: Kursus ===== -->
+    <mxCell id="r2a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="180" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r2b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="180" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r2at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Kursus" vertex="1">
+      <mxGeometry x="40" y="180" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r2bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, judul, deskripsi, kategori, harga, tipe_kursus, status, maksimal_peserta, tanggal_mulai, tanggal_selesai, thumbnail_url, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="180" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 3: Materi Kursus ===== -->
+    <mxCell id="r3a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="220" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r3b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="220" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r3at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Materi Kursus" vertex="1">
+      <mxGeometry x="40" y="220" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r3bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, kursus_id, judul, deskripsi, tipe_materi, file_url, zoom_link, urutan, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="220" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 4: Pendaftaran Kursus ===== -->
+    <mxCell id="r4a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="260" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r4b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="260" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r4at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Pendaftaran Kursus" vertex="1">
+      <mxGeometry x="40" y="260" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r4bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, kursus_id, pengguna_id, sertifikat_id, status, tanggal_daftar, tanggal_selesai, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="260" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 5: Pembayaran ===== -->
+    <mxCell id="r5a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="300" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r5b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="300" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r5at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Pembayaran" vertex="1">
+      <mxGeometry x="40" y="300" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r5bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, kursus_id, pengguna_id, jumlah, tipe_pembayaran, status_pembayaran, metode_pembayaran, id_pembayaran_eksternal, dibayar_pada, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="300" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 6: Sertifikat ===== -->
+    <mxCell id="r6a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="340" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r6b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="340" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r6at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Sertifikat" vertex="1">
+      <mxGeometry x="40" y="340" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r6bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, kursus_id, peserta_id, template_id, nomor_sertifikat, sertifikat_url, status, tanggal_terbit, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="340" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ===== ROW 7: Template Sertifikat ===== -->
+    <mxCell id="r7a" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="40" y="380" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r7b" parent="1" style="rounded=0;fillColor=none;strokeColor=#000000;strokeWidth=1;" vertex="1">
+      <mxGeometry x="240" y="380" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r7at" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" value="Template Sertifikat" vertex="1">
+      <mxGeometry x="40" y="380" width="200" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="r7bt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;align=left;verticalAlign=middle;" value="{id, kursus_id, nama, file_path, koordinat, dibuat_pada, diperbarui_pada}" vertex="1">
+      <mxGeometry x="250" y="380" width="780" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- Closing text -->
+    <mxCell id="d-close" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;align=left;verticalAlign=top;whiteSpace=wrap;" value="Dengan mengidentifikasi struktur dokumen di atas, gambaran data sistem akan menjadi lebih jelas dan menjadi referensi dalam membangun hubungan antar dokumen pada Sistem Administrasi Pelatihan PT. Certi Guardia." vertex="1">
+      <mxGeometry height="30" width="1000" x="40" y="470" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

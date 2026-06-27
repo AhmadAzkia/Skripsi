@@ -31,7 +31,7 @@ export default async function ManajemenSertifikatPage() {
           nama_lengkap,
           email
         ),
-        kursus:kursus_id (
+        pelatihan:pelatihan_id (
           judul,
           kategori
         )
@@ -40,10 +40,10 @@ export default async function ManajemenSertifikatPage() {
       .order("tanggal_terbit", { ascending: false }),
     supabase
       .from("template_sertifikat")
-      .select("id, nama, file_path, kursus_id, kursus:kursus_id ( judul )")
+      .select("id, nama, file_path, pelatihan_id, pelatihan:pelatihan_id ( judul )")
       .order("dibuat_pada", { ascending: false }),
     supabase
-      .from("kursus")
+      .from("pelatihan")
       .select("id, judul")
       .eq("status", "published")
       .order("judul"),
@@ -111,7 +111,7 @@ export default async function ManajemenSertifikatPage() {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {certificates.map((certificate) => {
                     const peserta = Array.isArray(certificate.peserta) ? certificate.peserta[0] : certificate.peserta;
-                    const kursus = Array.isArray(certificate.kursus) ? certificate.kursus[0] : certificate.kursus;
+                    const pelatihan = Array.isArray(certificate.pelatihan) ? certificate.pelatihan[0] : certificate.pelatihan;
 
                     return (
                       <tr key={certificate.id} className="hover:bg-gray-50">
@@ -120,8 +120,8 @@ export default async function ManajemenSertifikatPage() {
                           <p className="text-sm text-gray-500">{peserta?.email || "-"}</p>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="font-medium text-gray-900">{kursus?.judul || "-"}</p>
-                          <p className="text-sm text-gray-500">{kursus?.kategori || "-"}</p>
+                          <p className="font-medium text-gray-900">{pelatihan?.judul || "-"}</p>
+                          <p className="text-sm text-gray-500">{pelatihan?.kategori || "-"}</p>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">{certificate.nomor_sertifikat}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{formatDate(certificate.tanggal_terbit)}</td>

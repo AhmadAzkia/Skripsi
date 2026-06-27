@@ -5,16 +5,16 @@ import AdminPelatihanClient from "./components/AdminPelatihanClient";
 import { getUserWithRole } from "@/lib/user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-// Fungsi untuk ambil data kursus (pakai admin client untuk bypass RLS)
-async function getSemuaKursus() {
+// Fungsi untuk ambil data pelatihan (pakai admin client untuk bypass RLS)
+async function getSemuaPelatihan() {
   const admin = createSupabaseAdminClient();
   if (!admin) return [];
-  const { data, error } = await admin.from("kursus").select("*").order("dibuat_pada", { ascending: false });
+  const { data, error } = await admin.from("pelatihan").select("*").order("dibuat_pada", { ascending: false });
   if (error) return [];
   return data;
 }
 
-export default async function AdminKursusPage() {
+export default async function AdminPelatihanPage() {
   // 1. Keamanan: Cek User & Role
   const userData = await getUserWithRole();
 
@@ -23,7 +23,7 @@ export default async function AdminKursusPage() {
   }
 
   // 2. Ambil Data
-  const kursus = await getSemuaKursus();
+  const pelatihan = await getSemuaPelatihan();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 to-gray-50">
@@ -37,26 +37,26 @@ export default async function AdminKursusPage() {
                 <h1 className="text-3xl md:text-4xl font-bold text-navy mb-3">
                   Manajemen <span className="text-gold">Pelatihan</span>
                 </h1>
-                <p className="text-silver text-lg max-w-2xl">Kelola semua pelatihan dan kursus dalam platform. Tambah, edit, atau hapus pelatihan sesuai kebutuhan.</p>
+                <p className="text-silver text-lg max-w-2xl">Kelola semua pelatihan dalam platform. Tambah, edit, atau hapus pelatihan sesuai kebutuhan.</p>
 
                 {/* Quick Stats */}
                 <div className="flex items-center gap-6 mt-4">
                   <div className="flex items-center gap-2 text-sm text-silver">
                     <div className="w-2 h-2 bg-linear-to-r from-navy to-gold rounded-full"></div>
                     <span>
-                      Total: <span className="font-semibold text-navy">{kursus.length}</span> pelatihan
+                      Total: <span className="font-semibold text-navy">{pelatihan.length}</span> pelatihan
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-silver">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span>
-                      Published: <span className="font-semibold text-navy">{kursus.filter((k: any) => k.status === "published").length}</span>
+                      Published: <span className="font-semibold text-navy">{pelatihan.filter((k: any) => k.status === "published").length}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-silver">
                     <div className="w-2 h-2 bg-gold rounded-full"></div>
                     <span>
-                      Draft: <span className="font-semibold text-navy">{kursus.filter((k: any) => k.status === "draft").length}</span>
+                      Draft: <span className="font-semibold text-navy">{pelatihan.filter((k: any) => k.status === "draft").length}</span>
                     </span>
                   </div>
                 </div>
@@ -83,7 +83,7 @@ export default async function AdminKursusPage() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Render Komponen & Teruskan Data + Role */}
-        <AdminPelatihanClient kursusData={kursus} />
+        <AdminPelatihanClient pelatihanData={pelatihan} />
       </div>
     </div>
   );

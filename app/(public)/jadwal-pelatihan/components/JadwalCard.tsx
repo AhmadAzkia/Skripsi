@@ -17,7 +17,7 @@ const formatHarga = (harga: number) => {
 };
 
 export default function JadwalCard({ jadwal }: JadwalCardProps) {
-  const isOnline = jadwal.tipe_kursus === "online";
+  const isOnline = jadwal.tipe_pelatihan === "online";
   const isFree = jadwal.harga === 0;
 
   // Data untuk InteractiveCard

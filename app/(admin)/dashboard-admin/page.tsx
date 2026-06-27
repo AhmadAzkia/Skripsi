@@ -13,9 +13,9 @@ async function getAdminStats(): Promise<AdminDashboardStatsData> {
 
   const [penggunaRes, pelatihanTotalRes, pelatihanPublishedRes, pendaftaranAktifRes, pendapatanRes] = await Promise.all([
     supabase.from("profil_pengguna").select("*", { count: "exact", head: true }),
-    supabase.from("kursus").select("*", { count: "exact", head: true }),
-    supabase.from("kursus").select("*", { count: "exact", head: true }).eq("status", "published"),
-    supabase.from("pendaftaran_kursus").select("*", { count: "exact", head: true }).in("status", ["terdaftar", "sedang_belajar"]),
+    supabase.from("pelatihan").select("*", { count: "exact", head: true }),
+    supabase.from("pelatihan").select("*", { count: "exact", head: true }).eq("status", "published"),
+    supabase.from("pendaftaran_pelatihan").select("*", { count: "exact", head: true }).in("status", ["terdaftar", "sedang_belajar"]),
     supabase.from("pembayaran").select("jumlah").eq("status_pembayaran", "berhasil"),
   ]);
 
@@ -45,15 +45,15 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
     const [penggunaRes, pendaftaranRes, sertifikatRes, pembayaranRes] = await Promise.all([
       // 1. Pengguna baru
       supabase.from("profil_pengguna").select("id, nama_lengkap, peran, dibuat_pada").order("dibuat_pada", { ascending: false }).limit(5),
-      // 2. Pendaftaran kursus terbaru
+      // 2. Pendaftaran pelatihan terbaru
       supabase
-        .from("pendaftaran_kursus")
+        .from("pendaftaran_pelatihan")
         .select(
           `
           id,
           tanggal_daftar,
           pengguna:pengguna_id ( nama_lengkap ),
-          kursus:kursus_id ( judul )
+          pelatihan:pelatihan_id ( judul )
         `
         )
         .order("tanggal_daftar", { ascending: false })
@@ -67,7 +67,7 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
           nomor_sertifikat,
           tanggal_terbit,
           peserta:peserta_id ( nama_lengkap ),
-          kursus:kursus_id ( judul )
+          pelatihan:pelatihan_id ( judul )
         `
         )
         .eq("status", "terbit")
@@ -83,7 +83,7 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
           dibayar_pada,
           dibuat_pada,
           pengguna:pengguna_id ( nama_lengkap ),
-          kursus:kursus_id ( judul )
+          pelatihan:pelatihan_id ( judul )
         `
         )
         .eq("status_pembayaran", "berhasil")
@@ -106,11 +106,11 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
     if (pendaftaranRes.data && !pendaftaranRes.error) {
       pendaftaranRes.data.forEach((item) => {
         const namaPengguna = (item.pengguna as any)?.nama_lengkap || "Peserta";
-        const judulKursus = (item.kursus as any)?.judul || "sebuah pelatihan";
+        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
         activities.push({
           id: `pendaftaran-${item.id}`,
           title: `${namaPengguna} mendaftar pelatihan`,
-          subtitle: judulKursus,
+          subtitle: judulPelatihan,
           type: "pendaftaran",
           date: item.tanggal_daftar,
         });
@@ -120,11 +120,11 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
     if (sertifikatRes.data && !sertifikatRes.error) {
       sertifikatRes.data.forEach((item) => {
         const namaPeserta = (item.peserta as any)?.nama_lengkap || "Peserta";
-        const judulKursus = (item.kursus as any)?.judul || item.nomor_sertifikat;
+        const judulPelatihan = (item.pelatihan as any)?.judul || item.nomor_sertifikat;
         activities.push({
           id: `sertifikat-${item.id}`,
           title: `Sertifikat untuk ${namaPeserta}`,
-          subtitle: judulKursus,
+          subtitle: judulPelatihan,
           type: "sertifikat",
           date: item.tanggal_terbit,
         });
@@ -134,12 +134,12 @@ async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
     if (pembayaranRes.data && !pembayaranRes.error) {
       pembayaranRes.data.forEach((item) => {
         const namaPengguna = (item.pengguna as any)?.nama_lengkap || "Peserta";
-        const judulKursus = (item.kursus as any)?.judul || "sebuah pelatihan";
+        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
         const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
         activities.push({
           id: `pembayaran-${item.id}`,
           title: `Pembayaran dari ${namaPengguna}`,
-          subtitle: `${judulKursus} — ${jumlah}`,
+          subtitle: `${judulPelatihan} — ${jumlah}`,
           type: "pembayaran",
           date: item.dibayar_pada || item.dibuat_pada,
         });
