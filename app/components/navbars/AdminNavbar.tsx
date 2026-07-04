@@ -238,7 +238,7 @@ export default function AdminNavbar() {
                             <button
                               onClick={() => {
                                 setProfileDropdownOpen(false);
-                                handleNavigation("/profil-peserta");
+                                handleNavigation("/profil");
                               }}
                               className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                             >

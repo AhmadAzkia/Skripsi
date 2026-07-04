@@ -163,7 +163,7 @@ export default function PesertaNavbar() {
                         <button
                           onClick={() => {
                             setProfileDropdownOpen(false);
-                            handleNavigation("/profil-peserta");
+                            handleNavigation("/profil");
                           }}
                           className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                         >
@@ -258,10 +258,10 @@ export default function PesertaNavbar() {
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    handleNavigation("/profil-peserta");
+                    handleNavigation("/profil");
                   }}
                   className={`w-full text-left px-6 py-2 rounded-md text-base font-medium transition-colors duration-300 flex items-center space-x-2 ${
-                    isActiveLink("/profil-peserta") ? "text-gold bg-navy/50" : "text-silver hover:text-gold hover:bg-navy/50"
+                    isActiveLink("/profil") ? "text-gold bg-navy/50" : "text-silver hover:text-gold hover:bg-navy/50"
                   }`}
                 >
                   <UserIcon className="w-5 h-5" />

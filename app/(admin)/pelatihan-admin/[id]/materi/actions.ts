@@ -1,5 +1,6 @@
 "use server";
 
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getUserWithRole } from "@/lib/user";
 import { revalidatePath } from "next/cache";

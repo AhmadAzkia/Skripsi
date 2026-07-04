@@ -21,7 +21,7 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
 
   if (!supabase) {
     console.error("Admin client not available");
-    return { totalPengguna: 0, totalAdmin: 0, totalPeserta: 0, penggunaAktif: 0, penggunaTidakAktif: 0 };
+    return { totalPengguna: 0, totalAdmin: 0, totalPeserta: 0, penggunaAktif: 0 };
   }
 
   // Get all users count
@@ -37,7 +37,6 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
       totalAdmin: 0,
       totalPeserta: 0,
       penggunaAktif: 0,
-      penggunaTidakAktif: 0,
     };
   }
 
@@ -52,7 +51,6 @@ async function getPenggunaStats(): Promise<PenggunaStats> {
     totalAdmin,
     totalPeserta,
     penggunaAktif,
-    penggunaTidakAktif,
   };
 }
 

@@ -176,8 +176,9 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
   };
 
   return (
-    <ScrollReveal>
+    <>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <ScrollReveal>
       <div className="bg-white rounded-xl shadow-lg border border-navy/10 overflow-hidden">
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
 
@@ -408,6 +409,7 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
           </div>
         </form>
       </div>
-    </ScrollReveal>
+      </ScrollReveal>
+    </>
   );
 }
