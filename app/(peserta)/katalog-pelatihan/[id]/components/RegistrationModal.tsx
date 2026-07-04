@@ -30,7 +30,6 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
     nama_lengkap: profile.nama_lengkap,
     email: profile.email,
     nomor_hp: profile.nomor_hp || "",
-    motivasi: "",
     persetujuan: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,12 +75,6 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
       newErrors.nomor_hp = "Nomor HP wajib diisi";
     } else if (!/^[0-9+\-\s()]+$/.test(formData.nomor_hp)) {
       newErrors.nomor_hp = "Format nomor HP tidak valid";
-    }
-
-    if (!formData.motivasi.trim()) {
-      newErrors.motivasi = "Motivasi mengikuti pelatihan wajib diisi";
-    } else if (formData.motivasi.length < 20) {
-      newErrors.motivasi = "Motivasi minimal 20 karakter";
     }
 
     if (!formData.persetujuan) {
@@ -132,26 +125,32 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
 
       const finishUrl = result.finishUrl || `/pembayaran/${result.paymentId}`;
 
-      if ((window as any).snap && result.token) {
-        (window as any).snap.pay(result.token, {
-          onSuccess: () => {
-            window.location.href = finishUrl;
-          },
-          onPending: () => {
-            window.location.href = finishUrl;
-          },
-          onError: () => {
-            window.location.href = finishUrl;
-          },
-          onClose: () => {
-            window.location.href = finishUrl;
-          },
-        });
-      } else if (result.redirectUrl) {
-        window.location.href = result.redirectUrl;
-      } else {
-        throw new Error("Token checkout Midtrans tidak tersedia.");
-      }
+      // Tunggu snap script ready, max 10 detik
+      const openSnap = (retries = 20): void => {
+        if ((window as any).snap && result.token) {
+          (window as any).snap.pay(result.token, {
+            onSuccess: () => {
+              window.location.href = finishUrl;
+            },
+            onPending: () => {
+              window.location.href = finishUrl;
+            },
+            onError: () => {
+              window.location.href = finishUrl;
+            },
+            onClose: () => {
+              window.location.href = finishUrl;
+            },
+          });
+        } else if (retries > 0) {
+          setTimeout(() => openSnap(retries - 1), 500);
+        } else if (result.redirectUrl) {
+          window.location.href = result.redirectUrl;
+        } else {
+          throw new Error("Token checkout Midtrans tidak tersedia.");
+        }
+      };
+      openSnap();
     } catch (error: any) {
       console.error("Error during registration:", error);
 
@@ -294,20 +293,6 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
                   disabled={isSubmitting}
                 />
                 {errors.nomor_hp && <p className="text-red-500 text-sm mt-2">{errors.nomor_hp}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Motivasi Mengikuti Pelatihan *</label>
-                <textarea
-                  value={formData.motivasi}
-                  onChange={(e) => setFormData({ ...formData, motivasi: e.target.value })}
-                  rows={5}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001233] focus:border-[#001233] bg-white resize-none text-gray-900 placeholder-gray-400 transition-colors"
-                  placeholder="Jelaskan motivasi Anda mengikuti pelatihan ini (minimal 20 karakter)"
-                  disabled={isSubmitting}
-                />
-                {errors.motivasi && <p className="text-red-500 text-sm mt-2">{errors.motivasi}</p>}
-                <p className="text-xs text-gray-500 mt-2 text-right">{formData.motivasi.length}/20 karakter minimum</p>
               </div>
 
               <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">

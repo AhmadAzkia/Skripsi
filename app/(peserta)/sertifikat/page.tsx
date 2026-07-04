@@ -129,12 +129,15 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     }
 
     // Determine status based on certificate existence, not course completion
+    const hasAnyCoursePayment = payments?.some(
+      (p) => p.pelatihan_id === pelatihanData.id && p.tipe_pembayaran === "pendaftaran_pelatihan"
+    );
     let status: CertificateClaim["status"];
     if (certificateId) {
       status = "sertifikat_tersedia";
     } else if (isCompleted && pelatihanData.harga > 0) {
       status = "termasuk_pelatihan_berbayar";
-    } else if (!isCompleted && pelatihanData.harga > 0 && coursePayment) {
+    } else if (pelatihanData.harga > 0 && hasAnyCoursePayment) {
       status = "termasuk_pelatihan_berbayar";
     } else if (certificatePayment?.status_pembayaran === "menunggu") {
       status = "menunggu_pembayaran";
