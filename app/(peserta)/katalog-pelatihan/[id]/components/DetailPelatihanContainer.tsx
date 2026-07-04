@@ -24,8 +24,9 @@ type RegistrationStatus = {
   isRegistered: boolean;
   registrationData?: {
     id: string;
-    status: "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
+    status: "menunggu_pembayaran" | "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
     tanggal_daftar: string;
+    paymentId: string | null;
   };
 };
 
@@ -118,6 +119,8 @@ export default function DetailPelatihanContainer({ user, profile, pelatihan, reg
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
+      case "menunggu_pembayaran":
+        return "bg-amber-100 text-amber-800";
       case "terdaftar":
         return "bg-blue-100 text-blue-800";
       case "sedang_belajar":
@@ -161,8 +164,8 @@ export default function DetailPelatihanContainer({ user, profile, pelatihan, reg
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipeBadgeColor(pelatihan.tipe_pelatihan)}`}>{pelatihan.tipe_pelatihan.charAt(0).toUpperCase() + pelatihan.tipe_pelatihan.slice(1)}</span>
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-navy/10 text-navy">{pelatihan.kategori}</span>
-                  {registrationStatus.isRegistered && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(registrationStatus.registrationData!.status)}`}>{registrationStatus.registrationData!.status.replace("_", " ").toUpperCase()}</span>
+                  {registrationStatus.isRegistered && registrationStatus.registrationData && (
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(registrationStatus.registrationData.status)}`}>{registrationStatus.registrationData.status.replace("_", " ").toUpperCase()}</span>
                   )}
                 </div>
 
@@ -228,12 +231,33 @@ export default function DetailPelatihanContainer({ user, profile, pelatihan, reg
                 {/* Status Pendaftaran */}
                 {registrationStatus.isRegistered ? (
                   <div className="mb-6">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                      <svg className="w-12 h-12 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className={`rounded-lg p-4 text-center ${
+                      registrationStatus.registrationData!.status === "menunggu_pembayaran"
+                        ? "bg-amber-50 border border-amber-200"
+                        : "bg-green-50 border border-green-200"
+                    }`}>
+                      <svg className={`w-12 h-12 mx-auto mb-2 ${
+                        registrationStatus.registrationData!.status === "menunggu_pembayaran"
+                          ? "text-amber-500" : "text-green-500"
+                      }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <h4 className="font-semibold text-green-800 mb-1">Anda Sudah Terdaftar</h4>
-                      <p className="text-sm text-green-700">Terdaftar sejak {formatTanggal(registrationStatus.registrationData!.tanggal_daftar)}</p>
+                      {registrationStatus.registrationData!.status === "menunggu_pembayaran" ? (
+                        <>
+                          <h4 className="font-semibold text-amber-800 mb-1">Menunggu Pembayaran</h4>
+                          <p className="text-sm text-amber-700">Selesaikan pembayaran untuk mengakses pelatihan.</p>
+                              {registrationStatus.registrationData!.paymentId && (
+                            <Link href={`/pembayaran/${registrationStatus.registrationData!.paymentId}`} className="inline-block mt-3 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors">
+                              Bayar Sekarang
+                            </Link>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <h4 className="font-semibold text-green-800 mb-1">Anda Sudah Terdaftar</h4>
+                          <p className="text-sm text-green-700">Terdaftar sejak {formatTanggal(registrationStatus.registrationData!.tanggal_daftar)}</p>
+                        </>
+                      )}
                     </div>
 
                     {registrationStatus.registrationData!.status === "sedang_belajar" && (

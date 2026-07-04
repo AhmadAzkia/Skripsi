@@ -22,8 +22,9 @@ type RegistrationStatus = {
   isRegistered: boolean;
   registrationData?: {
     id: string;
-    status: "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
+    status: "menunggu_pembayaran" | "terdaftar" | "sedang_belajar" | "selesai" | "dibatalkan";
     tanggal_daftar: string;
+    paymentId: string | null;
   };
 };
 
@@ -101,9 +102,24 @@ async function getRegistrationStatus(pelatihanId: string, pesertaId: string): Pr
       return { isRegistered: false };
     }
 
+    // Fetch payment ID for the "Bayar Sekarang" link
+    let paymentId: string | null = null;
+    if (data.status === "menunggu_pembayaran") {
+      const { data: payment } = await supabase
+        .from("pembayaran")
+        .select("id")
+        .eq("pelatihan_id", pelatihanId)
+        .eq("pengguna_id", pesertaId)
+        .eq("tipe_pembayaran", "pendaftaran_pelatihan")
+        .order("dibuat_pada", { ascending: false })
+        .limit(1)
+        .single();
+      paymentId = payment?.id || null;
+    }
+
     return {
       isRegistered: true,
-      registrationData: data,
+      registrationData: { ...data, paymentId },
     };
   } catch (error) {
     console.error("Error fetching registration status:", error);

@@ -59,6 +59,14 @@ export async function POST(request: NextRequest) {
     let certificateGenerated = false;
 
     if (payment.tipe_pembayaran === "pendaftaran_pelatihan") {
+      // Update status pendaftaran dari menunggu_pembayaran → terdaftar
+      await supabase
+        .from("pendaftaran_pelatihan")
+        .update({ status: "terdaftar" })
+        .eq("pelatihan_id", payment.pelatihan_id)
+        .eq("pengguna_id", payment.pengguna_id)
+        .eq("status", "menunggu_pembayaran");
+
       try {
         await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
         certificateGenerated = true;

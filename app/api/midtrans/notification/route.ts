@@ -80,6 +80,14 @@ export async function POST(request: NextRequest) {
 
     // Auto-generate certificate for paid course registration
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_pelatihan") {
+      // Update status pendaftaran dari menunggu_pembayaran → terdaftar
+      await supabase
+        .from("pendaftaran_pelatihan")
+        .update({ status: "terdaftar" })
+        .eq("pelatihan_id", payment.pelatihan_id)
+        .eq("pengguna_id", payment.pengguna_id)
+        .eq("status", "menunggu_pembayaran");
+
       try {
         await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
       } catch (certError: any) {

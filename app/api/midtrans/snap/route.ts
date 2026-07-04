@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
     const { error: registrationError } = await supabase.from("pendaftaran_pelatihan").insert({
       pelatihan_id: pelatihan.id,
       pengguna_id: profile.id,
-      status: "terdaftar",
+      status: pelatihan.harga > 0 ? "menunggu_pembayaran" : "terdaftar",
       tanggal_daftar: new Date().toISOString(),
     });
 

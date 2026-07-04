@@ -409,6 +409,7 @@ export type Database = {
       status_pelatihan: "draft" | "published" | "archived"
       status_pembayaran: "menunggu" | "berhasil" | "gagal" | "dikembalikan"
       status_pendaftaran:
+        | "menunggu_pembayaran"
         | "terdaftar"
         | "sedang_belajar"
         | "selesai"
@@ -548,6 +549,7 @@ export const Constants = {
       status_pelatihan: ["draft", "published", "archived"],
       status_pembayaran: ["menunggu", "berhasil", "gagal", "dikembalikan"],
       status_pendaftaran: [
+        "menunggu_pembayaran",
         "terdaftar",
         "sedang_belajar",
         "selesai",
