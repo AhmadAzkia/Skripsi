@@ -44,7 +44,7 @@ export default function AdminDashboardHero({ user }: AdminDashboardHeroProps) {
               <h1 className="text-3xl md:text-4xl font-bold text-white-text mb-2">
                 {greeting}, <span className="text-gold">{userName}</span>!
               </h1>
-              <p className="text-silver text-lg max-w-2xl">Selamat datang di panel admin. Pantau statistik platform dan aktivitas terbaru pengguna di sini.</p>
+              <p className="text-silver text-lg max-w-2xl">Selamat datang di panel admin. Pantau statistik platform dan kelola sistem di sini.</p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">

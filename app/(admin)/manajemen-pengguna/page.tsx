@@ -14,7 +14,6 @@ export type PenggunaStats = {
   totalAdmin: number;
   totalPeserta: number;
   penggunaAktif: number;
-  penggunaTidakAktif: number;
 };
 
 async function getPenggunaStats(): Promise<PenggunaStats> {

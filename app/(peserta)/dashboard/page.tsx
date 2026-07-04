@@ -10,15 +10,6 @@ type DashboardStats = {
   totalPelatihanDiikuti: number;
   sertifikatCount: number;
   jadwalBerlangsung: number;
-  totalPengeluaran: number;
-};
-
-type RecentActivity = {
-  id: string;
-  title: string;
-  type: "pelatihan" | "sertifikat" | "jadwal" | "pembayaran";
-  date: string;
-  status: "completed" | "in-progress" | "upcoming";
 };
 
 async function getDashboardStats(profileId: string): Promise<DashboardStats> {
@@ -50,257 +41,31 @@ async function getDashboardStats(profileId: string): Promise<DashboardStats> {
     .lte("pelatihan.tanggal_mulai", today)
     .gte("pelatihan.tanggal_selesai", today);
 
-  // 4. Total Pengeluaran (pembayaran berhasil)
-  const { data: pembayaranData, error: errorPembayaran } = await supabase
-    .from("pembayaran")
-    .select("jumlah")
-    .eq("pengguna_id", profileId)
-    .eq("status_pembayaran", "berhasil");
-
-  const totalPengeluaran = pembayaranData?.reduce((sum, p) => sum + (p.jumlah || 0), 0) ?? 0;
-
   if (errorTotal) console.error("Error fetching total pelatihan:", errorTotal.message);
   if (errorSertifikat) console.error("Error fetching certificates:", errorSertifikat.message);
   if (errorJadwal) console.error("Error fetching ongoing schedule:", errorJadwal.message);
-  if (errorPembayaran) console.error("Error fetching pembayaran:", errorPembayaran.message);
 
   return {
     totalPelatihanDiikuti: totalPelatihanDiikuti ?? 0,
     sertifikatCount: sertifikatCount ?? 0,
     jadwalBerlangsung: jadwalBerlangsung ?? 0,
-    totalPengeluaran,
   };
 }
 
-async function getRecentActivities(profileId: string): Promise<RecentActivity[]> {
-  const supabase = await createSupabaseServerClient();
-  const activities: RecentActivity[] = [];
-
-  // Helper function untuk menentukan status berdasarkan tanggal
-  function getStatusByDate(tanggalMulai: string, tanggalSelesai: string, statusDatabase: string): "completed" | "in-progress" | "upcoming" {
-    const today = new Date().toISOString().split("T")[0];
-
-    // Jika sudah dibatalkan, tetap upcoming (karena tidak ada status dibatalkan di activities)
-    if (statusDatabase === "dibatalkan") {
-      return "upcoming";
-    }
-
-    if (tanggalSelesai && today > tanggalSelesai) {
-      // Jika sudah melewati tanggal selesai -> Selesai
-      return "completed";
-    } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
-      // Jika sedang berlangsung -> Sedang belajar
-      return "in-progress";
-    } else if (tanggalMulai && today < tanggalMulai) {
-      // Jika belum dimulai -> Terdaftar
-      return "upcoming";
-    }
-
-    // Fallback ke mapping status database
-    switch (statusDatabase) {
-      case "selesai":
-        return "completed";
-      case "sedang_belajar":
-        return "in-progress";
-      case "terdaftar":
-      default:
-        return "upcoming";
-    }
-  }
-
-  try {
-    // 1. Ambil Pelatihan Terbaru dengan Status yang Akurat
-    const { data: pelatihanData, error: pelatihanError } = await supabase
-      .from("pendaftaran_pelatihan")
-      .select(
-        `
-        id,
-        status,
-        tanggal_daftar,
-        pelatihan:pelatihan_id (
-          judul,
-          tanggal_mulai,
-          tanggal_selesai
-        )
-      `
-      )
-      .eq("pengguna_id", profileId)
-      .in("status", ["terdaftar", "sedang_belajar", "selesai"])
-      .order("tanggal_daftar", { ascending: false })
-      .limit(5);
-
-    if (pelatihanData && !pelatihanError) {
-      pelatihanData.forEach((item) => {
-        const pelatihanData = item.pelatihan as any;
-
-        // Gunakan function getStatusByDate untuk konsistensi
-        const status = getStatusByDate(pelatihanData?.tanggal_mulai || "", pelatihanData?.tanggal_selesai || "", item.status);
-
-        activities.push({
-          id: `pelatihan-${item.id}`,
-          title: pelatihanData?.judul || "Pelatihan",
-          type: "pelatihan",
-          date: item.tanggal_daftar,
-          status: status,
-        });
-      });
-    }
-
-    // 2. Ambil Sertifikat yang Sudah Terbit
-    const { data: sertifikatData, error: sertifikatError } = await supabase
-      .from("sertifikat")
-      .select(
-        `
-        id,
-        nomor_sertifikat,
-        tanggal_terbit,
-        status,
-        pelatihan:pelatihan_id (
-          judul
-        )
-      `
-      )
-      .eq("peserta_id", profileId)
-      .eq("status", "terbit") // Hanya yang sudah terbit
-      .order("tanggal_terbit", { ascending: false })
-      .limit(3);
-
-    if (sertifikatData && !sertifikatError) {
-      sertifikatData.forEach((item) => {
-        activities.push({
-          id: `sertifikat-${item.id}`,
-          title: `Sertifikat: ${(item.pelatihan as any)?.judul || item.nomor_sertifikat}`,
-          type: "sertifikat",
-          date: item.tanggal_terbit,
-          status: "completed", // Sertifikat selalu completed
-        });
-      });
-    }
-
-    // 3. Ambil Jadwal Mendatang (pelatihan yang akan dimulai dalam 7 hari ke depan)
-    const currentDate = new Date();
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
-
-    const { data: jadwalData, error: jadwalError } = await supabase
-      .from("pendaftaran_pelatihan")
-      .select(
-        `
-        id,
-        status,
-        pelatihan:pelatihan_id (
-          judul,
-          tanggal_mulai
-        )
-      `
-      )
-      .eq("pengguna_id", profileId)
-      .eq("status", "terdaftar") // Hanya yang masih terdaftar (belum mulai)
-      .limit(10);
-
-    if (jadwalData && !jadwalError) {
-      const filteredJadwal = jadwalData
-        .filter((item) => {
-          const pelatihanData = item.pelatihan as any;
-          if (!pelatihanData?.tanggal_mulai) return false;
-
-          const tanggalMulai = new Date(pelatihanData.tanggal_mulai);
-          // Jadwal mendatang: mulai dari besok sampai 7 hari ke depan
-          return tanggalMulai > currentDate && tanggalMulai <= nextWeek;
-        })
-        .sort((a, b) => {
-          const dateA = new Date((a.pelatihan as any)?.tanggal_mulai);
-          const dateB = new Date((b.pelatihan as any)?.tanggal_mulai);
-          return dateA.getTime() - dateB.getTime(); // Sort ascending (terdekat dulu)
-        })
-        .slice(0, 3);
-
-      filteredJadwal.forEach((item) => {
-        const pelatihanData = item.pelatihan as any;
-
-        // Gunakan function getStatusByDate untuk konsistensi
-        const status = getStatusByDate(pelatihanData?.tanggal_mulai || "", pelatihanData?.tanggal_selesai || "", item.status);
-
-        activities.push({
-          id: `jadwal-${item.id}`,
-          title: `Jadwal: ${pelatihanData.judul}`,
-          type: "jadwal",
-          date: pelatihanData.tanggal_mulai,
-          status: status,
-        });
-      });
-    }
-
-    // 4. Riwayat Pembayaran
-    const { data: pembayaranData, error: pembayaranError } = await supabase
-      .from("pembayaran")
-      .select(
-        `
-        id,
-        jumlah,
-        status_pembayaran,
-        dibayar_pada,
-        dibuat_pada,
-        pelatihan:pelatihan_id ( judul )
-      `
-      )
-      .eq("pengguna_id", profileId)
-      .order("dibuat_pada", { ascending: false })
-      .limit(5);
-
-    if (pembayaranData && !pembayaranError) {
-      pembayaranData.forEach((item) => {
-        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
-        const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
-        const statusText = item.status_pembayaran === "berhasil" ? "Berhasil" : item.status_pembayaran === "menunggu" ? "Menunggu" : "Gagal";
-        activities.push({
-          id: `pembayaran-${item.id}`,
-          title: `Pembayaran ${statusText}: ${judulPelatihan}`,
-          type: "pembayaran",
-          date: item.dibayar_pada || item.dibuat_pada,
-          status: item.status_pembayaran === "berhasil" ? "completed" : "upcoming",
-        });
-      });
-    }
-
-    // 5. Sort berdasarkan tanggal terbaru dan ambil 8 teratas
-    activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    // Error handling untuk debugging jika diperlukan
-    if (pelatihanError) console.error("Error fetching pelatihan:", pelatihanError.message);
-    if (sertifikatError) console.error("Error fetching sertifikat:", sertifikatError.message);
-    if (jadwalError) console.error("Error fetching jadwal:", jadwalError.message);
-    if (pembayaranError) console.error("Error fetching pembayaran:", pembayaranError.message);
-
-    return activities.slice(0, 8);
-  } catch (error) {
-    console.error("Error fetching recent activities:", error);
-    return [];
-  }
-}
-
 export default async function DashboardPesertaPage() {
-  // Ambil data user DAN profil (termasuk peran) dari helper
   const userData = await getUserWithRole();
 
-  // Pengaman jika user tidak ditemukan (meskipun layout sudah melindungi)
   if (!userData?.user || userData.role !== "peserta") {
-    redirect("/login"); // Arahkan ke login jika tidak sesuai
+    redirect("/login");
   }
 
-  // 1. Jalankan kode BE di server untuk mendapatkan statistik dan aktivitas
-  // Pastikan profile.id ada sebelum memanggil getDashboardStats
   const stats = userData.profile?.id
     ? await getDashboardStats(userData.profile.id)
     : {
         totalPelatihanDiikuti: 0,
         sertifikatCount: 0,
         jadwalBerlangsung: 0,
-        totalPengeluaran: 0,
       };
 
-  const activities = userData.profile?.id ? await getRecentActivities(userData.profile.id) : [];
-
-  // 2. Render komponen FE dan kirimkan data user, statistik & aktivitas sebagai props
-  return <DashboardContainer user={userData.user as SessionUser} stats={stats} activities={activities} />;
+  return <DashboardContainer user={userData.user as SessionUser} stats={stats} />;
 }

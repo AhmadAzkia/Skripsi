@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import type { SessionUser } from "@/contexts/AuthContext";
 import AdminDashboardContainer from "./components/AdminDashboardContainer";
 import type { AdminDashboardStatsData } from "./components/AdminDashboardStats";
-import type { AdminRecentActivity } from "./components/AdminDashboardRecentActivities";
 
 async function getAdminStats(): Promise<AdminDashboardStatsData> {
   const supabase = createSupabaseAdminClient();
@@ -36,130 +35,6 @@ async function getAdminStats(): Promise<AdminDashboardStatsData> {
   };
 }
 
-async function getAdminRecentActivities(): Promise<AdminRecentActivity[]> {
-  const supabase = createSupabaseAdminClient();
-  if (!supabase) return [];
-  const activities: AdminRecentActivity[] = [];
-
-  try {
-    const [penggunaRes, pendaftaranRes, sertifikatRes, pembayaranRes] = await Promise.all([
-      // 1. Pengguna baru
-      supabase.from("profil_pengguna").select("id, nama_lengkap, peran, dibuat_pada").order("dibuat_pada", { ascending: false }).limit(5),
-      // 2. Pendaftaran pelatihan terbaru
-      supabase
-        .from("pendaftaran_pelatihan")
-        .select(
-          `
-          id,
-          tanggal_daftar,
-          pengguna:pengguna_id ( nama_lengkap ),
-          pelatihan:pelatihan_id ( judul )
-        `
-        )
-        .order("tanggal_daftar", { ascending: false })
-        .limit(5),
-      // 3. Sertifikat terbit terbaru
-      supabase
-        .from("sertifikat")
-        .select(
-          `
-          id,
-          nomor_sertifikat,
-          tanggal_terbit,
-          peserta:peserta_id ( nama_lengkap ),
-          pelatihan:pelatihan_id ( judul )
-        `
-        )
-        .eq("status", "terbit")
-        .order("tanggal_terbit", { ascending: false })
-        .limit(5),
-      // 4. Pembayaran berhasil terbaru
-      supabase
-        .from("pembayaran")
-        .select(
-          `
-          id,
-          jumlah,
-          dibayar_pada,
-          dibuat_pada,
-          pengguna:pengguna_id ( nama_lengkap ),
-          pelatihan:pelatihan_id ( judul )
-        `
-        )
-        .eq("status_pembayaran", "berhasil")
-        .order("dibayar_pada", { ascending: false })
-        .limit(5),
-    ]);
-
-    if (penggunaRes.data && !penggunaRes.error) {
-      penggunaRes.data.forEach((item) => {
-        activities.push({
-          id: `pengguna-${item.id}`,
-          title: item.nama_lengkap || "Pengguna Baru",
-          subtitle: `Bergabung sebagai ${item.peran}`,
-          type: "pengguna",
-          date: item.dibuat_pada,
-        });
-      });
-    }
-
-    if (pendaftaranRes.data && !pendaftaranRes.error) {
-      pendaftaranRes.data.forEach((item) => {
-        const namaPengguna = (item.pengguna as any)?.nama_lengkap || "Peserta";
-        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
-        activities.push({
-          id: `pendaftaran-${item.id}`,
-          title: `${namaPengguna} mendaftar pelatihan`,
-          subtitle: judulPelatihan,
-          type: "pendaftaran",
-          date: item.tanggal_daftar,
-        });
-      });
-    }
-
-    if (sertifikatRes.data && !sertifikatRes.error) {
-      sertifikatRes.data.forEach((item) => {
-        const namaPeserta = (item.peserta as any)?.nama_lengkap || "Peserta";
-        const judulPelatihan = (item.pelatihan as any)?.judul || item.nomor_sertifikat;
-        activities.push({
-          id: `sertifikat-${item.id}`,
-          title: `Sertifikat untuk ${namaPeserta}`,
-          subtitle: judulPelatihan,
-          type: "sertifikat",
-          date: item.tanggal_terbit,
-        });
-      });
-    }
-
-    if (pembayaranRes.data && !pembayaranRes.error) {
-      pembayaranRes.data.forEach((item) => {
-        const namaPengguna = (item.pengguna as any)?.nama_lengkap || "Peserta";
-        const judulPelatihan = (item.pelatihan as any)?.judul || "sebuah pelatihan";
-        const jumlah = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(item.jumlah);
-        activities.push({
-          id: `pembayaran-${item.id}`,
-          title: `Pembayaran dari ${namaPengguna}`,
-          subtitle: `${judulPelatihan} — ${jumlah}`,
-          type: "pembayaran",
-          date: item.dibayar_pada || item.dibuat_pada,
-        });
-      });
-    }
-
-    if (penggunaRes.error) console.error("Error fetching pengguna activities:", penggunaRes.error.message);
-    if (pendaftaranRes.error) console.error("Error fetching pendaftaran activities:", pendaftaranRes.error.message);
-    if (sertifikatRes.error) console.error("Error fetching sertifikat activities:", sertifikatRes.error.message);
-    if (pembayaranRes.error) console.error("Error fetching pembayaran activities:", pembayaranRes.error.message);
-
-    // Urutkan semua aktivitas berdasarkan tanggal terbaru, ambil 8 teratas
-    activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return activities.slice(0, 8);
-  } catch (error) {
-    console.error("Error fetching admin recent activities:", error);
-    return [];
-  }
-}
-
 export default async function DashboardAdminPage() {
   const userWithRole = await getUserWithRole();
 
@@ -172,7 +47,7 @@ export default async function DashboardAdminPage() {
     profile: userWithRole.profile,
   } as SessionUser;
 
-  const [stats, activities] = await Promise.all([getAdminStats(), getAdminRecentActivities()]);
+  const stats = await getAdminStats();
 
-  return <AdminDashboardContainer user={sessionUser} stats={stats} activities={activities} />;
+  return <AdminDashboardContainer user={sessionUser} stats={stats} />;
 }

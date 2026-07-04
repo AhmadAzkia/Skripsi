@@ -95,7 +95,7 @@ export default function AdminDashboardStats({ stats }: AdminDashboardStatsProps)
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {statsData.map((stat, index) => (
             <ScrollReveal key={stat.title} delay={index * 100}>
               <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:-translate-y-1">

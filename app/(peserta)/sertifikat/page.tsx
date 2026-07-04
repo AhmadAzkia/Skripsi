@@ -23,13 +23,6 @@ export type CertificateClaim = {
   certificatePaymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
 };
 
-type SertifikatStats = {
-  totalSertifikat: number;
-  sertifikatBulanIni: number;
-  kategoriTerlengkap: string;
-  rataRataNilai: number;
-};
-
 function isCourseCompleted(tanggalSelesai: string | null, registrationStatus: string) {
   if (registrationStatus === "selesai") return true;
   if (!tanggalSelesai) return false;
@@ -163,31 +156,6 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
   return claims;
 }
 
-function getSertifikatStats(certificates: CertificateWithCourse[]): SertifikatStats {
-  const totalSertifikat = certificates.length;
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-  const sertifikatBulanIni = certificates.filter((cert) => {
-    const certDate = new Date(cert.tanggal_terbit);
-    return certDate.getMonth() === currentMonth && certDate.getFullYear() === currentYear;
-  }).length;
-  const kategoriCount: Record<string, number> = {};
-
-  certificates.forEach((cert) => {
-    const kategori = cert.pelatihan?.kategori || "Lainnya";
-    kategoriCount[kategori] = (kategoriCount[kategori] || 0) + 1;
-  });
-
-  const kategoriTerlengkap = Object.keys(kategoriCount).length > 0 ? Object.keys(kategoriCount).reduce((a, b) => (kategoriCount[a] > kategoriCount[b] ? a : b)) : "Belum Ada";
-
-  return {
-    totalSertifikat,
-    sertifikatBulanIni,
-    kategoriTerlengkap,
-    rataRataNilai: totalSertifikat > 0 ? 85 : 0,
-  };
-}
-
 export default async function SertifikatPage({ searchParams }: { searchParams: Promise<{ pelatihanId?: string }> }) {
   const userData = await getUserWithRole();
 
@@ -199,8 +167,7 @@ export default async function SertifikatPage({ searchParams }: { searchParams: P
   const profileId = userData.profile.id;
   const claims = await getCertificateClaims(profileId);
   const certificates = await getCertificates(profileId);
-  const stats = getSertifikatStats(certificates);
   const selectedClaim = pelatihanId ? claims.find((claim) => claim.pelatihanId === pelatihanId) || null : null;
 
-  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} stats={stats} claims={claims} selectedClaim={selectedClaim} certificatePrice={getCertificatePrice()} />;
+  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} claims={claims} selectedClaim={selectedClaim} certificatePrice={getCertificatePrice()} />;
 }

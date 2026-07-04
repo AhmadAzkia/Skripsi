@@ -4,7 +4,6 @@ import HomeHero from "./HomeHero";
 import HomeStats from "./HomeStats";
 import HomeFeatures from "./HomeFeatures";
 import HomeFeaturedCourses from "./HomeFeaturedCourses";
-import HomeTestimonials from "./HomeTestimonials";
 import { Tables } from "@/../types/database";
 
 type PelatihanFeatured = Tables<"pelatihan">;
@@ -20,7 +19,6 @@ export default function HomeContainer({ featuredCourses }: HomeContainerProps) {
       <HomeStats />
       <HomeFeatures />
       <HomeFeaturedCourses featuredCourses={featuredCourses} />
-      <HomeTestimonials />
     </div>
   );
 }

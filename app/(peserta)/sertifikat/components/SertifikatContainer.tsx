@@ -1,22 +1,13 @@
 import Link from "next/link";
 import SertifikatHero from "./SertifikatHero";
-import SertifikatStats from "./SertifikatStats";
 import SertifikatList from "./SertifikatList";
 import CertificateClaimCard from "./CertificateClaimCard";
 import { SessionUser } from "@/contexts/AuthContext";
 import type { CertificateClaim, CertificateWithCourse } from "../page";
 
-type SertifikatStats = {
-  totalSertifikat: number;
-  sertifikatBulanIni: number;
-  kategoriTerlengkap: string;
-  rataRataNilai: number;
-};
-
 type SertifikatContainerProps = {
   user: SessionUser;
   certificates: CertificateWithCourse[];
-  stats: SertifikatStats;
   claims: CertificateClaim[];
   selectedClaim: CertificateClaim | null;
   certificatePrice: number;
@@ -56,7 +47,7 @@ function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
   );
 }
 
-export default function SertifikatContainer({ user, certificates, stats, claims, selectedClaim, certificatePrice }: SertifikatContainerProps) {
+export default function SertifikatContainer({ user, certificates, claims, selectedClaim, certificatePrice }: SertifikatContainerProps) {
   const shouldOfferCertificate = selectedClaim?.status === "tawarkan_pembelian" || selectedClaim?.status === "menunggu_pembayaran";
 
   return (
@@ -83,7 +74,6 @@ export default function SertifikatContainer({ user, certificates, stats, claims,
         </section>
       )}
 
-      <SertifikatStats stats={stats} />
       <ClaimSummary claims={claims} />
       <SertifikatList certificates={certificates} />
     </div>

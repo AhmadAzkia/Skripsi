@@ -1,7 +1,7 @@
 // app/(public)/tentang-kami/page.tsx
 
 import { Metadata } from "next";
-import { AboutHero, AboutStory, AboutVisionMission, AboutTeam, AboutAchievements, AboutTestimonials, AboutCTA } from "./components";
+import { AboutHero, AboutStory, AboutVisionMission, AboutTeam, AboutAchievements, AboutCTA } from "./components";
 
 export const metadata: Metadata = {
   title: "Tentang Kami - PT. CertiGuardia Solusi",
@@ -21,13 +21,6 @@ interface Achievement {
   icon: string;
   title: string;
   description: string;
-}
-
-interface Testimonial {
-  name: string;
-  position: string;
-  rating: number;
-  testimonial: string;
 }
 
 export default function TentangKamiPage() {
@@ -86,27 +79,6 @@ export default function TentangKamiPage() {
     },
   ];
 
-  const testimonials: Testimonial[] = [
-    {
-      name: "Budi Santoso",
-      position: "IT Manager, PT. Teknologi Maju",
-      rating: 5,
-      testimonial: "Pelatihan di CertiGuardia sangat profesional dan materi yang diberikan sangat aplikatif. Sertifikat yang saya peroleh membantu meningkatkan kredibilitas di perusahaan.",
-    },
-    {
-      name: "Linda Kusuma",
-      position: "Marketing Director, CV. Kreatif Solusi",
-      rating: 5,
-      testimonial: "Pelatihan berpengalaman dan metode pembelajaran yang interaktif membuat saya mudah memahami materi. Highly recommended untuk profesional yang ingin upgrade skill!",
-    },
-    {
-      name: "Eko Prasetyo",
-      position: "Project Manager, PT. Inovasi Digital",
-      rating: 5,
-      testimonial: "Fasilitas lengkap, kurikulum up-to-date, dan networking yang baik. CertiGuardia benar-benar membantu saya mencapai target karir yang diimpikan.",
-    },
-  ];
-
   // Company statistics
   const stats = {
     foundingYear: 2019,
@@ -131,9 +103,6 @@ export default function TentangKamiPage() {
 
       {/* Achievements Section */}
       <AboutAchievements achievements={achievements} />
-
-      {/* Testimonials Section */}
-      <AboutTestimonials testimonials={testimonials} />
 
       {/* CTA Section */}
       <AboutCTA />

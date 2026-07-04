@@ -1,16 +1,7 @@
 import DashboardHero from "./DashboardHero";
 import DashboardStats from "./DashboardStats";
 import DashboardQuickActions from "./DashboardQuickActions";
-import DashboardRecentActivities from "./DashboardRecentActivities";
 import { SessionUser } from "@/contexts/AuthContext";
-
-type RecentActivity = {
-  id: string;
-  title: string;
-  type: "pelatihan" | "sertifikat" | "jadwal" | "pembayaran";
-  date: string;
-  status: "completed" | "in-progress" | "upcoming";
-};
 
 type DashboardContainerProps = {
   user: SessionUser;
@@ -18,12 +9,10 @@ type DashboardContainerProps = {
     totalPelatihanDiikuti: number;
     sertifikatCount: number;
     jadwalBerlangsung: number;
-    totalPengeluaran: number;
   };
-  activities: RecentActivity[];
 };
 
-export default function DashboardContainer({ user, stats, activities }: DashboardContainerProps) {
+export default function DashboardContainer({ user, stats }: DashboardContainerProps) {
   return (
     <>
       {/* Hero Section with personalized greeting */}
@@ -34,9 +23,6 @@ export default function DashboardContainer({ user, stats, activities }: Dashboar
 
       {/* Quick Actions Section */}
       <DashboardQuickActions />
-
-      {/* Recent Activities Section */}
-      <DashboardRecentActivities activities={activities} />
     </>
   );
 }
