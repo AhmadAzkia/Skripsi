@@ -51,7 +51,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
   const { id } = await params;
   const userData = await getUserWithRole();
 
-  if (!userData?.user) {
+  if (!userData?.user || !userData.profile) {
     redirect("/login");
   }
 
