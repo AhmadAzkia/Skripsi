@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Tables } from "@/../types/database";
 import PelatihanList from "@/components/pelatihan/PelatihanList";
 import { deletePelatihan } from "../actions";
+import ToastContainer, { useToast } from "@/components/ui/Toast";
 
 type PelatihanData = Tables<"pelatihan"> & {
   jumlah_peserta?: number;
@@ -38,6 +39,7 @@ export default function AdminPelatihanClient({ pelatihanData }: AdminPelatihanCl
   const [loading, setLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<JadwalStatus>("berjalan");
   const router = useRouter();
+  const { toasts, toast, removeToast } = useToast();
 
   const grouped = useMemo(() => {
     const now = Date.now();
@@ -66,28 +68,26 @@ export default function AdminPelatihanClient({ pelatihanData }: AdminPelatihanCl
       const result = await deletePelatihan(pelatihanId);
 
       if (result.success) {
-        // Show success message
-        alert(result.message || "Pelatihan berhasil dihapus");
-        // Refresh the page to update the list
+        toast.success("Berhasil", result.message || "Pelatihan berhasil dihapus");
         router.refresh();
       } else {
-        // Show error message
-        alert(result.error || "Gagal menghapus pelatihan");
+        toast.error("Gagal", result.error || "Gagal menghapus pelatihan");
       }
     } catch (error) {
       console.error("Error deleting pelatihan:", error);
-      alert("Terjadi kesalahan yang tidak terduga");
+      toast.error("Error", "Terjadi kesalahan yang tidak terduga");
     } finally {
       setLoading(null);
     }
   };
 
   const handleView = (pelatihanId: string) => {
-    router.push(`/pelatihan-admin/edit/${pelatihanId}`);
+    router.push(`/pelatihan-admin/${pelatihanId}/materi`);
   };
 
   return (
     <div className="space-y-6">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       {/* Tab Jadwal */}
       <div className="flex flex-wrap gap-2 border-b border-navy/10">
         {TABS.map((tab) => {

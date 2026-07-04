@@ -99,7 +99,7 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Full Name */}
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-white-text mb-2">

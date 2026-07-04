@@ -109,47 +109,6 @@ export type Database = {
           },
         ]
       }
-      notifikasi: {
-        Row: {
-          dibuat_pada: string
-          id: string
-          judul: string
-          pengguna_id: string
-          pesan: string
-          sudah_dibaca: boolean | null
-          terkait_id: string | null
-          tipe: string
-        }
-        Insert: {
-          dibuat_pada?: string
-          id?: string
-          judul: string
-          pengguna_id: string
-          pesan: string
-          sudah_dibaca?: boolean | null
-          terkait_id?: string | null
-          tipe: string
-        }
-        Update: {
-          dibuat_pada?: string
-          id?: string
-          judul?: string
-          pengguna_id?: string
-          pesan?: string
-          sudah_dibaca?: boolean | null
-          terkait_id?: string | null
-          tipe?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifikasi_pengguna_id_fkey"
-            columns: ["pengguna_id"]
-            isOneToOne: false
-            referencedRelation: "profil_pengguna"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       pembayaran: {
         Row: {
           dibayar_pada: string | null
@@ -456,7 +415,7 @@ export type Database = {
         | "dibatalkan"
       status_sertifikat: "draft" | "terbit" | "dibatalkan"
       tipe_pelatihan: "online" | "offline"
-      tipe_materi: "pdf" | "ppt"
+      tipe_materi: "pdf" | "ppt" | "zoom"
       tipe_pembayaran: "pendaftaran_pelatihan" | "klaim_sertifikat"
     }
     CompositeTypes: {
@@ -596,7 +555,7 @@ export const Constants = {
       ],
       status_sertifikat: ["draft", "terbit", "dibatalkan"],
       tipe_pelatihan: ["online", "offline"],
-      tipe_materi: ["pdf", "ppt"],
+      tipe_materi: ["pdf", "ppt", "zoom"],
       tipe_pembayaran: ["pendaftaran_pelatihan", "klaim_sertifikat"],
     },
   },

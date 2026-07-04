@@ -2,8 +2,10 @@
 
 import { useTransition, useState } from "react";
 import { uploadTemplate } from "../actions";
-import PdfPreview from "./PdfPreview";
+import dynamic from "next/dynamic";
 import type { useToast } from "@/components/ui/Toast";
+
+const PdfPreview = dynamic(() => import("./PdfPreview"), { ssr: false });
 
 type KoordinatField = {
   x: number;

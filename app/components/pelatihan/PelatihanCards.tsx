@@ -93,7 +93,7 @@ export default function PelatihanCards({ pelatihanData, userRole, showActions = 
   const getViewLink = (pelatihanId: string) => {
     switch (userRole) {
       case "admin":
-        return `/pelatihan-admin/edit/${pelatihanId}`;
+        return `/pelatihan-admin/${pelatihanId}/materi`;
       case "peserta":
         return `/pelatihan/${pelatihanId}`;
       default:
@@ -229,7 +229,7 @@ export default function PelatihanCards({ pelatihanData, userRole, showActions = 
                 <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200">
                   {/* View/Access Button */}
                   <Link href={getViewLink(pelatihan.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
-                    {userRole === "admin" ? "Kelola Pelatihan" : "Lihat Detail"}
+                    {userRole === "admin" ? "Kelola Materi" : "Lihat Detail"}
                   </Link>
 
                   {/* Additional Actions for Admin */}

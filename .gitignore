@@ -41,3 +41,16 @@ yarn-error.log*
 next-env.d.ts
 
 nul
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+test-results.json
+/tests/
+
+# Utility scripts
+create_xlsx.py
