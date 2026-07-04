@@ -56,6 +56,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
   }
 
   const supabase = await createSupabaseServerClient();
+  const isAdmin = userData.role === "admin";
   const { data: payment, error } = await supabase
     .from("pembayaran")
     .select(
@@ -67,6 +68,7 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
       id_pembayaran_eksternal,
       dibuat_pada,
       dibayar_pada,
+      pengguna_id,
       pelatihan:pelatihan_id (
         id,
         judul,
@@ -76,10 +78,14 @@ export default async function PaymentStatusPage({ params }: PaymentPageProps) {
     `
     )
     .eq("id", id)
-    .eq("pengguna_id", userData.profile.id)
     .single();
 
   if (error || !payment) {
+    notFound();
+  }
+
+  // Only payment owner or admin can view
+  if (!isAdmin && payment.pengguna_id !== userData.profile.id) {
     notFound();
   }
 
