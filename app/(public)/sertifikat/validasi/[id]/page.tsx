@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type ValidationPageProps = {
   params: Promise<{ id: string }>;
@@ -15,7 +15,11 @@ function formatDate(value: string) {
 
 export default async function CertificateValidationPage({ params }: ValidationPageProps) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    notFound();
+  }
   const { data: certificate, error } = await supabase
     .from("sertifikat")
     .select(
