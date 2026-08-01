@@ -226,15 +226,22 @@ export default function PelatihanCards({ pelatihanData, userRole, showActions = 
 
               {/* Actions */}
               {showActions && (
-                <div className="flex items-center justify-between gap-2 pt-4 border-t border-gray-200">
+                <div className="flex flex-col gap-2 pt-4 border-t border-gray-200">
                   {/* View/Access Button */}
-                  <Link href={getViewLink(pelatihan.id)} className="flex-1 px-4 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
-                    {userRole === "admin" ? "Kelola Materi" : "Lihat Detail"}
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href={getViewLink(pelatihan.id)} className="flex-1 px-3 py-2 bg-linear-to-r from-navy to-gold text-white text-sm font-medium rounded-lg hover:from-navy/90 hover:to-gold/90 transition-all duration-300 text-center">
+                      {userRole === "admin" ? "Kelola Materi" : "Lihat Detail"}
+                    </Link>
+                    {userRole === "admin" && (
+                      <Link href={`/pelatihan-admin/${pelatihan.id}/peserta`} className="flex-1 px-3 py-2 border border-navy/20 bg-white text-navy text-sm font-medium rounded-lg hover:bg-navy/5 transition-colors text-center">
+                        Kelola Pelatihan
+                      </Link>
+                    )}
+                  </div>
 
                   {/* Additional Actions for Admin */}
                   {userRole === "admin" && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       {onEdit && (
                         <button
                           onClick={() => handleAction(() => onEdit(pelatihan), pelatihan.id)}

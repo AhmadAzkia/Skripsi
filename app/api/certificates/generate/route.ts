@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { generateAndUploadCertificate } from "@/lib/certificate-generator";
+import { assertCertificateEligibility, generateAndUploadCertificate } from "@/lib/certificate-generator";
 
 export const runtime = "nodejs";
 
@@ -32,13 +32,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Profil pengguna tidak ditemukan." }, { status: 404 });
     }
 
-    const query = supabase.from("sertifikat").select("id, peserta_id").eq("id", body.certificateId);
+    const query = supabase.from("sertifikat").select("id, peserta_id, pelatihan_id, status").eq("id", body.certificateId).eq("status", "terbit");
     const { data: certificate, error: certificateError } = profile.peran === "admin" ? await query.single() : await query.eq("peserta_id", profile.id).single();
 
     if (certificateError || !certificate) {
-      return NextResponse.json({ error: "Sertifikat tidak ditemukan atau tidak dapat diakses." }, { status: 404 });
+      return NextResponse.json({ error: "Sertifikat tidak ditemukan, belum terbit, atau tidak dapat diakses." }, { status: 404 });
     }
 
+    await assertCertificateEligibility(certificate.peserta_id, certificate.pelatihan_id);
     const certificateUrl = await generateAndUploadCertificate(certificate.id);
 
     return NextResponse.json({

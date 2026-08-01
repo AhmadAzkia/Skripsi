@@ -9,9 +9,13 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 async function getSemuaPelatihan() {
   const admin = createSupabaseAdminClient();
   if (!admin) return [];
-  const { data, error } = await admin.from("pelatihan").select("*").order("dibuat_pada", { ascending: false });
+  const { data, error } = await admin.from("pelatihan").select("*, pendaftaran_pelatihan(count), materi_pelatihan(count)").order("dibuat_pada", { ascending: false });
   if (error) return [];
-  return data;
+  return data.map(({ pendaftaran_pelatihan, materi_pelatihan, ...pelatihan }) => ({
+    ...pelatihan,
+    jumlah_peserta: pendaftaran_pelatihan?.[0]?.count || 0,
+    jumlah_materi: materi_pelatihan?.[0]?.count || 0,
+  }));
 }
 
 export default async function AdminPelatihanPage() {

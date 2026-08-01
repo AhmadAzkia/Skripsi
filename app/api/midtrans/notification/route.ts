@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createMidtransSignature, mapMidtransStatus, type MidtransTransactionStatus } from "@/lib/midtrans";
-import { createCertificateNumber } from "@/lib/certificates";
-import { generateAndUploadCertificate, ensureCertificateForCourse } from "@/lib/certificate-generator";
+import { ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export const runtime = "nodejs";
 
@@ -50,49 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "klaim_sertifikat") {
-      const { data: existingCertificate } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("pelatihan_id", payment.pelatihan_id).eq("peserta_id", payment.pengguna_id).maybeSingle();
-      let certificateId = existingCertificate?.id || null;
-
-      if (!certificateId) {
-        const { data: certificate, error: certificateError } = await supabase
-          .from("sertifikat")
-          .insert({
-            pelatihan_id: payment.pelatihan_id,
-            peserta_id: payment.pengguna_id,
-            nomor_sertifikat: createCertificateNumber(payment.pelatihan_id, payment.pengguna_id),
-            status: "terbit",
-            tanggal_terbit: new Date().toISOString(),
-          })
-          .select("id")
-          .single();
-
-        if (certificateError || !certificate) {
-          throw new Error(`Gagal membuat sertifikat: ${certificateError?.message || "data kosong"}`);
-        }
-
-        certificateId = certificate.id;
-      }
-
-      if (certificateId && !existingCertificate?.sertifikat_url) {
-        await generateAndUploadCertificate(certificateId);
-      }
+      await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
     }
 
-    // Auto-generate certificate for paid course registration
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_pelatihan") {
-      // Update status pendaftaran dari menunggu_pembayaran → terdaftar
       await supabase
         .from("pendaftaran_pelatihan")
         .update({ status: "terdaftar" })
         .eq("pelatihan_id", payment.pelatihan_id)
         .eq("pengguna_id", payment.pengguna_id)
         .eq("status", "menunggu_pembayaran");
-
-      try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
-      } catch (certError: any) {
-        console.error("Gagal auto-generate sertifikat untuk pelatihan berbayar:", certError.message);
-      }
     }
 
     return NextResponse.json({ success: true });

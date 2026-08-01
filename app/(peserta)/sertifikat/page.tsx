@@ -18,17 +18,10 @@ export type CertificateClaim = {
   judul: string;
   kategori: string;
   harga: number;
-  status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran";
+  status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran" | "menunggu_evaluasi" | "tidak_lulus";
   certificateId: string | null;
   certificatePaymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
 };
-
-function isCourseCompleted(tanggalSelesai: string | null, registrationStatus: string) {
-  if (registrationStatus === "selesai") return true;
-  if (!tanggalSelesai) return false;
-  const today = new Date().toISOString().split("T")[0];
-  return today > tanggalSelesai;
-}
 
 async function getCertificates(profileId: string): Promise<CertificateWithCourse[]> {
   const supabase = await createSupabaseServerClient();
@@ -49,14 +42,7 @@ async function getCertificates(profileId: string): Promise<CertificateWithCourse
     return [];
   }
 
-  // Only show certificates for completed courses
-  const today = new Date().toISOString().split("T")[0];
-  const filtered = certificates.filter((cert) => {
-    if (!cert.pelatihan?.tanggal_selesai) return true;
-    return today > cert.pelatihan.tanggal_selesai;
-  });
-
-  return filtered as CertificateWithCourse[];
+  return certificates as CertificateWithCourse[];
 }
 
 async function getCertificateClaims(profileId: string): Promise<CertificateClaim[]> {
@@ -67,6 +53,9 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
       `
       id,
       status,
+      hasil_pelatihan (
+        status_kelulusan
+      ),
       pelatihan:pelatihan_id (
         id,
         judul,
@@ -96,7 +85,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
   });
 
   const [{ data: certificates }, { data: payments }] = await Promise.all([
-    supabase.from("sertifikat").select("id, pelatihan_id").eq("peserta_id", profileId).in("pelatihan_id", pelatihanIds),
+    supabase.from("sertifikat").select("id, pelatihan_id, status").eq("peserta_id", profileId).eq("status", "terbit").in("pelatihan_id", pelatihanIds),
     supabase.from("pembayaran").select("id, pelatihan_id, status_pembayaran, tipe_pembayaran").eq("pengguna_id", profileId).in("pelatihan_id", pelatihanIds).order("dibuat_pada", { ascending: false }),
   ]);
 
@@ -106,13 +95,14 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     const pelatihanData = Array.isArray(registration.pelatihan) ? registration.pelatihan[0] : registration.pelatihan;
     if (!pelatihanData) continue;
 
-    const isCompleted = isCourseCompleted(pelatihanData.tanggal_selesai, registration.status);
+    const result = Array.isArray(registration.hasil_pelatihan) ? registration.hasil_pelatihan[0] : registration.hasil_pelatihan;
+    const graduationStatus = result?.status_kelulusan || null;
+    const hasPassed = graduationStatus === "lulus";
     let certificateId = certificates?.find((certificate) => certificate.pelatihan_id === pelatihanData.id)?.id || null;
     const coursePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "pendaftaran_pelatihan" && payment.status_pembayaran === "berhasil");
     const certificatePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "klaim_sertifikat");
 
-    // Auto-generate certificate only if course is completed
-    if (!certificateId && isCompleted && pelatihanData.harga > 0 && coursePayment) {
+    if (!certificateId && hasPassed && pelatihanData.harga > 0 && coursePayment) {
       try {
         certificateId = await ensureCertificateForCourse(profileId, pelatihanData.id);
       } catch (error) {
@@ -120,7 +110,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
       }
     }
 
-    if (!certificateId && isCompleted && pelatihanData.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
+    if (!certificateId && hasPassed && pelatihanData.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
       try {
         certificateId = await ensureCertificateForCourse(profileId, pelatihanData.id);
       } catch (error) {
@@ -128,21 +118,19 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
       }
     }
 
-    // Determine status based on certificate existence, not course completion
-    const hasAnyCoursePayment = payments?.some(
-      (p) => p.pelatihan_id === pelatihanData.id && p.tipe_pembayaran === "pendaftaran_pelatihan"
-    );
     let status: CertificateClaim["status"];
     if (certificateId) {
       status = "sertifikat_tersedia";
-    } else if (isCompleted && pelatihanData.harga > 0) {
-      status = "termasuk_pelatihan_berbayar";
-    } else if (pelatihanData.harga > 0 && hasAnyCoursePayment) {
+    } else if (!graduationStatus) {
+      status = "menunggu_evaluasi";
+    } else if (graduationStatus === "tidak_lulus") {
+      status = "tidak_lulus";
+    } else if (pelatihanData.harga > 0 && coursePayment) {
       status = "termasuk_pelatihan_berbayar";
     } else if (certificatePayment?.status_pembayaran === "menunggu") {
       status = "menunggu_pembayaran";
     } else {
-      status = "tawarkan_pembelian";
+      status = hasPassed ? "tawarkan_pembelian" : "menunggu_evaluasi";
     }
 
     claims.push({

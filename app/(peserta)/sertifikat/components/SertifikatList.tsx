@@ -135,7 +135,7 @@ export default function SertifikatList({ certificates }: SertifikatListProps) {
                   {/* Action Button */}
                   {cert.sertifikat_url ? (
                     <a
-                      href={cert.sertifikat_url}
+                      href={`/api/certificates/${cert.id}/download`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download

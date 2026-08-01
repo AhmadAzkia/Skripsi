@@ -59,7 +59,7 @@ export default function CertificateList({ certificates }: CertificateListProps) 
           <div className="bg-gray-50 p-4 md:p-6 flex items-center justify-center md:border-l border-gray-200">
             {cert.sertifikat_url ? (
               <a
-                href={cert.sertifikat_url}
+                href={`/api/certificates/${cert.id}/download`}
                 target="_blank"
                 rel="noopener noreferrer"
                 download // Menyarankan browser untuk download

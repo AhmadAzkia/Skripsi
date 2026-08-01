@@ -22,7 +22,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "paymentId wajib dikirim." }, { status: 400 });
     }
 
-    const supabase = createSupabaseAdminClient() || (await createSupabaseServerClient());
+    const sessionClient = await createSupabaseServerClient();
+    const { data: { user } } = await sessionClient.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Silakan login terlebih dahulu." }, { status: 401 });
+
+    const { data: profile } = await sessionClient.from("profil_pengguna").select("id, peran").eq("user_id", user.id).single();
+    if (!profile) return NextResponse.json({ error: "Profil pengguna tidak ditemukan." }, { status: 404 });
+
+    const supabase = createSupabaseAdminClient() || sessionClient;
 
     // Find the payment
     const { data: payment, error: paymentError } = await supabase
@@ -33,6 +40,10 @@ export async function POST(request: NextRequest) {
 
     if (paymentError || !payment) {
       return NextResponse.json({ error: `Pembayaran tidak ditemukan: ${paymentError?.message || paymentId}` }, { status: 404 });
+    }
+
+    if (profile.peran !== "admin" && payment.pengguna_id !== profile.id) {
+      return NextResponse.json({ error: "Anda tidak dapat mensimulasikan pembayaran milik pengguna lain." }, { status: 403 });
     }
 
     if (payment.status_pembayaran === "berhasil") {
@@ -55,24 +66,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Gagal update status: ${updateError.message}` }, { status: 500 });
     }
 
-    // Generate certificate based on payment type
     let certificateGenerated = false;
 
     if (payment.tipe_pembayaran === "pendaftaran_pelatihan") {
-      // Update status pendaftaran dari menunggu_pembayaran → terdaftar
       await supabase
         .from("pendaftaran_pelatihan")
         .update({ status: "terdaftar" })
         .eq("pelatihan_id", payment.pelatihan_id)
         .eq("pengguna_id", payment.pengguna_id)
         .eq("status", "menunggu_pembayaran");
-
-      try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
-        certificateGenerated = true;
-      } catch (certError: any) {
-        console.error("Simulate: Gagal generate sertifikat:", certError.message);
-      }
     }
 
     if (payment.tipe_pembayaran === "klaim_sertifikat") {

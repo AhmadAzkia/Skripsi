@@ -2,6 +2,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createCertificateNumber } from "@/lib/certificates";
+import type { TablesUpdate } from "@/../types/database";
 
 type KoordinatField = {
   x: number;
@@ -28,6 +29,62 @@ type CertificatePdfData = {
   templateBytes?: Uint8Array;
   koordinat?: TemplateKoordinat;
 };
+
+type CertificateSupabaseClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
+
+export class CertificateEligibilityError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CertificateEligibilityError";
+  }
+}
+
+export async function assertCertificateEligibility(
+  profileId: string,
+  pelatihanId: string,
+  supabaseClient?: CertificateSupabaseClient,
+) {
+  const supabase = supabaseClient || createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY belum diisi. Generator sertifikat membutuhkan akses server-side.");
+  }
+
+  const { data: registration, error: registrationError } = await supabase
+    .from("pendaftaran_pelatihan")
+    .select("id, status")
+    .eq("pengguna_id", profileId)
+    .eq("pelatihan_id", pelatihanId)
+    .maybeSingle();
+
+  if (registrationError) {
+    throw new Error(`Gagal memeriksa pendaftaran pelatihan: ${registrationError.message}`);
+  }
+
+  if (!registration || registration.status === "dibatalkan") {
+    throw new CertificateEligibilityError("Peserta tidak memiliki pendaftaran aktif untuk pelatihan ini.");
+  }
+
+  const { data: result, error: resultError } = await supabase
+    .from("hasil_pelatihan")
+    .select("pendaftaran_id, status_kelulusan")
+    .eq("pendaftaran_id", registration.id)
+    .maybeSingle();
+
+  if (resultError) {
+    throw new Error(`Gagal memeriksa hasil pelatihan: ${resultError.message}`);
+  }
+
+  if (!result) {
+    throw new CertificateEligibilityError("Hasil pelatihan belum dievaluasi.");
+  }
+
+  if (result.status_kelulusan !== "lulus") {
+    throw new CertificateEligibilityError("Sertifikat hanya tersedia bagi peserta yang dinyatakan lulus.");
+  }
+
+  return registration.id;
+}
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("id-ID", {
@@ -142,6 +199,7 @@ export async function generateAndUploadCertificate(certificateId: string) {
       pelatihan_id,
       template_id,
       nomor_sertifikat,
+      status,
       tanggal_terbit,
       peserta:peserta_id (
         nama_lengkap,
@@ -159,6 +217,12 @@ export async function generateAndUploadCertificate(certificateId: string) {
   if (error || !certificate) {
     throw new Error(`Data sertifikat tidak ditemukan: ${error?.message || certificateId}`);
   }
+
+  if (certificate.status !== "terbit") {
+    throw new CertificateEligibilityError("Sertifikat belum terbit atau telah dibatalkan.");
+  }
+
+  await assertCertificateEligibility(certificate.peserta_id, certificate.pelatihan_id, supabase);
 
   const peserta = Array.isArray(certificate.peserta) ? certificate.peserta[0] : certificate.peserta;
   const pelatihan = Array.isArray(certificate.pelatihan) ? certificate.pelatihan[0] : certificate.pelatihan;
@@ -227,33 +291,62 @@ export async function generateAndUploadCertificate(certificateId: string) {
   return certificateUrl;
 }
 
-export async function ensureCertificateForCourse(profileId: string, pelatihanId: string, supabaseClient?: ReturnType<typeof createSupabaseAdminClient>) {
+export async function ensureCertificateForCourse(profileId: string, pelatihanId: string, supabaseClient?: CertificateSupabaseClient) {
   const supabase = supabaseClient || createSupabaseAdminClient();
 
   if (!supabase) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY belum diisi. Generator sertifikat membutuhkan akses server-side.");
   }
 
-  const { data: existingCertificate, error: existingCertificateError } = await supabase.from("sertifikat").select("id, sertifikat_url").eq("peserta_id", profileId).eq("pelatihan_id", pelatihanId).maybeSingle();
+  await assertCertificateEligibility(profileId, pelatihanId, supabase);
+
+  const { data: existingCertificate, error: existingCertificateError } = await supabase
+    .from("sertifikat")
+    .select("id, sertifikat_url, status, template_id")
+    .eq("peserta_id", profileId)
+    .eq("pelatihan_id", pelatihanId)
+    .maybeSingle();
 
   if (existingCertificateError) {
     throw new Error(`Gagal memeriksa sertifikat yang sudah ada: ${existingCertificateError.message}`);
   }
 
-  if (existingCertificate) {
-    if (!existingCertificate.sertifikat_url) {
-      await generateAndUploadCertificate(existingCertificate.id);
-    }
-
-    return existingCertificate.id;
-  }
-
-  // Find template linked to this course
   const { data: template } = await supabase
     .from("template_sertifikat")
     .select("id")
     .eq("pelatihan_id", pelatihanId)
     .maybeSingle();
+
+  if (existingCertificate) {
+    const templateId = template?.id || existingCertificate.template_id || null;
+    const shouldRegenerate =
+      existingCertificate.status !== "terbit" ||
+      !existingCertificate.sertifikat_url ||
+      existingCertificate.template_id !== templateId;
+    const updatePayload: TablesUpdate<"sertifikat"> = {
+      status: "terbit",
+      template_id: templateId,
+      dibatalkan_pada: null,
+      alasan_pembatalan: null,
+      diperbarui_pada: new Date().toISOString(),
+    };
+    if (existingCertificate.status !== "terbit") updatePayload.tanggal_terbit = new Date().toISOString();
+
+    const { error: reactivateError } = await supabase
+      .from("sertifikat")
+      .update(updatePayload)
+      .eq("id", existingCertificate.id);
+
+    if (reactivateError) {
+      throw new Error(`Gagal mengaktifkan sertifikat: ${reactivateError.message}`);
+    }
+
+    if (shouldRegenerate) {
+      await generateAndUploadCertificate(existingCertificate.id);
+    }
+
+    return existingCertificate.id;
+  }
 
   const { data: certificate, error } = await supabase
     .from("sertifikat")

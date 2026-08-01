@@ -24,6 +24,8 @@ export type Database = {
           judul: string
           kategori: string
           maksimal_peserta: number | null
+          minimal_kehadiran_persen: number
+          minimal_nilai_ujian: number
           status: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai: string | null
           tanggal_selesai: string | null
@@ -39,6 +41,8 @@ export type Database = {
           judul: string
           kategori: string
           maksimal_peserta?: number | null
+          minimal_kehadiran_persen?: number
+          minimal_nilai_ujian?: number
           status?: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai?: string | null
           tanggal_selesai?: string | null
@@ -54,6 +58,8 @@ export type Database = {
           judul?: string
           kategori?: string
           maksimal_peserta?: number | null
+          minimal_kehadiran_persen?: number
+          minimal_nilai_ujian?: number
           status?: Database["public"]["Enums"]["status_pelatihan"]
           tanggal_mulai?: string | null
           tanggal_selesai?: string | null
@@ -61,6 +67,214 @@ export type Database = {
           tipe_pelatihan?: Database["public"]["Enums"]["tipe_pelatihan"]
         }
         Relationships: []
+      }
+      hasil_pelatihan: {
+        Row: {
+          alasan_perubahan: string | null
+          dibuat_pada: string
+          dievaluasi_oleh: string
+          dievaluasi_pada: string
+          diperbarui_pada: string
+          impor_baris_id: string | null
+          jumlah_hadir: number
+          jumlah_pertemuan: number
+          minimal_kehadiran_snapshot: number
+          minimal_nilai_snapshot: number
+          nilai_ujian: number
+          pendaftaran_id: string
+          persentase_kehadiran: number
+          status_kelulusan: string
+          sumber: string
+        }
+        Insert: {
+          alasan_perubahan?: string | null
+          dibuat_pada?: string
+          dievaluasi_oleh: string
+          dievaluasi_pada?: string
+          diperbarui_pada?: string
+          impor_baris_id?: string | null
+          jumlah_hadir: number
+          jumlah_pertemuan: number
+          minimal_kehadiran_snapshot: number
+          minimal_nilai_snapshot: number
+          nilai_ujian: number
+          pendaftaran_id: string
+          persentase_kehadiran?: never
+          status_kelulusan?: never
+          sumber?: string
+        }
+        Update: {
+          alasan_perubahan?: string | null
+          dibuat_pada?: string
+          dievaluasi_oleh?: string
+          dievaluasi_pada?: string
+          diperbarui_pada?: string
+          impor_baris_id?: string | null
+          jumlah_hadir?: number
+          jumlah_pertemuan?: number
+          minimal_kehadiran_snapshot?: number
+          minimal_nilai_snapshot?: number
+          nilai_ujian?: number
+          pendaftaran_id?: string
+          persentase_kehadiran?: never
+          status_kelulusan?: never
+          sumber?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hasil_pelatihan_dievaluasi_oleh_fkey"
+            columns: ["dievaluasi_oleh"]
+            isOneToOne: false
+            referencedRelation: "profil_pengguna"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hasil_pelatihan_impor_baris_id_fkey"
+            columns: ["impor_baris_id"]
+            isOneToOne: false
+            referencedRelation: "impor_hasil_pelatihan_baris"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hasil_pelatihan_pendaftaran_id_fkey"
+            columns: ["pendaftaran_id"]
+            isOneToOne: true
+            referencedRelation: "pendaftaran_pelatihan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      impor_hasil_pelatihan: {
+        Row: {
+          dibuat_pada: string
+          diproses_pada: string | null
+          diunggah_oleh: string
+          hash_file: string
+          id: string
+          jumlah_baris: number
+          jumlah_berhasil: number
+          jumlah_gagal: number
+          nama_file: string
+          pelatihan_id: string
+          pesan_error: string | null
+          status: string
+          ukuran_file: number | null
+        }
+        Insert: {
+          dibuat_pada?: string
+          diproses_pada?: string | null
+          diunggah_oleh: string
+          hash_file: string
+          id?: string
+          jumlah_baris?: number
+          jumlah_berhasil?: number
+          jumlah_gagal?: number
+          nama_file: string
+          pelatihan_id: string
+          pesan_error?: string | null
+          status?: string
+          ukuran_file?: number | null
+        }
+        Update: {
+          dibuat_pada?: string
+          diproses_pada?: string | null
+          diunggah_oleh?: string
+          hash_file?: string
+          id?: string
+          jumlah_baris?: number
+          jumlah_berhasil?: number
+          jumlah_gagal?: number
+          nama_file?: string
+          pelatihan_id?: string
+          pesan_error?: string | null
+          status?: string
+          ukuran_file?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impor_hasil_pelatihan_diunggah_oleh_fkey"
+            columns: ["diunggah_oleh"]
+            isOneToOne: false
+            referencedRelation: "profil_pengguna"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impor_hasil_pelatihan_pelatihan_id_fkey"
+            columns: ["pelatihan_id"]
+            isOneToOne: false
+            referencedRelation: "pelatihan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      impor_hasil_pelatihan_baris: {
+        Row: {
+          data_asli: Json
+          dibuat_pada: string
+          diproses_pada: string | null
+          email_sumber: string | null
+          id: string
+          impor_id: string
+          jumlah_hadir_sumber: number | null
+          jumlah_pertemuan_sumber: number | null
+          kode_error: string | null
+          nama_sumber: string | null
+          nilai_ujian_sumber: number | null
+          nomor_baris: number
+          pendaftaran_id: string | null
+          pesan_error: string | null
+          status_proses: string
+        }
+        Insert: {
+          data_asli?: Json
+          dibuat_pada?: string
+          diproses_pada?: string | null
+          email_sumber?: string | null
+          id?: string
+          impor_id: string
+          jumlah_hadir_sumber?: number | null
+          jumlah_pertemuan_sumber?: number | null
+          kode_error?: string | null
+          nama_sumber?: string | null
+          nilai_ujian_sumber?: number | null
+          nomor_baris: number
+          pendaftaran_id?: string | null
+          pesan_error?: string | null
+          status_proses?: string
+        }
+        Update: {
+          data_asli?: Json
+          dibuat_pada?: string
+          diproses_pada?: string | null
+          email_sumber?: string | null
+          id?: string
+          impor_id?: string
+          jumlah_hadir_sumber?: number | null
+          jumlah_pertemuan_sumber?: number | null
+          kode_error?: string | null
+          nama_sumber?: string | null
+          nilai_ujian_sumber?: number | null
+          nomor_baris?: number
+          pendaftaran_id?: string | null
+          pesan_error?: string | null
+          status_proses?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impor_hasil_pelatihan_baris_impor_id_fkey"
+            columns: ["impor_id"]
+            isOneToOne: false
+            referencedRelation: "impor_hasil_pelatihan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impor_hasil_pelatihan_baris_pendaftaran_id_fkey"
+            columns: ["pendaftaran_id"]
+            isOneToOne: false
+            referencedRelation: "pendaftaran_pelatihan"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       materi_pelatihan: {
         Row: {
@@ -268,6 +482,8 @@ export type Database = {
       }
       sertifikat: {
         Row: {
+          alasan_pembatalan: string | null
+          dibatalkan_pada: string | null
           dibuat_pada: string
           diperbarui_pada: string | null
           id: string
@@ -280,6 +496,8 @@ export type Database = {
           template_id: string | null
         }
         Insert: {
+          alasan_pembatalan?: string | null
+          dibatalkan_pada?: string | null
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string
@@ -292,6 +510,8 @@ export type Database = {
           template_id?: string | null
         }
         Update: {
+          alasan_pembatalan?: string | null
+          dibatalkan_pada?: string | null
           dibuat_pada?: string
           diperbarui_pada?: string | null
           id?: string

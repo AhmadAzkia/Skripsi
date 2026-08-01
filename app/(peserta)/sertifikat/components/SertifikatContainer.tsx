@@ -68,7 +68,22 @@ export default function SertifikatContainer({ user, certificates, claims, select
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="border border-blue-200 bg-blue-50 rounded-xl p-6">
               <h2 className="text-xl font-bold text-navy mb-2">Sertifikat sedang disiapkan</h2>
-              <p className="text-gray-700">Pelatihan ini berbayar, sehingga sertifikat sudah termasuk setelah pembayaran pelatihan lunas. Muat ulang halaman ini beberapa saat lagi bila sertifikat belum muncul.</p>
+              <p className="text-gray-700">Anda telah dinyatakan lulus dan sertifikat termasuk dalam pembayaran pelatihan. Muat ulang halaman ini beberapa saat lagi bila sertifikat belum muncul.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {(selectedClaim?.status === "menunggu_evaluasi" || selectedClaim?.status === "tidak_lulus") && (
+        <section className="py-10 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className={`rounded-xl border p-6 ${selectedClaim.status === "tidak_lulus" ? "border-red-200 bg-red-50" : "border-gray-200 bg-gray-50"}`}>
+              <h2 className="text-xl font-bold text-navy mb-2">{selectedClaim.status === "tidak_lulus" ? "Belum memenuhi syarat kelulusan" : "Menunggu hasil evaluasi"}</h2>
+              <p className="text-gray-700">
+                {selectedClaim.status === "tidak_lulus"
+                  ? "Sertifikat hanya tersedia bagi peserta yang memenuhi ketentuan kehadiran dan nilai ujian."
+                  : "Admin belum memasukkan hasil kehadiran dan nilai ujian untuk pelatihan ini."}
+              </p>
             </div>
           </div>
         </section>

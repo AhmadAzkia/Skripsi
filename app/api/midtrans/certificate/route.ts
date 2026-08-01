@@ -67,13 +67,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Sertifikat hanya dapat diklaim setelah pelatihan selesai." }, { status: 400 });
     }
 
+    if (registration.status === "dibatalkan") {
+      return NextResponse.json({ error: "Pendaftaran pelatihan sudah dibatalkan." }, { status: 403 });
+    }
+
     if (pelatihan.harga > 0) {
       return NextResponse.json({ error: "Sertifikat pelatihan berbayar sudah termasuk dalam pembayaran pelatihan." }, { status: 400 });
     }
 
-    const { data: existingCertificate } = await supabase.from("sertifikat").select("id").eq("pelatihan_id", pelatihan.id).eq("peserta_id", profile.id).maybeSingle();
+    const database = supabase as any;
+    const { data: trainingResult, error: trainingResultError } = await database
+      .from("hasil_pelatihan")
+      .select("status_kelulusan")
+      .eq("pendaftaran_id", registration.id)
+      .maybeSingle();
 
-    if (existingCertificate) {
+    if (trainingResultError) {
+      return NextResponse.json({ error: `Gagal memeriksa hasil pelatihan: ${trainingResultError.message}` }, { status: 500 });
+    }
+
+    if (!trainingResult) {
+      return NextResponse.json({ error: "Hasil pelatihan belum dievaluasi." }, { status: 400 });
+    }
+
+    if (trainingResult.status_kelulusan !== "lulus") {
+      return NextResponse.json({ error: "Sertifikat hanya dapat dibeli oleh peserta yang dinyatakan lulus." }, { status: 403 });
+    }
+
+    const { data: existingCertificate } = await database.from("sertifikat").select("id, status").eq("pelatihan_id", pelatihan.id).eq("peserta_id", profile.id).maybeSingle();
+
+    if (existingCertificate?.status === "terbit") {
       return NextResponse.json({ error: "Sertifikat untuk pelatihan ini sudah tersedia." }, { status: 409 });
     }
 
