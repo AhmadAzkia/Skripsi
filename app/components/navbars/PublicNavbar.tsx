@@ -3,9 +3,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+
+const navigation = [
+  { name: "Beranda", href: "/" },
+  { name: "Jadwal Pelatihan", href: "/jadwal-pelatihan" },
+  { name: "Tentang Kami", href: "/tentang-kami" },
+];
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActiveLink = (href: string) => {
+    if (href === "/") {
+      return pathname === href;
+    }
+
+    return pathname.startsWith(href);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-navy border-b-2 border-gold">
@@ -27,21 +43,17 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex flex-1 justify-center">
             <div className="flex items-baseline space-x-4">
-              <Link href="/" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
-                Beranda
-              </Link>
-              <Link href="/jadwal-pelatihan" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
-                Jadwal Pelatihan
-              </Link>
-              <Link href="/tentang-kami" className="text-silver hover:text-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium">
-                Tentang Kami
-              </Link>
+              {navigation.map((item) => (
+                <Link key={item.href} href={item.href} className={`transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium ${isActiveLink(item.href) ? "text-gold" : "text-silver hover:text-gold"}`}>
+                  {item.name}
+                </Link>
+              ))}
             </div>
           </div>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3 shrink-0">
-            <Link href="/login" className="text-silver hover:text-gold border border-silver hover:border-gold transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium">
+            <Link href="/login" className={`border transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium ${isActiveLink("/login") ? "text-gold border-gold" : "text-silver hover:text-gold border-silver hover:border-gold"}`}>
               Masuk
             </Link>
             <Link href="/register" className="bg-gold hover:bg-gold/90 text-navy btn-interactive px-4 py-2 rounded-md text-sm font-medium transition-all duration-300">
@@ -73,20 +85,16 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gold/30 mt-2">
-              <Link href="/" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
-                Beranda
-              </Link>
-              <Link href="/jadwal-pelatihan" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
-                Jadwal Pelatihan
-              </Link>
-              <Link href="/tentang-kami" className="text-silver hover:text-gold block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300" onClick={() => setIsMenuOpen(false)}>
-                Tentang Kami
-              </Link>
+              {navigation.map((item) => (
+                <Link key={item.href} href={item.href} className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${isActiveLink(item.href) ? "text-gold bg-navy/50" : "text-silver hover:text-gold"}`} onClick={() => setIsMenuOpen(false)}>
+                  {item.name}
+                </Link>
+              ))}
               <div className="pt-4 pb-3 border-t border-gold/30">
                 <div className="flex items-center space-x-3">
                   <Link
                     href="/login"
-                    className="text-silver hover:text-gold border border-silver hover:border-gold transition-all duration-300 px-4 py-2 rounded-md text-sm font-medium flex-1 text-center"
+                    className={`border transition-all duration-300 px-4 py-2 rounded-md text-sm font-medium flex-1 text-center ${isActiveLink("/login") ? "text-gold border-gold" : "text-silver hover:text-gold border-silver hover:border-gold"}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Masuk

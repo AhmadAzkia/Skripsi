@@ -42,7 +42,7 @@ export default function HomeFeaturedCourses({ featuredCourses }: HomeFeaturedCou
                     participants={`Maks. ${course.maksimal_peserta || "N/A"} Peserta`}
                     isOnline={course.tipe_pelatihan === "online"}
                     price={course.harga}
-                    href={`/pelatihan/${course.id}`}
+                    href={`/login?redirect=/katalog-pelatihan/${course.id}`}
                   />
                 </ScrollReveal>
               ))}

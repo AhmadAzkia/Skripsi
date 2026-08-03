@@ -91,6 +91,7 @@ export default function AdminNavbar() {
   const isPelatihanActive = () => {
     return pelatihanDropdown.some((item) => pathname.startsWith(item.href));
   };
+  const isProfileActive = isActiveLink("/profil");
 
   return (
     <>
@@ -203,12 +204,12 @@ export default function AdminNavbar() {
                   <>
                     <button
                       onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                      className="flex items-center space-x-2 px-3 py-2 rounded-full text-sm text-silver hover:text-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold"
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-full text-sm hover:text-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold ${isProfileActive ? "text-gold" : "text-silver"}`}
                     >
                       <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
                         <UserIcon className="w-5 h-5 text-navy" />
                       </div>
-                      <span className="hidden sm:block font-medium max-w-32 truncate text-white-text">{user?.profile?.nama_lengkap?.split(" ")[0] || "Admin"}</span>
+                      <span className={`hidden sm:block font-medium max-w-32 truncate ${isProfileActive ? "text-gold" : "text-white-text"}`}>{user?.profile?.nama_lengkap?.split(" ")[0] || "Admin"}</span>
                       <ChevronDownIcon className={`w-4 h-4 hidden sm:block transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
                     </button>
 
@@ -240,13 +241,15 @@ export default function AdminNavbar() {
                                 setProfileDropdownOpen(false);
                                 handleNavigation("/profil");
                               }}
-                              className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                              className={`w-full text-left px-4 py-3 text-sm flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02] ${
+                                isProfileActive ? "text-gold bg-linear-to-r from-gold/10 to-gold/5 border-r-2 border-gold" : "text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy"
+                              }`}
                             >
-                              <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200">
+                              <div className={`p-1.5 rounded-lg transition-all duration-200 ${isProfileActive ? "bg-gold/10 text-gold" : "bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"}`}>
                                 <UserIcon className="w-4 h-4" />
                               </div>
                               <div className="flex-1">
-                                <span className="font-medium">Profil Admin</span>
+                                <span className={`font-medium ${isProfileActive ? "text-gold" : ""}`}>Profil Admin</span>
                                 <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Kelola informasi admin</div>
                               </div>
                               <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
@@ -301,7 +304,7 @@ export default function AdminNavbar() {
                       }}
                       className={`
                         flex items-center w-full px-3 py-2 rounded-lg text-left font-medium transition-all duration-200
-                        ${isActive ? "bg-gold text-navy shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
+                        ${isActive ? "text-gold bg-navy/50 shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
                       `}
                     >
                       <item.icon className="w-5 h-5 mr-3" />
@@ -316,7 +319,7 @@ export default function AdminNavbar() {
                     onClick={() => setPelatihanDropdownOpen(!pelatihanDropdownOpen)}
                     className={`
                       flex items-center justify-between w-full px-3 py-2 rounded-lg text-left font-medium transition-all duration-200
-                      ${isPelatihanActive() ? "bg-gold text-navy shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
+                      ${isPelatihanActive() ? "text-gold bg-navy/50 shadow-lg" : "text-silver hover:bg-navy hover:text-white"}
                     `}
                   >
                     <div className="flex items-center">
@@ -340,7 +343,7 @@ export default function AdminNavbar() {
                             }}
                             className={`
                               flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-all duration-200
-                              ${isActive ? "bg-gold text-navy shadow-lg" : "text-gray-300 hover:bg-navy hover:text-white"}
+                              ${isActive ? "text-gold bg-navy/50 shadow-lg" : "text-gray-300 hover:bg-navy hover:text-white"}
                             `}
                           >
                             <item.icon className="w-4 h-4 mr-3" />

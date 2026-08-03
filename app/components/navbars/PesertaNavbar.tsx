@@ -72,6 +72,7 @@ export default function PesertaNavbar() {
     }
     return pathname.startsWith(href);
   };
+  const isAccountSectionActive = isActiveLink("/profil") || isActiveLink("/riwayat-peserta");
 
   return (
     <header className="sticky top-0 z-50 bg-navy border-b-2 border-gold">
@@ -122,12 +123,12 @@ export default function PesertaNavbar() {
               <>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-silver hover:text-gold hover:bg-navy/50 transition-all duration-300 group"
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:text-gold hover:bg-navy/50 transition-all duration-300 group ${isAccountSectionActive ? "text-gold" : "text-silver"}`}
                 >
                   <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 text-navy rounded-full flex items-center justify-center text-xs font-semibold transition-transform duration-200 group-hover:scale-110 shadow-lg">
                     {user?.email?.charAt(0).toUpperCase() || "U"}
                   </div>
-                  <span className="max-w-32 truncate text-white-text">
+                  <span className={`max-w-32 truncate ${isAccountSectionActive ? "text-gold" : "text-white-text"}`}>
                     {user?.profile?.nama_lengkap || user?.email || "User"}
                   </span>
                   <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
@@ -165,13 +166,15 @@ export default function PesertaNavbar() {
                             setProfileDropdownOpen(false);
                             handleNavigation("/profil");
                           }}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                          className={`w-full text-left px-4 py-3 text-sm flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02] ${
+                            isActiveLink("/profil") ? "text-gold bg-linear-to-r from-gold/10 to-gold/5 border-r-2 border-gold" : "text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy"
+                          }`}
                         >
-                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
+                          <div className={`p-1.5 rounded-lg transition-all duration-200 icon-hover ${isActiveLink("/profil") ? "bg-gold/10 text-gold" : "bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"}`}>
                             <UserIcon className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium">Profil Saya</span>
+                            <span className={`font-medium ${isActiveLink("/profil") ? "text-gold" : ""}`}>Profil Saya</span>
                             <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Kelola informasi akun</div>
                           </div>
                           <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
@@ -181,13 +184,15 @@ export default function PesertaNavbar() {
                             setProfileDropdownOpen(false);
                             handleNavigation("/riwayat-peserta");
                           }}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
+                          className={`w-full text-left px-4 py-3 text-sm flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02] ${
+                            isActiveLink("/riwayat-peserta") ? "text-gold bg-linear-to-r from-gold/10 to-gold/5 border-r-2 border-gold" : "text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy"
+                          }`}
                         >
-                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
+                          <div className={`p-1.5 rounded-lg transition-all duration-200 icon-hover ${isActiveLink("/riwayat-peserta") ? "bg-gold/10 text-gold" : "bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy"}`}>
                             <ClockIcon className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium">Riwayat Saya</span>
+                            <span className={`font-medium ${isActiveLink("/riwayat-peserta") ? "text-gold" : ""}`}>Riwayat Saya</span>
                             <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Transaksi dan pelatihan</div>
                           </div>
                           <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
