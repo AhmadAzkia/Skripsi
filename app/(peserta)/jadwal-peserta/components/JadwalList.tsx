@@ -25,6 +25,8 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
         return "bg-gold/10 text-amber-700 border-gold/30";
       case "terdaftar":
         return "bg-navy/10 text-navy border-navy/30";
+      case "menunggu_pembayaran":
+        return "bg-amber-50 text-amber-700 border-amber-200";
       case "dibatalkan":
         return "bg-red-50 text-red-700 border-red-200";
       default:
@@ -40,6 +42,8 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
         return "Sedang Berlangsung";
       case "terdaftar":
         return "Mendatang";
+      case "menunggu_pembayaran":
+        return "Menunggu Pembayaran";
       case "dibatalkan":
         return "Dibatalkan";
       default:
@@ -126,10 +130,11 @@ export default function JadwalList({ jadwalList }: JadwalListProps) {
                     <div className="flex flex-col sm:flex-row gap-3 lg:ml-6">
                       {jadwal.status === "sedang_belajar" && (
                         <a href={`/materi-kursus/${jadwal.pelatihan_id}`} className="px-4 py-2 bg-gold text-navy font-medium rounded-lg hover:bg-gold/90 transition-colors duration-300 text-center">
-                          Lanjutkan Pelatihan
+                          Buka Pelatihan
                         </a>
                       )}
                       {jadwal.status === "terdaftar" && <span className="px-4 py-2 bg-navy/10 text-navy font-medium rounded-lg text-center border border-navy/20">Menunggu Dimulai</span>}
+                      {jadwal.status === "menunggu_pembayaran" && <span className="px-4 py-2 bg-amber-50 text-amber-700 font-medium rounded-lg text-center border border-amber-200">Menunggu Pembayaran</span>}
                       {jadwal.status === "selesai" && (
                         <a href={`/sertifikat?pelatihanId=${jadwal.pelatihan_id}`} className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors duration-300 text-center">
                           Lihat Sertifikat

@@ -41,8 +41,8 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
       iconColor: "text-gold",
     },
     {
-      title: "Riwayat Pelatihan",
-      description: "Lihat detail dan progres pelatihan yang telah diikuti",
+      title: "Riwayat Saya",
+      description: "Lihat riwayat transaksi dan pelatihan yang telah diikuti",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -53,7 +53,7 @@ export default function DashboardQuickActions({}: DashboardQuickActionsProps) {
           />
         </svg>
       ),
-      href: "/jadwal-peserta",
+      href: "/riwayat-peserta",
       bgColor: "from-silver/10 to-silver/20",
       borderColor: "border-silver/30",
       hoverBorderColor: "hover:border-silver/50",

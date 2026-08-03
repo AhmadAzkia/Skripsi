@@ -1,33 +1,73 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { exchangeCode } from "../actions";
+import { exchangeCode, setRecoverySession, verifyRecoverySession } from "../actions";
 import ResetPasswordHero from "./ResetPasswordHero";
 import ResetPasswordForm from "./ResetPasswordForm";
 import { ScrollReveal } from "@/components/ui";
 
-export default function ResetPasswordContainer({ code }: { code?: string }) {
+type ResetPasswordContainerProps = {
+  code?: string;
+  linkError?: string;
+};
+
+function getRecoveryTokensFromHash() {
+  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+  const params = new URLSearchParams(hash);
+
+  return {
+    accessToken: params.get("access_token") || undefined,
+    refreshToken: params.get("refresh_token") || undefined,
+    error: params.get("error_description") || params.get("error") || undefined,
+  };
+}
+
+export default function ResetPasswordContainer({ code, linkError }: ResetPasswordContainerProps) {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    console.log("ResetPasswordContainer - code:", code);
-    if (!code) {
-      setStatus("error");
-      setErrorMsg("Link reset password tidak valid.");
-      return;
-    }
+    let ignore = false;
 
-    exchangeCode(code).then((result) => {
+    async function prepareResetSession() {
+      if (linkError) {
+        setStatus("error");
+        setErrorMsg(linkError);
+        return;
+      }
+
+      const recoveryTokens = getRecoveryTokensFromHash();
+      if (!code && recoveryTokens.error) {
+        setStatus("error");
+        setErrorMsg(recoveryTokens.error);
+        return;
+      }
+
+      const hasHashTokens = Boolean(recoveryTokens.accessToken && recoveryTokens.refreshToken);
+      const result = code
+        ? await exchangeCode(code)
+        : hasHashTokens
+          ? await setRecoverySession(recoveryTokens)
+          : await verifyRecoverySession();
+
+      if (ignore) return;
+
       if (result.error) {
         setStatus("error");
         setErrorMsg("Link reset password tidak valid atau sudah kedaluwarsa.");
-      } else {
-        window.history.replaceState({}, "", window.location.pathname);
-        setStatus("ready");
+        return;
       }
-    });
-  }, [code]);
+
+      window.history.replaceState({}, "", window.location.pathname);
+      setStatus("ready");
+    }
+
+    prepareResetSession();
+
+    return () => {
+      ignore = true;
+    };
+  }, [code, linkError]);
 
   if (status === "loading") {
     return (

@@ -2,6 +2,9 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
+
+const PASSWORD_RECOVERY_COOKIE = "password-recovery";
+
 // Fungsi untuk menentukan path redirect berdasarkan peran
 function getRedirectPath(role: string): string {
   switch (role) {
@@ -14,9 +17,18 @@ function getRedirectPath(role: string): string {
   }
 }
 
+function getSafeRedirectPath(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return null;
+  }
+
+  return value;
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const next = getSafeRedirectPath(requestUrl.searchParams.get("next"));
   const origin = requestUrl.origin;
 
   if (code) {
@@ -28,6 +40,22 @@ export async function GET(request: NextRequest) {
     if (sessionError) {
       console.error("Callback Error:", sessionError);
       return NextResponse.redirect(`${origin}/login?message=Gagal verifikasi email.`);
+    }
+
+    if (next) {
+      const response = NextResponse.redirect(`${origin}${next}`);
+
+      if (next.startsWith("/reset-password")) {
+        response.cookies.set(PASSWORD_RECOVERY_COOKIE, "true", {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 10 * 60,
+        });
+      }
+
+      return response;
     }
 
     // 2. Jika berhasil, ambil peran pengguna

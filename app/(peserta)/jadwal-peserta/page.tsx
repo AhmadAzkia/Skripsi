@@ -21,9 +21,56 @@ export type JadwalStats = {
   jadwalMendatang: number;
 };
 
+const COURSE_TIME_ZONE = "Asia/Jakarta";
+
+function getTodayDateInCourseTimeZone() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: COURSE_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function getDateOnly(value?: string | null) {
+  return value ? value.slice(0, 10) : "";
+}
+
+// Fungsi untuk menentukan status berdasarkan tanggal kalender Indonesia.
+function getStatusByDate(
+  tanggalMulai: string | null,
+  tanggalSelesai: string | null,
+  statusDatabase: string,
+  today = getTodayDateInCourseTimeZone(),
+): string {
+  if (statusDatabase === "dibatalkan" || statusDatabase === "menunggu_pembayaran") {
+    return statusDatabase;
+  }
+
+  const startDate = getDateOnly(tanggalMulai);
+  const endDate = getDateOnly(tanggalSelesai);
+
+  if (endDate && today > endDate) {
+    return "selesai";
+  }
+
+  if (startDate && today >= startDate && (!endDate || today <= endDate)) {
+    return "sedang_belajar";
+  }
+
+  if (startDate && today < startDate) {
+    return "terdaftar";
+  }
+
+  return statusDatabase;
+}
+
 async function getJadwalStats(userId: string): Promise<JadwalStats> {
   const supabase = await createSupabaseServerClient();
-  const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+  const today = getTodayDateInCourseTimeZone();
 
   // Ambil semua data pendaftaran pelatihan dengan detail pelatihan
   const { data: allJadwal, error: errorFetch } = await supabase
@@ -58,17 +105,13 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
   // Kategorikan berdasarkan tanggal, bukan status database
   allJadwal?.forEach((item) => {
     const pelatihanData = item.pelatihan as any;
-    const tanggalMulai = pelatihanData?.tanggal_mulai;
-    const tanggalSelesai = pelatihanData?.tanggal_selesai;
+    const statusAktual = getStatusByDate(pelatihanData?.tanggal_mulai, pelatihanData?.tanggal_selesai, item.status, today);
 
-    if (tanggalSelesai && today > tanggalSelesai) {
-      // Jika hari ini sudah melewati tanggal selesai -> Selesai
+    if (statusAktual === "selesai") {
       jadwalSelesai++;
-    } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
-      // Jika hari ini antara tanggal mulai dan selesai -> Berlangsung
+    } else if (statusAktual === "sedang_belajar") {
       jadwalBerlangsung++;
-    } else if (tanggalMulai && today < tanggalMulai) {
-      // Jika hari ini sebelum tanggal mulai -> Mendatang
+    } else if (statusAktual === "terdaftar") {
       jadwalMendatang++;
     }
   });
@@ -81,32 +124,9 @@ async function getJadwalStats(userId: string): Promise<JadwalStats> {
   };
 }
 
-// Fungsi untuk menentukan status berdasarkan tanggal
-function getStatusByDate(tanggalMulai: string, tanggalSelesai: string, statusDatabase: string): string {
-  const today = new Date().toISOString().split("T")[0];
-
-  // Jika sudah dibatalkan, tetap dibatalkan
-  if (statusDatabase === "dibatalkan") {
-    return "dibatalkan";
-  }
-
-  if (tanggalSelesai && today > tanggalSelesai) {
-    // Jika sudah melewati tanggal selesai -> Selesai
-    return "selesai";
-  } else if (tanggalMulai && today >= tanggalMulai && tanggalSelesai && today <= tanggalSelesai) {
-    // Jika sedang berlangsung -> Sedang belajar
-    return "sedang_belajar";
-  } else if (tanggalMulai && today < tanggalMulai) {
-    // Jika belum dimulai -> Terdaftar
-    return "terdaftar";
-  }
-
-  // Fallback ke status database jika tidak ada tanggal
-  return statusDatabase;
-}
-
 async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
   const supabase = await createSupabaseServerClient();
+  const today = getTodayDateInCourseTimeZone();
 
   try {
     const { data: jadwalData, error } = await supabase
@@ -138,9 +158,9 @@ async function getJadwalList(userId: string): Promise<JadwalPelatihan[]> {
       const pelatihanData = item.pelatihan as any;
 
       // Tentukan status berdasarkan tanggal pelatihan
-      const tanggalMulai = pelatihanData?.tanggal_mulai || item.tanggal_daftar;
-      const tanggalSelesai = pelatihanData?.tanggal_selesai || item.tanggal_selesai || "";
-      const statusAktual = getStatusByDate(tanggalMulai, tanggalSelesai, item.status);
+      const tanggalMulai = getDateOnly(pelatihanData?.tanggal_mulai || item.tanggal_daftar);
+      const tanggalSelesai = getDateOnly(pelatihanData?.tanggal_selesai || item.tanggal_selesai);
+      const statusAktual = getStatusByDate(tanggalMulai, tanggalSelesai, item.status, today);
 
       return {
         id: item.id,

@@ -128,7 +128,7 @@ export default function PaymentStatusActions({ pelatihanId, paymentId, status }:
       )}
 
       <a href="/riwayat-peserta" className="block w-full px-6 py-3 border border-navy/20 text-navy rounded-lg font-semibold text-center hover:bg-navy/5 transition-colors">
-        Lihat Riwayat Transaksi
+        Lihat Riwayat Saya
       </a>
 
       {simMessage && <p className="text-sm text-green-600 text-center">{simMessage}</p>}

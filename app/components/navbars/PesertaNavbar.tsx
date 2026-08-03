@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/(peserta)/actions";
 import RoleIndicator from "@/components/ui/RoleIndicator";
-import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, CreditCardIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, ClockIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
@@ -184,11 +184,11 @@ export default function PesertaNavbar() {
                           className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-linear-to-r hover:from-navy/8 hover:to-blue-50 hover:text-navy flex items-center space-x-3 transition-all duration-200 group dropdown-item transform hover:scale-[1.02]"
                         >
                           <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-linear-to-br group-hover:from-navy/10 group-hover:to-blue-100 group-hover:text-navy transition-all duration-200 icon-hover">
-                            <CreditCardIcon className="w-4 h-4" />
+                            <ClockIcon className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
-                            <span className="font-medium">Riwayat Transaksi</span>
-                            <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Lihat riwayat pembayaran</div>
+                            <span className="font-medium">Riwayat Saya</span>
+                            <div className="text-xs text-gray-500 group-hover:text-navy/70 transition-all duration-200">Transaksi dan pelatihan</div>
                           </div>
                           <div className="w-1 h-1 bg-gray-300 rounded-full group-hover:bg-navy/50 transition-all duration-200"></div>
                         </button>
@@ -276,8 +276,8 @@ export default function PesertaNavbar() {
                     isActiveLink("/riwayat-peserta") ? "text-gold bg-navy/50" : "text-silver hover:text-gold hover:bg-navy/50"
                   }`}
                 >
-                  <CreditCardIcon className="w-5 h-5" />
-                  <span>Riwayat Transaksi</span>
+                  <ClockIcon className="w-5 h-5" />
+                  <span>Riwayat Saya</span>
                 </button>
                 <button onClick={handleSignOut} className="w-full text-left px-6 py-2 rounded-md text-base font-medium text-red-400 hover:text-red-300 hover:bg-navy/50 flex items-center space-x-2 transition-colors duration-300">
                   <ArrowRightOnRectangleIcon className="w-5 h-5" />

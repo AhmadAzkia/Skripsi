@@ -1,7 +1,13 @@
 import { ResetPasswordContainer } from "./components";
 
-export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
-  const { code } = await searchParams;
+type ResetPasswordSearchParams = {
+  code?: string;
+  error?: string;
+  error_description?: string;
+};
+
+export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<ResetPasswordSearchParams> }) {
+  const { code, error, error_description } = await searchParams;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-navy via-navy/95 to-navy/90 flex items-center justify-center p-4">
@@ -14,7 +20,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
         <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_75%_75%,rgba(192,192,192,0.1)_0%,transparent_50%)]"></div>
       </div>
 
-      <ResetPasswordContainer code={code} />
+      <ResetPasswordContainer code={code} linkError={error_description || error} />
     </div>
   );
 }
