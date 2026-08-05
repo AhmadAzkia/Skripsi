@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteUrlFromHeaders } from "@/lib/site-url";
 import { headers } from "next/headers";
 import { Database } from "@/../types/database";
 
@@ -15,14 +16,14 @@ interface SignupData {
 export async function signup(data: SignupData) {
   const supabase = await createSupabaseServerClient();
   const Headers = await headers();
-  const origin = Headers.get("origin"); // Mendapatkan URL website
+  const siteUrl = getSiteUrlFromHeaders(Headers);
 
   // Panggil Supabase Auth dari sisi Server
   const { data: authData, error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
     options: {
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: `${siteUrl}/auth/confirm`,
       data: {
         // Data ini akan diteruskan ke trigger 'handle_new_user' Anda
         nama_lengkap: data.fullName, 

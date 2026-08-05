@@ -2,23 +2,24 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getSiteUrlFromHeaders } from "@/lib/site-url";
 import { headers } from "next/headers";
 
 export async function requestPasswordReset(formData: FormData) {
   const email = String(formData.get("email") || "").trim();
   const supabase = await createSupabaseServerClient();
   const Headers = await headers();
-  const origin = Headers.get("origin");
+  const siteUrl = getSiteUrlFromHeaders(Headers);
 
   if (!email) {
     return { error: "Email tidak boleh kosong." };
   }
 
-  if (!origin) {
+  if (!siteUrl) {
     return { error: "Konfigurasi URL aplikasi belum tersedia." };
   }
 
-  const redirectTo = `${origin}/auth/callback?next=/reset-password`;
+  const redirectTo = `${siteUrl}/auth/callback?next=/reset-password`;
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: redirectTo,

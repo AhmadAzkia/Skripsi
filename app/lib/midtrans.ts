@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { getSiteUrlFromRequest } from "./site-url";
 
 export type MidtransTransactionStatus =
   | "capture"
@@ -46,16 +47,7 @@ export function getSnapScriptUrl() {
 }
 
 export function getSiteUrl(request?: Request) {
-  const forwardedHost = request?.headers.get("x-forwarded-host");
-  const host = forwardedHost || request?.headers.get("host");
-
-  if (host) {
-    const forwardedProto = request?.headers.get("x-forwarded-proto");
-    const proto = forwardedProto || (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
-    return `${proto}://${host}`.replace(/\/$/, "");
-  }
-
-  return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+  return getSiteUrlFromRequest(request);
 }
 
 export function mapMidtransStatus(status: MidtransTransactionStatus) {

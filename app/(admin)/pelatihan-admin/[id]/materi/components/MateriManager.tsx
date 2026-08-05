@@ -43,6 +43,13 @@ const emptyForm: FormState = {
   urutan: 1,
 };
 
+const ALLOWED_FILE_EXTENSIONS = ["pdf", "ppt", "pptx"];
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+function getFileExtension(fileName: string) {
+  return fileName.split(".").pop()?.toLowerCase() || "";
+}
+
 export default function MateriManager({ pelatihanId, initialMateriList }: MateriManagerProps) {
   const [materiList, setMateriList] = useState<MateriData[]>(initialMateriList);
   const [showModal, setShowModal] = useState(false);
@@ -180,7 +187,8 @@ export default function MateriManager({ pelatihanId, initialMateriList }: Materi
         }
       }
     } catch (err) {
-      toast.error("Error", "Terjadi kesalahan yang tidak terduga");
+      const message = err instanceof Error ? err.message : "Terjadi kesalahan yang tidak terduga";
+      toast.error("Error", message);
     } finally {
       setLoading(false);
       setUploading(false);
@@ -413,7 +421,7 @@ export default function MateriManager({ pelatihanId, initialMateriList }: Materi
                       {file ? (
                         <span className="text-sm text-navy font-medium">{file.name}</span>
                       ) : (
-                        <span className="text-xs text-silver">Klik untuk upload file (PDF/PPT, max 20MB)</span>
+                        <span className="text-xs text-silver">Klik untuk upload file (PDF/PPT/PPTX, max 20MB)</span>
                       )}
                     </div>
                     <input
@@ -422,6 +430,22 @@ export default function MateriManager({ pelatihanId, initialMateriList }: Materi
                       accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                       onChange={(e) => {
                         const f = e.target.files?.[0] || null;
+                        const extension = f ? getFileExtension(f.name) : "";
+
+                        if (f && !ALLOWED_FILE_EXTENSIONS.includes(extension)) {
+                          setFile(null);
+                          setErrors((p) => ({ ...p, file: "Format file harus PDF, PPT, atau PPTX" }));
+                          e.target.value = "";
+                          return;
+                        }
+
+                        if (f && f.size > MAX_FILE_SIZE) {
+                          setFile(null);
+                          setErrors((p) => ({ ...p, file: "Ukuran file maksimal 20MB" }));
+                          e.target.value = "";
+                          return;
+                        }
+
                         setFile(f);
                         if (errors.file) setErrors((p) => ({ ...p, file: "" }));
                       }}

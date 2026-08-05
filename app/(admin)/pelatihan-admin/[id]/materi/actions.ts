@@ -10,18 +10,31 @@ async function ensureAdmin() {
   return Boolean(userData?.user && userData.role === "admin");
 }
 
-// ── Upload file materi (PDF/PPT) ke Supabase Storage ──
+const ALLOWED_MATERI_FILE_TYPES: Record<string, string[]> = {
+  pdf: ["application/pdf"],
+  ppt: ["application/vnd.ms-powerpoint"],
+  pptx: ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+};
+
+function getMateriFileExtension(fileName: string) {
+  return fileName.split(".").pop()?.toLowerCase() || "";
+}
+
+function getMateriContentType(file: File, extension: string) {
+  return file.type || ALLOWED_MATERI_FILE_TYPES[extension]?.[0] || "application/octet-stream";
+}
+
+// ── Upload file materi (PDF/PPT/PPTX) ke Supabase Storage ──
 export async function uploadMateriFile(
   file: File
 ): Promise<{ url: string | null; error: string | null }> {
   try {
-    const allowedTypes = [
-      "application/pdf",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      return { url: null, error: "Format file harus PDF atau PPT" };
+    const fileExt = getMateriFileExtension(file.name);
+    const allowedMimeTypes = ALLOWED_MATERI_FILE_TYPES[fileExt];
+    const isValidMimeType = !file.type || file.type === "application/octet-stream" || allowedMimeTypes?.includes(file.type);
+
+    if (!allowedMimeTypes || !isValidMimeType) {
+      return { url: null, error: "Format file harus PDF, PPT, atau PPTX" };
     }
 
     // Max 20MB
@@ -34,13 +47,13 @@ export async function uploadMateriFile(
       return { url: null, error: "Admin client tidak tersedia" };
     }
 
-    const fileExt = file.name.split(".").pop()?.toLowerCase();
     const fileName = `materi-${Date.now()}.${fileExt}`;
 
     const { error: uploadError } = await admin.storage
       .from("materi-files")
       .upload(fileName, file, {
         cacheControl: "3600",
+        contentType: getMateriContentType(file, fileExt),
         upsert: false,
       });
 
