@@ -3,7 +3,6 @@
 "use server"; // Menandakan ini adalah file Backend (Server Actions)
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 function getRedirectPath(role: string): string {
@@ -28,6 +27,10 @@ export async function login(formData: FormData) {
   });
 
   if (signInError) {
+    if (signInError.message.toLowerCase().includes("email not confirmed")) {
+      return { error: "Email belum diverifikasi. Silakan cek email Anda lalu klik link verifikasi sebelum login." };
+    }
+
     return { error: "Email atau password yang Anda masukkan salah." };
   }
 

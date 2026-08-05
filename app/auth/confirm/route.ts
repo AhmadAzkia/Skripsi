@@ -4,14 +4,6 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 
 const PASSWORD_RECOVERY_COOKIE = "password-recovery";
 
-function getSafeRedirectPath(value: string | null) {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return null;
-  }
-
-  return value;
-}
-
 function markPasswordRecovery(response: NextResponse) {
   response.cookies.set(PASSWORD_RECOVERY_COOKIE, "true", {
     httpOnly: true,
@@ -24,9 +16,23 @@ function markPasswordRecovery(response: NextResponse) {
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
   const tokenHash = requestUrl.searchParams.get("token_hash");
   const type = requestUrl.searchParams.get("type") as EmailOtpType | null;
-  const next = getSafeRedirectPath(requestUrl.searchParams.get("next")) || "/";
+  const verifiedMessage = encodeURIComponent("Email berhasil diverifikasi. Silakan login.");
+  const verifiedRedirectPath = `/login?message=${verifiedMessage}`;
+
+  if (code) {
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      console.error("Confirm code error:", error);
+      return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid atau sudah kedaluwarsa.`);
+    }
+
+    return NextResponse.redirect(`${requestUrl.origin}${verifiedRedirectPath}`);
+  }
 
   if (!tokenHash || !type) {
     return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid.`);
@@ -43,7 +49,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid atau sudah kedaluwarsa.`);
   }
 
-  const redirectPath = type === "recovery" ? "/reset-password" : next;
+  const redirectPath = type === "recovery" ? "/reset-password" : verifiedRedirectPath;
   const response = NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
 
   if (type === "recovery") {

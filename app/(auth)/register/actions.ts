@@ -22,7 +22,7 @@ export async function signup(data: SignupData) {
     email: data.email,
     password: data.password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/confirm`,
       data: {
         // Data ini akan diteruskan ke trigger 'handle_new_user' Anda
         nama_lengkap: data.fullName, 
@@ -33,11 +33,16 @@ export async function signup(data: SignupData) {
 
   if (error) {
     // Kirim pesan error kembali ke Frontend
+    if (error.message.toLowerCase().includes("email rate limit exceeded")) {
+      return {
+        user: null,
+        error: "Batas pengiriman email verifikasi Supabase tercapai. Tunggu beberapa saat lalu coba lagi, atau gunakan custom SMTP untuk produksi.",
+      };
+    }
+
     return { user: null, error: error.message };
   }
 
-  // Sign in langsung setelah signup supaya ada session aktif
-  // (email confirmation dimatikan di Supabase, jadi bisa langsung login)
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email: data.email,
     password: data.password,

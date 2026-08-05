@@ -5,14 +5,18 @@ import LoginForm from "./LoginForm";
 import { ScrollReveal } from "@/components/ui";
 import Link from "next/link";
 
-export default function LoginContainer() {
+interface LoginContainerProps {
+  message?: string;
+}
+
+export default function LoginContainer({ message = "" }: LoginContainerProps) {
   return (
     <div className="relative w-full max-w-md">
       <ScrollReveal>
         <LoginHero />
       </ScrollReveal>
       <ScrollReveal delay={200}>
-        <LoginForm />
+        <LoginForm message={message} />
       </ScrollReveal>
 
       {/* Under Development Banner

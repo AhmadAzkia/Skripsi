@@ -43,7 +43,7 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
         throw new Error(result.error || "Gagal membuat checkout sertifikat.");
       }
 
-      const finishUrl = result.finishUrl || `/sertifikat?pelatihanId=${pelatihanId}`;
+      const finishUrl = result.finishPath || `/sertifikat?pelatihanId=${pelatihanId}`;
 
       if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {

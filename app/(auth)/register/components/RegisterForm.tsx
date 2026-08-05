@@ -76,8 +76,6 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       if (error) {
         setError(error);
       } else if (user) {
-        // Signup action sudah sign in server-side (signInWithPassword)
-        // Full page reload supaya AuthProvider reinitializes dengan session baru
         window.location.href = "/dashboard";
       }
     } catch (err) {

@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
 
     // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
     const newOrderId = `CG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    const finishUrl = `${getSiteUrl()}/pembayaran/${payment.id}`;
+    const finishPath = `/pembayaran/${payment.id}`;
+    const finishUrl = `${getSiteUrl(request)}${finishPath}`;
 
     // Update payment with new order_id
     await supabase
@@ -90,6 +91,7 @@ export async function POST(request: NextRequest) {
       orderId: newOrderId,
       token: snap.token,
       redirectUrl: snap.redirect_url,
+      finishPath,
       finishUrl,
     });
   } catch (error: any) {

@@ -84,7 +84,8 @@ export async function POST(request: NextRequest) {
       if (existingPayment && existingPayment.id_pembayaran_eksternal) {
         // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
         const newOrderId = `CG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-        const finishUrl = `${getSiteUrl()}/pembayaran/${existingPayment.id}`;
+        const finishPath = `/pembayaran/${existingPayment.id}`;
+        const finishUrl = `${getSiteUrl(request)}${finishPath}`;
 
         // Update payment with new order_id
         await supabase
@@ -125,6 +126,7 @@ export async function POST(request: NextRequest) {
           orderId: newOrderId,
           token: snap.token,
           redirectUrl: snap.redirect_url,
+          finishPath,
           finishUrl,
         });
       }
@@ -194,7 +196,8 @@ export async function POST(request: NextRequest) {
     }
 
     const orderId = `CG-${payment.id}`;
-    const finishUrl = `${getSiteUrl()}/pembayaran/${payment.id}`;
+    const finishPath = `/pembayaran/${payment.id}`;
+    const finishUrl = `${getSiteUrl(request)}${finishPath}`;
 
     const { error: paymentUpdateError } = await supabase
       .from("pembayaran")
@@ -238,6 +241,7 @@ export async function POST(request: NextRequest) {
       orderId,
       token: snap.token,
       redirectUrl: snap.redirect_url,
+      finishPath,
       finishUrl,
     });
   } catch (error: any) {

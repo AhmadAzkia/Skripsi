@@ -141,7 +141,8 @@ export async function POST(request: NextRequest) {
     }
 
     const orderId = `CG-CERT-${payment.id}`;
-    const finishUrl = `${getSiteUrl()}/sertifikat?pelatihanId=${pelatihan.id}`;
+    const finishPath = `/sertifikat?pelatihanId=${pelatihan.id}`;
+    const finishUrl = `${getSiteUrl(request)}${finishPath}`;
 
     const { error: updatePaymentError } = await supabase
       .from("pembayaran")
@@ -184,6 +185,7 @@ export async function POST(request: NextRequest) {
       orderId,
       token: snap.token,
       redirectUrl: snap.redirect_url,
+      finishPath,
       finishUrl,
     });
   } catch (error: any) {

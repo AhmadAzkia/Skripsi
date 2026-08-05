@@ -45,7 +45,16 @@ export function getSnapScriptUrl() {
   return isMidtransProduction() ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
 }
 
-export function getSiteUrl() {
+export function getSiteUrl(request?: Request) {
+  const forwardedHost = request?.headers.get("x-forwarded-host");
+  const host = forwardedHost || request?.headers.get("host");
+
+  if (host) {
+    const forwardedProto = request?.headers.get("x-forwarded-proto");
+    const proto = forwardedProto || (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
+    return `${proto}://${host}`.replace(/\/$/, "");
+  }
+
   return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
 }
 

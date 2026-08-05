@@ -3,6 +3,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Tables } from "@/../types/database";
 import { HomeContainer } from "./components";
+import { redirect } from "next/navigation";
 
 type PelatihanFeatured = Tables<"pelatihan">;
 
@@ -22,7 +23,26 @@ async function getFeaturedCourses(): Promise<PelatihanFeatured[]> {
   return courses;
 }
 
-export default async function Home() {
+type HomeProps = {
+  searchParams: Promise<{
+    error?: string;
+    error_code?: string;
+    error_description?: string;
+  }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+
+  if (params.error || params.error_code || params.error_description) {
+    const message =
+      params.error_code === "otp_expired"
+        ? "Link verifikasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang atau minta link baru."
+        : params.error_description || "Link autentikasi tidak valid.";
+
+    redirect(`/login?message=${encodeURIComponent(message)}`);
+  }
+
   const featuredCourses = await getFeaturedCourses();
 
   return <HomeContainer featuredCourses={featuredCourses} />;

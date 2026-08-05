@@ -5,7 +5,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { login } from "../actions";
 
-export default function LoginForm() {
+interface LoginFormProps {
+  message?: string;
+}
+
+export default function LoginForm({ message = "" }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
@@ -32,6 +36,8 @@ export default function LoginForm() {
 
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+      {message && <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm">{message}</div>}
+
       {error && <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-6">

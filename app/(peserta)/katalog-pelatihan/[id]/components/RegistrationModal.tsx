@@ -123,7 +123,7 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
         return;
       }
 
-      const finishUrl = result.finishUrl || `/pembayaran/${result.paymentId}`;
+      const finishUrl = result.finishPath || `/pembayaran/${result.paymentId}`;
 
       // Tunggu snap script ready, max 10 detik
       const openSnap = (retries = 20): void => {
