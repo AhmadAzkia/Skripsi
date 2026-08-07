@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
 // Change user password
@@ -176,9 +177,15 @@ export async function updateUserProfile(formData: FormData) {
         // Get current profile to delete old avatar if exists
         const { data: currentProfile } = await supabase.from("profil_pengguna").select("foto_profil_url").eq("user_id", user.id).single();
 
+        const admin = createSupabaseAdminClient();
+        if (!admin) {
+          throw new Error("Admin client tidak tersedia untuk upload foto profil");
+        }
+
         // Upload new avatar to avatars bucket
-        const { data: uploadData, error: uploadError } = await supabase.storage.from("avatars").upload(fileName, avatarFile, {
+        const { error: uploadError } = await admin.storage.from("avatars").upload(fileName, avatarFile, {
           cacheControl: "3600",
+          contentType: avatarFile.type,
           upsert: false,
         });
 
@@ -190,7 +197,7 @@ export async function updateUserProfile(formData: FormData) {
         // Get public URL for uploaded file
         const {
           data: { publicUrl },
-        } = supabase.storage.from("avatars").getPublicUrl(fileName);
+        } = admin.storage.from("avatars").getPublicUrl(fileName);
 
         foto_profil_url = publicUrl;
 
@@ -199,7 +206,7 @@ export async function updateUserProfile(formData: FormData) {
           try {
             const oldFileName = currentProfile.foto_profil_url.split("/").pop();
             if (oldFileName && oldFileName.includes(user.id)) {
-              await supabase.storage.from("avatars").remove([oldFileName]);
+              await admin.storage.from("avatars").remove([oldFileName]);
             }
           } catch (deleteError) {
             console.warn("Failed to delete old avatar:", deleteError);
@@ -317,7 +324,10 @@ export async function deleteUserAvatar() {
       try {
         const fileName = currentProfile.foto_profil_url.split("/").pop();
         if (fileName && fileName.includes(user.id)) {
-          const { error: deleteError } = await supabase.storage.from("avatars").remove([fileName]);
+          const admin = createSupabaseAdminClient();
+          const { error: deleteError } = admin
+            ? await admin.storage.from("avatars").remove([fileName])
+            : await supabase.storage.from("avatars").remove([fileName]);
 
           if (deleteError) {
             console.warn("Failed to delete avatar file:", deleteError);
