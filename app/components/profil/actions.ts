@@ -138,6 +138,24 @@ export async function updateUserProfile(formData: FormData) {
 
     let foto_profil_url = null;
 
+    if (!nama_lengkap?.trim()) {
+      return {
+        success: false,
+        profile: null,
+        error: "Nama lengkap wajib diisi",
+        message: "Gagal memperbarui profil",
+      };
+    }
+
+    if (nomor_hp?.trim() && !/^[\d\s\-\+\(\)]+$/.test(nomor_hp)) {
+      return {
+        success: false,
+        profile: null,
+        error: "Format nomor telepon tidak valid",
+        message: "Gagal memperbarui profil",
+      };
+    }
+
     // Handle avatar upload if provided
     if (avatarFile && avatarFile.size > 0) {
       try {
@@ -202,9 +220,9 @@ export async function updateUserProfile(formData: FormData) {
 
     // Update profile data
     const updateData: any = {
-      nama_lengkap,
-      nomor_hp: nomor_hp || null,
-      bio: bio || null,
+      nama_lengkap: nama_lengkap.trim(),
+      nomor_hp: nomor_hp?.trim() || null,
+      bio: bio?.trim() || null,
       diperbarui_pada: new Date().toISOString(),
     };
 

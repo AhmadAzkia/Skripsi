@@ -54,6 +54,11 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setAvatarPreview(e.target?.result as string);
@@ -201,7 +206,7 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Avatar Upload */}
         <div className="text-center">
           <div className="relative inline-block">
@@ -243,7 +248,7 @@ export default function ProfilEditForm({ profile, role, loading = false, onSave,
               </button>
             )}
           </div>
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" disabled={loading || isSubmitting} />
+          <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf" onChange={handleAvatarChange} className="hidden" disabled={loading || isSubmitting} />
           <p className="text-sm text-gray-500 mt-2">
             Klik ikon kamera untuk mengganti foto
             <br />
