@@ -58,7 +58,7 @@ export default function ForgotPasswordForm() {
     <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
       {error && <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-white-text mb-2">
