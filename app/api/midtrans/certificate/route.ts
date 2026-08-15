@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSnapTransaction, getSiteUrl } from "@/lib/midtrans";
-import { getCertificatePrice } from "@/lib/certificates";
+import { getCertificatePrice, isCourseCompleted } from "@/lib/certificates";
 
 export const runtime = "nodejs";
 
 type CertificateCheckoutRequest = {
   pelatihanId: string;
 };
-
-function isCompleted(tanggalSelesai: string | null) {
-  if (!tanggalSelesai) return false;
-  const today = new Date().toISOString().split("T")[0];
-  return today > tanggalSelesai;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +57,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Data pelatihan peserta tidak ditemukan." }, { status: 404 });
     }
 
-    if (!isCompleted(pelatihan.tanggal_selesai) && registration.status !== "selesai") {
+    if (!isCourseCompleted(pelatihan.tanggal_selesai)) {
       return NextResponse.json({ error: "Sertifikat hanya dapat diklaim setelah pelatihan selesai." }, { status: 400 });
     }
 

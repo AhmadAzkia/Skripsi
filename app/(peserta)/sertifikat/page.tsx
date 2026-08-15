@@ -6,7 +6,7 @@ import SertifikatContainer from "./components/SertifikatContainer";
 import { redirect } from "next/navigation";
 import { Tables } from "@/../types/database";
 import type { SessionUser } from "@/contexts/AuthContext";
-import { getCertificatePrice } from "@/lib/certificates";
+import { getCertificatePrice, isCourseCompleted } from "@/lib/certificates";
 import { ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export type CertificateWithCourse = Tables<"sertifikat"> & {
@@ -18,7 +18,7 @@ export type CertificateClaim = {
   judul: string;
   kategori: string;
   harga: number;
-  status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran" | "menunggu_evaluasi" | "tidak_lulus";
+  status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran" | "menunggu_pelatihan_selesai" | "menunggu_evaluasi" | "tidak_lulus";
   certificateId: string | null;
   certificatePaymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
 };
@@ -42,7 +42,7 @@ async function getCertificates(profileId: string): Promise<CertificateWithCourse
     return [];
   }
 
-  return certificates as CertificateWithCourse[];
+  return (certificates as CertificateWithCourse[]).filter((certificate) => isCourseCompleted(certificate.pelatihan?.tanggal_selesai || null));
 }
 
 async function getCertificateClaims(profileId: string): Promise<CertificateClaim[]> {
@@ -84,6 +84,8 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     return pelatihanData!.id;
   });
 
+  if (pelatihanIds.length === 0) return [];
+
   const [{ data: certificates }, { data: payments }] = await Promise.all([
     supabase.from("sertifikat").select("id, pelatihan_id, status").eq("peserta_id", profileId).eq("status", "terbit").in("pelatihan_id", pelatihanIds),
     supabase.from("pembayaran").select("id, pelatihan_id, status_pembayaran, tipe_pembayaran").eq("pengguna_id", profileId).in("pelatihan_id", pelatihanIds).order("dibuat_pada", { ascending: false }),
@@ -98,11 +100,12 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     const result = Array.isArray(registration.hasil_pelatihan) ? registration.hasil_pelatihan[0] : registration.hasil_pelatihan;
     const graduationStatus = result?.status_kelulusan || null;
     const hasPassed = graduationStatus === "lulus";
+    const hasCourseCompleted = isCourseCompleted(pelatihanData.tanggal_selesai);
     let certificateId = certificates?.find((certificate) => certificate.pelatihan_id === pelatihanData.id)?.id || null;
     const coursePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "pendaftaran_pelatihan" && payment.status_pembayaran === "berhasil");
     const certificatePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "klaim_sertifikat");
 
-    if (!certificateId && hasPassed && pelatihanData.harga > 0 && coursePayment) {
+    if (!certificateId && hasCourseCompleted && hasPassed && pelatihanData.harga > 0 && coursePayment) {
       try {
         certificateId = await ensureCertificateForCourse(profileId, pelatihanData.id);
       } catch (error) {
@@ -110,7 +113,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
       }
     }
 
-    if (!certificateId && hasPassed && pelatihanData.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
+    if (!certificateId && hasCourseCompleted && hasPassed && pelatihanData.harga === 0 && certificatePayment?.status_pembayaran === "berhasil") {
       try {
         certificateId = await ensureCertificateForCourse(profileId, pelatihanData.id);
       } catch (error) {
@@ -119,7 +122,9 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     }
 
     let status: CertificateClaim["status"];
-    if (certificateId) {
+    if (!hasCourseCompleted) {
+      status = "menunggu_pelatihan_selesai";
+    } else if (certificateId) {
       status = "sertifikat_tersedia";
     } else if (!graduationStatus) {
       status = "menunggu_evaluasi";

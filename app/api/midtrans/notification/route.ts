@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createMidtransSignature, mapMidtransStatus, type MidtransTransactionStatus } from "@/lib/midtrans";
-import { ensureCertificateForCourse } from "@/lib/certificate-generator";
+import { CertificateEligibilityError, ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export const runtime = "nodejs";
 
@@ -49,7 +49,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "klaim_sertifikat") {
-      await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
+      try {
+        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
+      } catch (error) {
+        if (!(error instanceof CertificateEligibilityError)) throw error;
+        console.warn("Sertifikat klaim belum memenuhi syarat:", error.message);
+      }
     }
 
     if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_pelatihan") {

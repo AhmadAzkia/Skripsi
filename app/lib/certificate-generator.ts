@@ -1,7 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createCertificateNumber } from "@/lib/certificates";
+import { createCertificateNumber, isCourseCompleted } from "@/lib/certificates";
 import type { TablesUpdate } from "@/../types/database";
 
 type KoordinatField = {
@@ -63,6 +63,20 @@ export async function assertCertificateEligibility(
 
   if (!registration || registration.status === "dibatalkan") {
     throw new CertificateEligibilityError("Peserta tidak memiliki pendaftaran aktif untuk pelatihan ini.");
+  }
+
+  const { data: course, error: courseError } = await supabase
+    .from("pelatihan")
+    .select("tanggal_selesai")
+    .eq("id", pelatihanId)
+    .maybeSingle();
+
+  if (courseError) {
+    throw new Error(`Gagal memeriksa tanggal pelatihan: ${courseError.message}`);
+  }
+
+  if (!course || !isCourseCompleted(course.tanggal_selesai)) {
+    throw new CertificateEligibilityError("Sertifikat hanya tersedia setelah pelatihan selesai.");
   }
 
   const { data: result, error: resultError } = await supabase

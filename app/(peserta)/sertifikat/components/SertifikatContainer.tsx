@@ -74,6 +74,17 @@ export default function SertifikatContainer({ user, certificates, claims, select
         </section>
       )}
 
+      {selectedClaim?.status === "menunggu_pelatihan_selesai" && (
+        <section className="py-10 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+              <h2 className="text-xl font-bold text-navy mb-2">Pelatihan masih berlangsung</h2>
+              <p className="text-gray-700">Sertifikat baru dapat dibeli setelah tanggal selesai pelatihan terlewati dan peserta dinyatakan lulus.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {(selectedClaim?.status === "menunggu_evaluasi" || selectedClaim?.status === "tidak_lulus") && (
         <section className="py-10 bg-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
