@@ -10,9 +10,55 @@ type PaymentStatusActionsProps = {
 
 export default function PaymentStatusActions({ paymentId, status }: PaymentStatusActionsProps) {
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
   const snapScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true" ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
   const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
+
+  const syncPaymentStatus = async () => {
+    const response = await fetch("/api/midtrans/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentId }),
+    });
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Gagal sinkron status pembayaran.");
+    }
+
+    return result;
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setError("");
+
+    try {
+      const result = await syncPaymentStatus();
+
+      if (result.status === "berhasil") {
+        window.location.reload();
+        return;
+      }
+
+      setError("Pembayaran masih menunggu konfirmasi Midtrans.");
+    } catch (err: any) {
+      setError(err.message || "Gagal sinkron status pembayaran.");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const reloadAfterSync = async () => {
+    try {
+      await syncPaymentStatus();
+    } catch (err) {
+      console.error("Gagal sinkron status pembayaran:", err);
+    } finally {
+      window.location.reload();
+    }
+  };
 
   const handlePay = async () => {
     setLoading(true);
@@ -30,10 +76,15 @@ export default function PaymentStatusActions({ paymentId, status }: PaymentStatu
         throw new Error(result.error || "Gagal membuka checkout.");
       }
 
+      if (result.alreadyPaid) {
+        window.location.reload();
+        return;
+      }
+
       if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {
-          onSuccess: () => window.location.reload(),
-          onPending: () => window.location.reload(),
+          onSuccess: reloadAfterSync,
+          onPending: reloadAfterSync,
           onError: () => {
             setError("Pembayaran gagal. Silakan coba lagi.");
             setLoading(false);
@@ -60,14 +111,24 @@ export default function PaymentStatusActions({ paymentId, status }: PaymentStatu
 
       {/* Menunggu: Bayar */}
       {status === "menunggu" && (
-        <button
-          type="button"
-          onClick={handlePay}
-          disabled={loading}
-          className="w-full px-6 py-3 bg-linear-to-r from-navy to-blue-700 text-white rounded-lg font-semibold hover:from-gold hover:to-gold/90 transition-all duration-300 disabled:opacity-60"
-        >
-          {loading ? "Membuka Checkout..." : "Bayar Sekarang"}
-        </button>
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={handlePay}
+            disabled={loading || syncing}
+            className="w-full px-6 py-3 bg-linear-to-r from-navy to-blue-700 text-white rounded-lg font-semibold hover:from-gold hover:to-gold/90 transition-all duration-300 disabled:opacity-60"
+          >
+            {loading ? "Membuka Checkout..." : "Bayar Sekarang"}
+          </button>
+          <button
+            type="button"
+            onClick={handleSync}
+            disabled={loading || syncing}
+            className="w-full px-6 py-3 border border-navy/20 text-navy rounded-lg font-semibold text-center hover:bg-navy/5 transition-colors disabled:opacity-60"
+          >
+            {syncing ? "Mengecek Status..." : "Refresh Status Pembayaran"}
+          </button>
+        </div>
       )}
 
       {/* Gagal: Retry */}

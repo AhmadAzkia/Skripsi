@@ -34,6 +34,16 @@ type SnapTransactionPayload = {
   };
 };
 
+export type MidtransTransactionStatusResponse = {
+  order_id: string;
+  status_code: string;
+  gross_amount: string;
+  transaction_status: MidtransTransactionStatus;
+  payment_type?: string;
+  status_message?: string;
+  fraud_status?: string;
+};
+
 export function isMidtransProduction() {
   return process.env.MIDTRANS_IS_PRODUCTION === "true";
 }
@@ -44,6 +54,11 @@ export function getSnapApiUrl() {
 
 export function getSnapScriptUrl() {
   return isMidtransProduction() ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
+}
+
+export function getTransactionStatusApiUrl(orderId: string) {
+  const encodedOrderId = encodeURIComponent(orderId);
+  return isMidtransProduction() ? `https://api.midtrans.com/v2/${encodedOrderId}/status` : `https://api.sandbox.midtrans.com/v2/${encodedOrderId}/status`;
 }
 
 export function getSiteUrl(request?: Request) {
@@ -78,19 +93,27 @@ export function createMidtransSignature(orderId: string, statusCode: string, gro
   return crypto.createHash("sha512").update(`${orderId}${statusCode}${grossAmount}${serverKey}`).digest("hex");
 }
 
-export async function createSnapTransaction(payload: SnapTransactionPayload) {
+function getServerKey() {
   const serverKey = process.env.MIDTRANS_SERVER_KEY;
 
   if (!serverKey) {
     throw new Error("MIDTRANS_SERVER_KEY belum diisi di environment.");
   }
 
+  return serverKey;
+}
+
+function getAuthorizationHeader() {
+  return `Basic ${Buffer.from(`${getServerKey()}:`).toString("base64")}`;
+}
+
+export async function createSnapTransaction(payload: SnapTransactionPayload) {
   const response = await fetch(getSnapApiUrl(), {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: `Basic ${Buffer.from(`${serverKey}:`).toString("base64")}`,
+      Authorization: getAuthorizationHeader(),
     },
     body: JSON.stringify(payload),
   });
@@ -106,4 +129,23 @@ export async function createSnapTransaction(payload: SnapTransactionPayload) {
     token: string;
     redirect_url: string;
   };
+}
+
+export async function getMidtransTransactionStatus(orderId: string) {
+  const response = await fetch(getTransactionStatusApiUrl(orderId), {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: getAuthorizationHeader(),
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const message = Array.isArray(result?.error_messages) ? result.error_messages.join(", ") : result?.status_message || "Gagal mengambil status transaksi Midtrans.";
+    throw new Error(message);
+  }
+
+  return result as MidtransTransactionStatusResponse;
 }

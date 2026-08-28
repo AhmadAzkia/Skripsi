@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createSnapTransaction, getSiteUrl } from "@/lib/midtrans";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSnapTransaction, getMidtransTransactionStatus, getSiteUrl } from "@/lib/midtrans";
+import { applyMidtransPaymentStatus } from "@/lib/payment-status";
 
 export const runtime = "nodejs";
 
@@ -82,16 +84,43 @@ export async function POST(request: NextRequest) {
         .maybeSingle();
 
       if (existingPayment && existingPayment.id_pembayaran_eksternal) {
-        // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
-        const newOrderId = `CG-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
         const finishPath = `/pembayaran/${existingPayment.id}`;
         const finishUrl = `${getSiteUrl(request)}${finishPath}`;
+
+        try {
+          const midtransStatus = await getMidtransTransactionStatus(existingPayment.id_pembayaran_eksternal);
+          const statusSupabase = createSupabaseAdminClient() || supabase;
+          const syncedPayment = await applyMidtransPaymentStatus({
+            supabase: statusSupabase,
+            orderId: midtransStatus.order_id,
+            transactionStatus: midtransStatus.transaction_status,
+            paymentType: midtransStatus.payment_type,
+          });
+
+          if (syncedPayment.paymentStatus === "berhasil") {
+            return NextResponse.json({
+              success: true,
+              isFree: false,
+              alreadyPaid: true,
+              paymentId: existingPayment.id,
+              orderId: existingPayment.id_pembayaran_eksternal,
+              finishPath,
+              finishUrl,
+            });
+          }
+        } catch (error) {
+          console.warn("Gagal cek status Midtrans existing payment:", error);
+        }
+
+        // Generate new order_id (Midtrans max 50 chars, no reusing same order_id)
+        const newOrderId = `CG-${existingPayment.id}-${Date.now().toString(36).slice(-6)}`;
 
         // Update payment with new order_id
         await supabase
           .from("pembayaran")
           .update({
             id_pembayaran_eksternal: newOrderId,
+            status_pembayaran: "menunggu",
             diperbarui_pada: new Date().toISOString(),
           })
           .eq("id", existingPayment.id);

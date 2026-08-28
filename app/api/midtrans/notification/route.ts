@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createMidtransSignature, mapMidtransStatus, type MidtransTransactionStatus } from "@/lib/midtrans";
-import { CertificateEligibilityError, ensureCertificateForCourse } from "@/lib/certificate-generator";
+import { createMidtransSignature, type MidtransTransactionStatus } from "@/lib/midtrans";
+import { applyMidtransPaymentStatus } from "@/lib/payment-status";
 
 export const runtime = "nodejs";
 
@@ -35,42 +35,20 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createSupabaseAdminClient() || (await createSupabaseServerClient());
-    const mappedStatus = mapMidtransStatus(payload.transaction_status);
-    const { data: payment, error: paymentError } = await supabase
-      .from("pembayaran")
-      .update({
-        status_pembayaran: mappedStatus.paymentStatus,
-        metode_pembayaran: payload.payment_type || null,
-        dibayar_pada: mappedStatus.paidAt,
-        diperbarui_pada: new Date().toISOString(),
-      })
-      .eq("id_pembayaran_eksternal", payload.order_id)
-      .select("id, pelatihan_id, pengguna_id, tipe_pembayaran")
-      .single();
+    const result = await applyMidtransPaymentStatus({
+      supabase,
+      orderId: payload.order_id,
+      transactionStatus: payload.transaction_status,
+      paymentType: payload.payment_type,
+    });
 
-    if (paymentError || !payment) {
-      return NextResponse.json({ error: `Pembayaran tidak ditemukan: ${paymentError?.message || payload.order_id}` }, { status: 404 });
-    }
+    console.log("Midtrans notification processed:", {
+      orderId: payload.order_id,
+      transactionStatus: payload.transaction_status,
+      paymentStatus: result.paymentStatus,
+    });
 
-    if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "klaim_sertifikat") {
-      try {
-        await ensureCertificateForCourse(payment.pengguna_id, payment.pelatihan_id, supabase);
-      } catch (error) {
-        if (!(error instanceof CertificateEligibilityError)) throw error;
-        console.warn("Sertifikat klaim belum memenuhi syarat:", error.message);
-      }
-    }
-
-    if (mappedStatus.paymentStatus === "berhasil" && payment.tipe_pembayaran === "pendaftaran_pelatihan") {
-      await supabase
-        .from("pendaftaran_pelatihan")
-        .update({ status: "terdaftar" })
-        .eq("pelatihan_id", payment.pelatihan_id)
-        .eq("pengguna_id", payment.pengguna_id)
-        .eq("status", "menunggu_pembayaran");
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, status: result.paymentStatus });
   } catch (error: any) {
     console.error("Midtrans notification error:", error);
     return NextResponse.json({ error: error.message || "Gagal memproses notifikasi Midtrans." }, { status: 500 });

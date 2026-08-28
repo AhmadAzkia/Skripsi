@@ -118,12 +118,17 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
 
       handleSuccess();
 
+      const finishUrl = result.finishPath || `/pembayaran/${result.paymentId}`;
+
       if (result.isFree) {
         window.location.href = "/jadwal-peserta";
         return;
       }
 
-      const finishUrl = result.finishPath || `/pembayaran/${result.paymentId}`;
+      if (result.alreadyPaid) {
+        window.location.href = finishUrl;
+        return;
+      }
 
       // Tunggu snap script ready, max 10 detik
       const openSnap = (retries = 20): void => {
