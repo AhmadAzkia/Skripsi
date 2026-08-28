@@ -130,6 +130,11 @@ export default function RegistrationModal({ pelatihan, profile, isOpen }: Regist
         return;
       }
 
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+        return;
+      }
+
       // Tunggu snap script ready, max 10 detik
       const openSnap = (retries = 20): void => {
         if ((window as any).snap && result.token) {

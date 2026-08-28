@@ -45,7 +45,9 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
 
       const finishUrl = result.finishPath || `/sertifikat?pelatihanId=${pelatihanId}`;
 
-      if ((window as any).snap && result.token) {
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      } else if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {
           onSuccess: () => {
             window.location.href = finishUrl;
@@ -60,8 +62,6 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
             window.location.href = finishUrl;
           },
         });
-      } else if (result.redirectUrl) {
-        window.location.href = result.redirectUrl;
       } else {
         throw new Error("Token checkout sertifikat tidak tersedia.");
       }

@@ -81,7 +81,9 @@ export default function PaymentStatusActions({ paymentId, status }: PaymentStatu
         return;
       }
 
-      if ((window as any).snap && result.token) {
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      } else if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {
           onSuccess: reloadAfterSync,
           onPending: reloadAfterSync,
@@ -94,8 +96,6 @@ export default function PaymentStatusActions({ paymentId, status }: PaymentStatu
             setLoading(false);
           },
         });
-      } else if (result.redirectUrl) {
-        window.location.href = result.redirectUrl;
       } else {
         throw new Error("Token checkout tidak tersedia.");
       }
