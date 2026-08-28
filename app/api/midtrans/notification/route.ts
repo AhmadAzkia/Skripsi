@@ -6,6 +6,10 @@ import { CertificateEligibilityError, ensureCertificateForCourse } from "@/lib/c
 
 export const runtime = "nodejs";
 
+export async function GET() {
+  return NextResponse.json({ success: true, message: "Midtrans notification endpoint aktif." });
+}
+
 type MidtransNotification = {
   order_id: string;
   status_code: string;
