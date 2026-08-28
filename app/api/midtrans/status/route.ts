@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const midtransStatus = await getMidtransTransactionStatus(payment.id_pembayaran_eksternal);
     const result = await applyMidtransPaymentStatus({
       supabase,
-      orderId: midtransStatus.order_id,
+      orderId: midtransStatus.order_id || payment.id_pembayaran_eksternal,
       transactionStatus: midtransStatus.transaction_status,
       paymentType: midtransStatus.payment_type,
     });

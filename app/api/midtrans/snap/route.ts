@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
           const statusSupabase = createSupabaseAdminClient() || supabase;
           const syncedPayment = await applyMidtransPaymentStatus({
             supabase: statusSupabase,
-            orderId: midtransStatus.order_id,
+            orderId: midtransStatus.order_id || existingPayment.id_pembayaran_eksternal,
             transactionStatus: midtransStatus.transaction_status,
             paymentType: midtransStatus.payment_type,
           });

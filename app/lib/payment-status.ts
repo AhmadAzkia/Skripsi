@@ -12,7 +12,9 @@ type ApplyPaymentStatusParams = {
   paymentType?: string | null;
 };
 
-function getPaymentIdFromOrderId(orderId: string) {
+function getPaymentIdFromOrderId(orderId?: string | null) {
+  if (!orderId) return null;
+
   const match = orderId.match(/^CG-(?:CERT-)?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:-.+)?$/i);
   return match?.[1] || null;
 }
