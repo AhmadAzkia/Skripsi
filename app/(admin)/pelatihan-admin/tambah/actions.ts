@@ -126,10 +126,10 @@ export async function createPelatihan(data: CreatePelatihanData) {
       };
     }
 
-    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) <= 0)) {
+    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) < 0)) {
       return {
         success: false,
-        error: "Harga sertifikat harus lebih dari 0 untuk pelatihan gratis",
+        error: "Harga sertifikat tidak boleh negatif untuk pelatihan gratis",
       };
     }
 
@@ -242,10 +242,10 @@ export async function updatePelatihan(id: string, data: Partial<CreatePelatihanD
       };
     }
 
-    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) <= 0)) {
+    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) < 0)) {
       return {
         success: false,
-        error: "Harga sertifikat harus lebih dari 0 untuk pelatihan gratis",
+        error: "Harga sertifikat tidak boleh negatif untuk pelatihan gratis",
       };
     }
 

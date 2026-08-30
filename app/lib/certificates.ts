@@ -1,5 +1,5 @@
 export function getCertificatePriceForCourse(hargaSertifikat?: number | null) {
-  return Number.isFinite(hargaSertifikat) && Number(hargaSertifikat) > 0 ? Number(hargaSertifikat) : 50000;
+  return Number.isFinite(hargaSertifikat) && Number(hargaSertifikat) >= 0 ? Number(hargaSertifikat) : 50000;
 }
 
 export function getTodayDateOnly(timeZone = "Asia/Jakarta") {

@@ -22,7 +22,7 @@ function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-navy mb-2">Sertifikat Opsional</h2>
-          <p className="text-gray-600">Pelatihan gratis yang sudah selesai dan dapat dibeli sertifikatnya.</p>
+          <p className="text-gray-600">Pelatihan gratis yang sudah selesai dan sertifikatnya dapat diklaim atau dibeli.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -35,7 +35,7 @@ function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
                   <p className="text-sm text-gray-600 mt-1">{claim.kategori}</p>
                 </div>
                 <Link href={`/sertifikat?pelatihanId=${claim.pelatihanId}`} className="px-4 py-2 bg-gold text-navy rounded-lg font-semibold text-center hover:bg-gold/90">
-                  {claim.status === "menunggu_pembayaran" ? "Lanjutkan" : "Beli Sertifikat"}
+                  {claim.status === "menunggu_pembayaran" ? "Lanjutkan" : claim.hargaSertifikat === 0 ? "Klaim Sertifikat" : "Beli Sertifikat"}
                 </Link>
               </div>
             </div>

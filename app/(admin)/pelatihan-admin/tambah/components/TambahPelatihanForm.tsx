@@ -115,7 +115,7 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
     if (!formData.deskripsi.trim()) newErrors.deskripsi = "Deskripsi harus diisi";
     if (!formData.kategori.trim()) newErrors.kategori = "Kategori harus diisi";
     if (formData.is_gratis) {
-      if (formData.harga_sertifikat <= 0) newErrors.harga_sertifikat = "Harga sertifikat harus lebih dari 0";
+      if (formData.harga_sertifikat < 0) newErrors.harga_sertifikat = "Harga sertifikat tidak boleh negatif";
     } else if (formData.harga < 0) {
       newErrors.harga = "Harga tidak boleh negatif";
     }

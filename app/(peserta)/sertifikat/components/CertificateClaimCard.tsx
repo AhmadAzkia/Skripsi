@@ -45,7 +45,9 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
 
       const finishUrl = result.finishPath || `/sertifikat?pelatihanId=${pelatihanId}`;
 
-      if (result.redirectUrl) {
+      if (!result.redirectUrl && !result.token) {
+        window.location.href = finishUrl;
+      } else if (result.redirectUrl) {
         window.location.href = result.redirectUrl;
       } else if ((window as any).snap && result.token) {
         (window as any).snap.pay(result.token, {
@@ -88,7 +90,7 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
               <div className="md:col-span-2">
                 <h3 className="text-xl font-bold text-navy mb-3">Pelatihan gratis telah selesai</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Sertifikat untuk pelatihan gratis bersifat opsional. Anda dapat membeli sertifikat digital sebagai bukti penyelesaian pelatihan.
+                  Sertifikat untuk pelatihan gratis bersifat opsional. Anda dapat mengklaim sertifikat digital sebagai bukti penyelesaian pelatihan.
                 </p>
                 {paymentStatus === "menunggu" && <p className="mt-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Pembayaran sertifikat sebelumnya masih menunggu penyelesaian.</p>}
               </div>
@@ -102,7 +104,7 @@ export default function CertificateClaimCard({ pelatihanId, courseTitle, certifi
                   disabled={loading}
                   className="w-full px-4 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-60"
                 >
-                  {loading ? "Membuka Checkout..." : paymentStatus === "menunggu" ? "Lanjutkan Pembayaran" : "Beli Sertifikat"}
+                  {loading ? (certificatePrice === 0 ? "Mengklaim Sertifikat..." : "Membuka Checkout...") : paymentStatus === "menunggu" ? "Lanjutkan Pembayaran" : certificatePrice === 0 ? "Klaim Sertifikat" : "Beli Sertifikat"}
                 </button>
               </div>
             </div>

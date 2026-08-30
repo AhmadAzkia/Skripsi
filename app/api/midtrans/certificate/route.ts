@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSnapTransaction, getSiteUrl } from "@/lib/midtrans";
 import { getCertificatePriceForCourse, isCourseCompleted } from "@/lib/certificates";
+import { ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export const runtime = "nodejs";
 
@@ -96,6 +97,21 @@ export async function POST(request: NextRequest) {
     }
 
     const certificatePrice = getCertificatePriceForCourse(pelatihan.harga_sertifikat);
+
+    if (certificatePrice === 0) {
+      const certificateId = await ensureCertificateForCourse(profile.id, pelatihan.id, database);
+      return NextResponse.json({
+        success: true,
+        paymentId: null,
+        orderId: null,
+        token: null,
+        redirectUrl: null,
+        finishPath: `/sertifikat?pelatihanId=${pelatihan.id}`,
+        finishUrl: `${getSiteUrl(request)}/sertifikat?pelatihanId=${pelatihan.id}`,
+        certificateId,
+      });
+    }
+
     const now = new Date().toISOString();
 
     const { data: oldPendingPayments } = await supabase
