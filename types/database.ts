@@ -20,6 +20,7 @@ export type Database = {
           dibuat_pada: string
           diperbarui_pada: string | null
           harga: number
+          harga_sertifikat: number | null
           id: string
           judul: string
           kategori: string
@@ -37,6 +38,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           harga?: number
+          harga_sertifikat?: number | null
           id?: string
           judul: string
           kategori: string
@@ -54,6 +56,7 @@ export type Database = {
           dibuat_pada?: string
           diperbarui_pada?: string | null
           harga?: number
+          harga_sertifikat?: number | null
           id?: string
           judul?: string
           kategori?: string

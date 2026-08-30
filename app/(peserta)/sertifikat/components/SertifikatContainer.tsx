@@ -10,7 +10,6 @@ type SertifikatContainerProps = {
   certificates: CertificateWithCourse[];
   claims: CertificateClaim[];
   selectedClaim: CertificateClaim | null;
-  certificatePrice: number;
 };
 
 function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
@@ -47,7 +46,7 @@ function ClaimSummary({ claims }: { claims: CertificateClaim[] }) {
   );
 }
 
-export default function SertifikatContainer({ user, certificates, claims, selectedClaim, certificatePrice }: SertifikatContainerProps) {
+export default function SertifikatContainer({ user, certificates, claims, selectedClaim }: SertifikatContainerProps) {
   const shouldOfferCertificate = selectedClaim?.status === "tawarkan_pembelian" || selectedClaim?.status === "menunggu_pembayaran";
 
   return (
@@ -58,7 +57,7 @@ export default function SertifikatContainer({ user, certificates, claims, select
         <CertificateClaimCard
           pelatihanId={selectedClaim.pelatihanId}
           courseTitle={selectedClaim.judul}
-          certificatePrice={certificatePrice}
+          certificatePrice={selectedClaim.hargaSertifikat}
           paymentStatus={selectedClaim.certificatePaymentStatus}
         />
       )}

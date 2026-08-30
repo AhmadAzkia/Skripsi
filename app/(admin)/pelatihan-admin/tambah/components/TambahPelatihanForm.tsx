@@ -12,6 +12,8 @@ interface FormData {
   kategori: string;
   tipe_pelatihan: "online" | "offline";
   harga: number;
+  harga_sertifikat: number;
+  is_gratis: boolean;
   maksimal_peserta: number;
   tanggal_mulai: string;
   tanggal_selesai: string;
@@ -25,6 +27,8 @@ const initialFormData: FormData = {
   kategori: "",
   tipe_pelatihan: "online",
   harga: 0,
+  harga_sertifikat: 0,
+  is_gratis: false,
   maksimal_peserta: 0,
   tanggal_mulai: "",
   tanggal_selesai: "",
@@ -91,10 +95,11 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : false;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "harga" || name === "maksimal_peserta" ? Number(value) : value,
+      [name]: type === "checkbox" ? checked : name === "harga" || name === "harga_sertifikat" || name === "maksimal_peserta" ? Number(value) : value,
     }));
 
     // Clear error when user starts typing
@@ -109,7 +114,11 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
     if (!formData.judul.trim()) newErrors.judul = "Judul pelatihan harus diisi";
     if (!formData.deskripsi.trim()) newErrors.deskripsi = "Deskripsi harus diisi";
     if (!formData.kategori.trim()) newErrors.kategori = "Kategori harus diisi";
-    if (formData.harga < 0) newErrors.harga = "Harga tidak boleh negatif";
+    if (formData.is_gratis) {
+      if (formData.harga_sertifikat <= 0) newErrors.harga_sertifikat = "Harga sertifikat harus lebih dari 0";
+    } else if (formData.harga < 0) {
+      newErrors.harga = "Harga tidak boleh negatif";
+    }
     if (formData.maksimal_peserta <= 0) newErrors.maksimal_peserta = "Maksimal peserta harus lebih dari 0";
     if (!formData.tanggal_mulai) newErrors.tanggal_mulai = "Tanggal mulai harus diisi";
     if (!formData.tanggal_selesai) newErrors.tanggal_selesai = "Tanggal selesai harus diisi";
@@ -148,7 +157,12 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
         thumbnailUrl = url || "";
       }
 
-      const submitData = { ...formData, thumbnail_url: thumbnailUrl };
+      const submitData = {
+        ...formData,
+        harga: formData.is_gratis ? 0 : formData.harga,
+        harga_sertifikat: formData.is_gratis ? formData.harga_sertifikat : null,
+        thumbnail_url: thumbnailUrl,
+      };
       const result = mode === "edit" && courseId ? await updatePelatihan(courseId, submitData) : await createPelatihan(submitData);
 
       if (result.success) {
@@ -300,20 +314,34 @@ export default function TambahPelatihanForm({ mode = "create", courseId, initial
 
               {/* Harga */}
               <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-navy mb-3">
+                  <input
+                    type="checkbox"
+                    name="is_gratis"
+                    checked={formData.is_gratis}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 rounded border-silver/30 text-gold focus:ring-gold/20"
+                  />
+                  Pelatihan Gratis
+                </label>
+
                 <label className="block text-sm font-medium text-navy mb-2">
-                  Harga (IDR) <span className="text-red-500">*</span>
+                  {formData.is_gratis ? "Harga Sertifikat (IDR)" : "Harga Pelatihan (IDR)"} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
-                  name="harga"
-                  value={formData.harga}
+                  name={formData.is_gratis ? "harga_sertifikat" : "harga"}
+                  value={formData.is_gratis ? formData.harga_sertifikat : formData.harga}
                   onChange={handleInputChange}
                   min="0"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200 ${errors.harga ? "border-red-300 bg-red-50" : "border-silver/30"}`}
-                  placeholder="500000"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200 ${errors.harga || errors.harga_sertifikat ? "border-red-300 bg-red-50" : "border-silver/30"}`}
+                  placeholder={formData.is_gratis ? "75000" : "500000"}
                 />
                 {errors.harga && <p className="text-red-500 text-sm mt-1">{errors.harga}</p>}
-                <p className="text-xs text-silver mt-1">Masukkan 0 untuk pelatihan gratis</p>
+                {errors.harga_sertifikat && <p className="text-red-500 text-sm mt-1">{errors.harga_sertifikat}</p>}
+                <p className="text-xs text-silver mt-1">
+                  {formData.is_gratis ? "Peserta bayar sertifikat setelah lulus pelatihan gratis." : "Harga ini dibayar peserta saat daftar pelatihan."}
+                </p>
               </div>
 
               {/* Maksimal Peserta */}

@@ -62,6 +62,7 @@ interface CreatePelatihanData {
   kategori: string;
   tipe_pelatihan: "online" | "offline";
   harga: number;
+  harga_sertifikat?: number | null;
   maksimal_peserta: number;
   tanggal_mulai: string;
   tanggal_selesai: string;
@@ -125,6 +126,13 @@ export async function createPelatihan(data: CreatePelatihanData) {
       };
     }
 
+    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) <= 0)) {
+      return {
+        success: false,
+        error: "Harga sertifikat harus lebih dari 0 untuk pelatihan gratis",
+      };
+    }
+
     if (data.maksimal_peserta <= 0) {
       return {
         success: false,
@@ -150,6 +158,8 @@ export async function createPelatihan(data: CreatePelatihanData) {
       };
     }
 
+    const hargaSertifikat = data.harga === 0 ? Number(data.harga_sertifikat) : null;
+
     // Prepare data for insertion
     const pelatihanData = {
       judul: data.judul.trim(),
@@ -157,6 +167,7 @@ export async function createPelatihan(data: CreatePelatihanData) {
       kategori: data.kategori.trim(),
       tipe_pelatihan: data.tipe_pelatihan,
       harga: data.harga,
+      harga_sertifikat: hargaSertifikat,
       maksimal_peserta: data.maksimal_peserta,
       tanggal_mulai: data.tanggal_mulai,
       tanggal_selesai: data.tanggal_selesai,
@@ -224,9 +235,26 @@ export async function updatePelatihan(id: string, data: Partial<CreatePelatihanD
       };
     }
 
+    if (data.harga !== undefined && data.harga < 0) {
+      return {
+        success: false,
+        error: "Harga tidak boleh negatif",
+      };
+    }
+
+    if (data.harga === 0 && (!Number.isFinite(data.harga_sertifikat) || Number(data.harga_sertifikat) <= 0)) {
+      return {
+        success: false,
+        error: "Harga sertifikat harus lebih dari 0 untuk pelatihan gratis",
+      };
+    }
+
+    const { is_gratis: _isGratis, ...pelatihanInput } = data as Partial<CreatePelatihanData> & { is_gratis?: boolean };
+
     // Prepare update data
     const updateData = {
-      ...data,
+      ...pelatihanInput,
+      harga_sertifikat: data.harga === 0 ? Number(data.harga_sertifikat) : data.harga && data.harga > 0 ? null : data.harga_sertifikat,
       diperbarui_pada: new Date().toISOString(),
     };
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSnapTransaction, getSiteUrl } from "@/lib/midtrans";
-import { getCertificatePrice, isCourseCompleted } from "@/lib/certificates";
+import { getCertificatePriceForCourse, isCourseCompleted } from "@/lib/certificates";
 
 export const runtime = "nodejs";
 
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
           id,
           judul,
           harga,
+          harga_sertifikat,
           tanggal_selesai
         )
       `
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Sertifikat untuk pelatihan ini sudah tersedia." }, { status: 409 });
     }
 
-    const certificatePrice = getCertificatePrice();
+    const certificatePrice = getCertificatePriceForCourse(pelatihan.harga_sertifikat);
     const now = new Date().toISOString();
 
     const { data: oldPendingPayments } = await supabase

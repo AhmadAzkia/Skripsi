@@ -1,6 +1,5 @@
-export function getCertificatePrice() {
-  const configuredPrice = Number(process.env.CERTIFICATE_PRICE || process.env.NEXT_PUBLIC_CERTIFICATE_PRICE || 50000);
-  return Number.isFinite(configuredPrice) && configuredPrice > 0 ? configuredPrice : 50000;
+export function getCertificatePriceForCourse(hargaSertifikat?: number | null) {
+  return Number.isFinite(hargaSertifikat) && Number(hargaSertifikat) > 0 ? Number(hargaSertifikat) : 50000;
 }
 
 export function getTodayDateOnly(timeZone = "Asia/Jakarta") {

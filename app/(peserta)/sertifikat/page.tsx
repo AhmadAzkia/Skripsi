@@ -6,7 +6,7 @@ import SertifikatContainer from "./components/SertifikatContainer";
 import { redirect } from "next/navigation";
 import { Tables } from "@/../types/database";
 import type { SessionUser } from "@/contexts/AuthContext";
-import { getCertificatePrice, isCourseCompleted } from "@/lib/certificates";
+import { getCertificatePriceForCourse, isCourseCompleted } from "@/lib/certificates";
 import { ensureCertificateForCourse } from "@/lib/certificate-generator";
 
 export type CertificateWithCourse = Tables<"sertifikat"> & {
@@ -18,6 +18,7 @@ export type CertificateClaim = {
   judul: string;
   kategori: string;
   harga: number;
+  hargaSertifikat: number;
   status: "sertifikat_tersedia" | "termasuk_pelatihan_berbayar" | "tawarkan_pembelian" | "menunggu_pembayaran" | "menunggu_pelatihan_selesai" | "menunggu_evaluasi" | "tidak_lulus";
   certificateId: string | null;
   certificatePaymentStatus: "menunggu" | "berhasil" | "gagal" | "dikembalikan" | null;
@@ -61,6 +62,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
         judul,
         kategori,
         harga,
+        harga_sertifikat,
         tanggal_selesai
       )
     `,
@@ -101,6 +103,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
     const graduationStatus = result?.status_kelulusan || null;
     const hasPassed = graduationStatus === "lulus";
     const hasCourseCompleted = isCourseCompleted(pelatihanData.tanggal_selesai);
+    const hargaSertifikat = getCertificatePriceForCourse(pelatihanData.harga_sertifikat);
     let certificateId = certificates?.find((certificate) => certificate.pelatihan_id === pelatihanData.id)?.id || null;
     const coursePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "pendaftaran_pelatihan" && payment.status_pembayaran === "berhasil");
     const certificatePayment = payments?.find((payment) => payment.pelatihan_id === pelatihanData.id && payment.tipe_pembayaran === "klaim_sertifikat");
@@ -143,6 +146,7 @@ async function getCertificateClaims(profileId: string): Promise<CertificateClaim
       judul: pelatihanData.judul,
       kategori: pelatihanData.kategori,
       harga: pelatihanData.harga,
+      hargaSertifikat,
       status,
       certificateId,
       certificatePaymentStatus: certificatePayment?.status_pembayaran || null,
@@ -165,5 +169,5 @@ export default async function SertifikatPage({ searchParams }: { searchParams: P
   const certificates = await getCertificates(profileId);
   const selectedClaim = pelatihanId ? claims.find((claim) => claim.pelatihanId === pelatihanId) || null : null;
 
-  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} claims={claims} selectedClaim={selectedClaim} certificatePrice={getCertificatePrice()} />;
+  return <SertifikatContainer user={userData.user as SessionUser} certificates={certificates} claims={claims} selectedClaim={selectedClaim} />;
 }
