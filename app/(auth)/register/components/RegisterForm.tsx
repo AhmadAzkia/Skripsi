@@ -76,7 +76,12 @@ export default function RegisterForm({ className = "" }: RegisterFormProps) {
       if (error) {
         setError(error);
       } else if (user) {
-        window.location.href = "/dashboard";
+        setSuccess(`Link verifikasi telah dikirim ke ${formData.email}. Buka email tersebut untuk mengaktifkan akun, lalu login.`);
+        setFormData((current) => ({
+          ...current,
+          password: "",
+          confirmPassword: "",
+        }));
       }
     } catch (err) {
       setError("Terjadi kesalahan saat pendaftaran");

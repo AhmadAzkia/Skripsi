@@ -11,23 +11,34 @@ interface SignupData {
   password: string;
   fullName: string;
   phone: string;
+  agreeToTerms: boolean;
 }
 
 export async function signup(data: SignupData) {
+  const email = data.email.trim().toLowerCase();
+  const fullName = data.fullName.trim();
+  const phone = data.phone.trim();
+
+  if (!fullName) return { user: null, error: "Nama lengkap wajib diisi." };
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) return { user: null, error: "Format email tidak valid." };
+  if (!phone) return { user: null, error: "Nomor telepon wajib diisi." };
+  if (data.password.length < 8) return { user: null, error: "Password minimal 8 karakter." };
+  if (!data.agreeToTerms) return { user: null, error: "Anda harus menyetujui syarat dan ketentuan." };
+
   const supabase = await createSupabaseServerClient();
   const Headers = await headers();
   const siteUrl = getSiteUrlFromHeaders(Headers);
 
   // Panggil Supabase Auth dari sisi Server
   const { data: authData, error } = await supabase.auth.signUp({
-    email: data.email,
+    email,
     password: data.password,
     options: {
       emailRedirectTo: `${siteUrl}/auth/confirm`,
       data: {
         // Data ini akan diteruskan ke trigger 'handle_new_user' Anda
-        nama_lengkap: data.fullName, 
-        nomor_hp: data.phone,
+        nama_lengkap: fullName,
+        nomor_hp: phone,
       },
     },
   });
@@ -44,15 +55,6 @@ export async function signup(data: SignupData) {
     return { user: null, error: error.message };
   }
 
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: data.email,
-    password: data.password,
-  });
-
-  if (signInError) {
-    return { user: null, error: "Pendaftaran berhasil, namun gagal login otomatis. Silakan login manual." };
-  }
-
-  // Kirim data user kembali ke Frontend
+  // Jangan login otomatis. Akun baru harus dikonfirmasi melalui email dahulu.
   return { user: authData.user, error: null };
 }
