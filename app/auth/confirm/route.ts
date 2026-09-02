@@ -35,7 +35,10 @@ export async function GET(request: NextRequest) {
   }
 
   if (!tokenHash || !type) {
-    return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid.`);
+    // ConfirmationURL bawaan Supabase dapat memverifikasi email sebelum
+    // mengarahkan pengguna ke aplikasi tanpa meneruskan token ke route ini.
+    const processedMessage = encodeURIComponent("Verifikasi email telah diproses. Silakan login.");
+    return NextResponse.redirect(`${requestUrl.origin}/login?message=${processedMessage}`);
   }
 
   const supabase = await createSupabaseServerClient();
