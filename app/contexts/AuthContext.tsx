@@ -46,6 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return profile;
   };
 
+  const updateUserWithProfile = async (authUser: User) => {
+    const profile = await getProfile(authUser);
+
+    // Gangguan query profil sementara tidak boleh menghapus nama yang sudah tampil.
+    setUser((currentUser) => ({
+      ...authUser,
+      profile: profile || (currentUser?.id === authUser.id ? currentUser.profile : null),
+    }));
+  };
+
   // Fungsi untuk me-refresh data user + profil secara manual
   const refreshUser = async () => {
     setLoading(true);
@@ -64,8 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (user) {
-        const profile = await getProfile(user);
-        setUser({ ...user, profile });
+        await updateUserWithProfile(user);
       } else {
         setUser(null);
       }
@@ -102,8 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Cek sesi awal
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        const profile = await getProfile(session.user);
-        setUser({ ...session.user, profile });
+        await updateUserWithProfile(session.user);
       }
       setLoading(false);
     });
@@ -113,10 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
 
       if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
-        // Clear stale user data sebelum fetch baru supaya navbar gak nampilin data lama
-        setUser(null);
-        const profile = await getProfile(session.user);
-        setUser({ ...session.user, profile });
+        await updateUserWithProfile(session.user);
         setLoading(false);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
@@ -124,14 +129,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       // Tangani TOKEN_REFRESHED untuk update otomatis
       else if (event === "TOKEN_REFRESHED" && session) {
-        const profile = await getProfile(session.user);
-        setUser({ ...session.user, profile });
+        await updateUserWithProfile(session.user);
         setLoading(false);
       }
       // Juga tangani USER_UPDATED jika ingin profil update otomatis
       else if (event === "USER_UPDATED" && session) {
-        const profile = await getProfile(session.user);
-        setUser({ ...session.user, profile });
+        await updateUserWithProfile(session.user);
         setLoading(false);
       }
     });
@@ -140,12 +143,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // (onAuthStateChange tidak selalu fire INITIAL_SESSION saat tab switch)
     const handleVisibilityChange = async () => {
       if (document.visibilityState === "visible") {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const profile = await getProfile(session.user);
-          setUser({ ...session.user, profile });
-        } else {
+        const { data: { user: authUser }, error } = await supabase.auth.getUser();
+        if (authUser && !error) {
+          await updateUserWithProfile(authUser);
+        } else if (!error) {
           setUser(null);
+        } else {
+          console.error("Error refreshing visible tab user:", error);
         }
       }
     };

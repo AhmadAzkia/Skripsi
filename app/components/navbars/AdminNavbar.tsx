@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/(peserta)/actions";
 import RoleIndicator from "@/components/ui/RoleIndicator";
+import { getUserDisplayName } from "@/lib/user-display";
 import { HomeIcon, UsersIcon, CalendarDaysIcon, AcademicCapIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon, CreditCardIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -29,18 +30,8 @@ export default function AdminNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(authLoading);
-
-  // Sync dengan auth loading, tapi kalau stuck lebih dari 3 detik, paksa stop
-  React.useEffect(() => {
-    if (authLoading) {
-      setLoading(true);
-      const timeout = setTimeout(() => setLoading(false), 3000);
-      return () => clearTimeout(timeout);
-    } else {
-      setLoading(false);
-    }
-  }, [authLoading]);
+  const displayName = getUserDisplayName(user, "Admin");
+  const firstName = displayName.split(/\s+/)[0];
 
   // Close dropdowns when clicking outside
   React.useEffect(() => {
@@ -195,7 +186,7 @@ export default function AdminNavbar() {
             <div className="flex items-center space-x-4">
               {/* Profile Dropdown */}
               <div className="relative dropdown-container">
-                {loading ? (
+                {authLoading && !user ? (
                   <div className="flex items-center space-x-2 px-3 py-2">
                     <div className="w-8 h-8 bg-white/10 rounded-full animate-pulse" />
                     <div className="w-16 h-4 bg-white/10 rounded animate-pulse hidden sm:block" />
@@ -209,7 +200,7 @@ export default function AdminNavbar() {
                       <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
                         <UserIcon className="w-5 h-5 text-navy" />
                       </div>
-                      <span className={`hidden sm:block font-medium max-w-32 truncate ${isProfileActive ? "text-gold" : "text-white-text"}`}>{user?.profile?.nama_lengkap?.split(" ")[0] || "Admin"}</span>
+                      <span className={`hidden sm:block font-medium max-w-32 truncate ${isProfileActive ? "text-gold" : "text-white-text"}`}>{firstName}</span>
                       <ChevronDownIcon className={`w-4 h-4 hidden sm:block transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
                     </button>
 
@@ -224,8 +215,8 @@ export default function AdminNavbar() {
                                 <UserIcon className="w-5 h-5 text-white" />
                               </div>
                               <div className="flex-1">
-                                <div className="font-semibold text-navy text-sm gradient-text">{user?.profile?.nama_lengkap || user?.profile?.email?.split("@")[0] || "Admin"}</div>
-                                <div className="text-xs text-gray-500 truncate">{user?.profile?.email}</div>
+                                <div className="font-semibold text-navy text-sm gradient-text">{displayName}</div>
+                                <div className="text-xs text-gray-500 truncate">{user?.profile?.email || user?.email}</div>
                                 <div className="mt-1">
                                   <RoleIndicator />
                                 </div>

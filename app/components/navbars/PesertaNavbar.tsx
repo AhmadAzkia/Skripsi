@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout } from "@/(peserta)/actions";
 import RoleIndicator from "@/components/ui/RoleIndicator";
+import { getUserDisplayName } from "@/lib/user-display";
 import { HomeIcon, BookOpenIcon, CalendarDaysIcon, AcademicCapIcon, ClockIcon, UserIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -24,18 +25,8 @@ export default function PesertaNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(authLoading);
-
-  // Sync dengan auth loading, tapi kalau stuck lebih dari 3 detik, paksa stop
-  React.useEffect(() => {
-    if (authLoading) {
-      setLoading(true);
-      const timeout = setTimeout(() => setLoading(false), 3000);
-      return () => clearTimeout(timeout);
-    } else {
-      setLoading(false);
-    }
-  }, [authLoading]);
+  const displayName = getUserDisplayName(user, "Peserta");
+  const firstName = displayName.split(/\s+/)[0];
 
   const handleNavigation = (href: string) => {
     setMobileMenuOpen(false); // Tutup menu mobile
@@ -114,7 +105,7 @@ export default function PesertaNavbar() {
 
           {/* Profile Dropdown - Desktop */}
           <div className="hidden lg:block relative shrink-0">
-            {loading ? (
+            {authLoading && !user ? (
               <div className="flex items-center space-x-2 px-3 py-2">
                 <div className="w-8 h-8 bg-white/10 rounded-full animate-pulse" />
                 <div className="w-20 h-4 bg-white/10 rounded animate-pulse" />
@@ -126,10 +117,10 @@ export default function PesertaNavbar() {
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:text-gold hover:bg-navy/50 transition-all duration-300 group ${isAccountSectionActive ? "text-gold" : "text-silver"}`}
                 >
                   <div className="w-8 h-8 bg-linear-to-br from-gold to-yellow-600 text-navy rounded-full flex items-center justify-center text-xs font-semibold transition-transform duration-200 group-hover:scale-110 shadow-lg">
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                    {displayName.charAt(0).toUpperCase()}
                   </div>
                   <span className={`max-w-32 truncate ${isAccountSectionActive ? "text-gold" : "text-white-text"}`}>
-                    {user?.profile?.nama_lengkap || user?.email || "User"}
+                    {firstName}
                   </span>
                   <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${profileDropdownOpen ? "rotate-180" : "rotate-0"}`} />
                 </button>
@@ -146,7 +137,7 @@ export default function PesertaNavbar() {
                           </div>
                           <div className="flex-1">
                             <div className="font-semibold text-navy text-sm gradient-text">
-                              {user?.profile?.nama_lengkap || user?.email?.split("@")[0] || "Peserta"}
+                              {displayName}
                             </div>
                             <div className="text-xs text-gray-500 truncate">
                               {user?.email}
