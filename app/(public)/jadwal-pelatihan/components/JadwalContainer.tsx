@@ -56,7 +56,7 @@ export default function JadwalContainer({ initialJadwal }: JadwalContainerProps)
               </h1>
               <p className="text-xl md:text-2xl text-silver mb-8 max-w-3xl mx-auto text-pretty animate-slide-up">Temukan jadwal pelatihan terbaru dari PT. CertiGuardia Solusi. Pilih program yang sesuai dengan kebutuhan dan jadwal Anda.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
-                <Link href="/daftar" className="bg-gold hover:bg-gold/90 text-navy btn-interactive px-8 py-3 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center hover-lift shadow-lg">
+                <Link href="/registrasi" className="bg-gold hover:bg-gold/90 text-navy btn-interactive px-8 py-3 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center hover-lift shadow-lg">
                   Daftar Sekarang
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
