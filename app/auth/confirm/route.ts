@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Confirm code error:", error);
-      return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid atau sudah kedaluwarsa.`);
+      const processedMessage = encodeURIComponent("Verifikasi email telah diproses. Silakan login.");
+      return NextResponse.redirect(`${requestUrl.origin}/login?message=${processedMessage}`);
     }
 
     return NextResponse.redirect(`${requestUrl.origin}${verifiedRedirectPath}`);
@@ -49,7 +50,8 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error("Confirm OTP error:", error);
-    return NextResponse.redirect(`${requestUrl.origin}/login?message=Link verifikasi tidak valid atau sudah kedaluwarsa.`);
+    const processedMessage = encodeURIComponent("Verifikasi email telah diproses. Silakan login.");
+    return NextResponse.redirect(`${requestUrl.origin}/login?message=${processedMessage}`);
   }
 
   const redirectPath = type === "recovery" ? "/reset-password" : verifiedRedirectPath;
